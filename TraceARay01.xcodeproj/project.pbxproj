@@ -10,6 +10,9 @@
 		630D56802093694C00F925B8 /* TraceARay01.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 630D56712093621F00F925B8 /* TraceARay01.cpp */; };
 		630D568320936CF300F925B8 /* vec3.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 630D568220936CF300F925B8 /* vec3.cpp */; };
 		630D56862093755E00F925B8 /* ray.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 630D56842093755E00F925B8 /* ray.cpp */; };
+		63EE6C1421DFBE0C00F4A6AE /* hitable.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 63EE6C1221DFBE0C00F4A6AE /* hitable.cpp */; };
+		63EE6C1721DFBEFE00F4A6AE /* sphere.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 63EE6C1521DFBEFE00F4A6AE /* sphere.cpp */; };
+		63EE6C1A21DFC43400F4A6AE /* hitablearray.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 63EE6C1821DFC43400F4A6AE /* hitablearray.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -32,6 +35,12 @@
 		630D568220936CF300F925B8 /* vec3.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = vec3.cpp; sourceTree = "<group>"; };
 		630D56842093755E00F925B8 /* ray.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ray.cpp; sourceTree = "<group>"; };
 		630D56852093755E00F925B8 /* ray.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = ray.hpp; sourceTree = "<group>"; };
+		63EE6C1221DFBE0C00F4A6AE /* hitable.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = hitable.cpp; sourceTree = "<group>"; };
+		63EE6C1321DFBE0C00F4A6AE /* hitable.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = hitable.hpp; sourceTree = "<group>"; };
+		63EE6C1521DFBEFE00F4A6AE /* sphere.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = sphere.cpp; sourceTree = "<group>"; };
+		63EE6C1621DFBEFE00F4A6AE /* sphere.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = sphere.hpp; sourceTree = "<group>"; };
+		63EE6C1821DFC43400F4A6AE /* hitablearray.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = hitablearray.cpp; sourceTree = "<group>"; };
+		63EE6C1921DFC43400F4A6AE /* hitablearray.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = hitablearray.hpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -70,6 +79,12 @@
 				630D56722093621F00F925B8 /* TraceARay01.hpp */,
 				630D568220936CF300F925B8 /* vec3.cpp */,
 				630D568120936C9C00F925B8 /* vec3.hpp */,
+				63EE6C1221DFBE0C00F4A6AE /* hitable.cpp */,
+				63EE6C1321DFBE0C00F4A6AE /* hitable.hpp */,
+				63EE6C1521DFBEFE00F4A6AE /* sphere.cpp */,
+				63EE6C1621DFBEFE00F4A6AE /* sphere.hpp */,
+				63EE6C1821DFC43400F4A6AE /* hitablearray.cpp */,
+				63EE6C1921DFC43400F4A6AE /* hitablearray.hpp */,
 			);
 			name = Source;
 			sourceTree = "<group>";
@@ -131,8 +146,11 @@
 			buildActionMask = 2147483647;
 			files = (
 				630D56862093755E00F925B8 /* ray.cpp in Sources */,
+				63EE6C1421DFBE0C00F4A6AE /* hitable.cpp in Sources */,
 				630D568320936CF300F925B8 /* vec3.cpp in Sources */,
 				630D56802093694C00F925B8 /* TraceARay01.cpp in Sources */,
+				63EE6C1721DFBEFE00F4A6AE /* sphere.cpp in Sources */,
+				63EE6C1A21DFC43400F4A6AE /* hitablearray.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

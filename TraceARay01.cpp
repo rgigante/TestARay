@@ -8,6 +8,9 @@
 //	First committed on github on 02.05.2018
 
 #include "TraceARay01.hpp"
+#include "sphere.hpp"
+#include "hitable.hpp"
+#include "hitablearray.hpp"
 
 // global var to enable console debug
 bool g_debugConsole = false;
@@ -74,7 +77,7 @@ float hit_triangle(const Vec3& ptA, const Vec3& ptB, const Vec3& ptC, const Ray&
 	return -1.0;
 }
 
-Vec3 color_const(const Ray& r)
+Vec3 ColorConst(const Ray& r)
 {
 	// compute the color intersecting a sphere
 	const Vec3 sphereCen(0,0,-1);
@@ -95,7 +98,7 @@ Vec3 color_const(const Ray& r)
 	return Lerp(Vec3(1.0, 1.0, 1.0), Vec3(0.5, 0.7, 1.0), blend);
 }
 
-Vec3 color_normals(const Ray& r)
+Vec3 ColorNormals(const Ray& r)
 {
 	float t;
 	
@@ -111,8 +114,8 @@ Vec3 color_normals(const Ray& r)
 			const Vec3 normalAtHitPoint = Normalize(r.PointAtParameter(t) - sphereCen);
 			// convert the normal component [-1,1] to color component [0,1]
 			const Vec3 colorFromNormal = Vec3(
-																				normalAtHitPoint.x()+1,
-																				normalAtHitPoint.y()+1,
+																				normalAtHitPoint.x() + 1,
+																				normalAtHitPoint.y() + 1,
 																				normalAtHitPoint.z() + 1) * 0.5;
 			return colorFromNormal;
 		}
@@ -131,11 +134,29 @@ Vec3 color_normals(const Ray& r)
 			const Vec3 normalAtHitPoint = Normalize(Cross(triA - triB, triC - triA));
 			// convert the normal component [-1,1] to color component [0,1]
 			const Vec3 colorFromNormal = Vec3(
-																				normalAtHitPoint.x()+1,
-																				normalAtHitPoint.y()+1,
+																				normalAtHitPoint.x() + 1,
+																				normalAtHitPoint.y() + 1,
 																				normalAtHitPoint.z() + 1) * 0.5;
 			return colorFromNormal;
 		}
+	}
+	
+	// compute the background color
+	const Vec3 ray_direction = Normalize(r.GetDirection());
+	const float blend = 0.5 * (ray_direction.y() + 1.0);
+	return Lerp(Vec3(1.0, 1.0, 1.0), Vec3(0.5, 0.7, 1.0), blend);
+}
+
+Vec3 ColorHitables(const Ray& r, Hitable* world)
+{
+	HitRecord rec;
+	if (world && world->Hit(r, 0.0, MAXFLOAT, rec))
+	{
+		const Vec3 colorFromNormal = Vec3(
+																			rec.n.x() + 1,
+																			rec.n.y() + 1,
+																			rec.n.z() + 1) * 0.5;
+		return colorFromNormal;
 	}
 	
 	// compute the background color
@@ -161,6 +182,13 @@ int main()
 	const int nx = 200;
 	const int ny = int(nx / ratio);
 	
+	// define the world (by specifying the hitable elements)
+	const int objsCnt = 2;
+	Hitable *objects[objsCnt];
+	objects[0] = new Sphere(Vec3(0, 0, -1), 0.5);
+	objects[1] = new Sphere(Vec3(0, -100.5, -1), 100);
+	Hitable *world = new HitableArray(objects, objsCnt);
+	
 	// allocate the final image
 	std::ofstream image;
 	image.open("/Users/riccardogigante/Desktop/test.ppm", std::ofstream::out);
@@ -182,7 +210,8 @@ int main()
 			Ray r(eyePos, eyeDir);
 			
 			// evaluate the color given a certain ray
-			const Vec3 col = color_normals(r);
+			//const Vec3 col = ColorNormals(r);
+			const Vec3 col = ColorHitables(r, world);
 			
 			// map the value returned by the ray to a meaningful color
 			const int ir = int(255.99 * col.r());
