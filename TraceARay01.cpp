@@ -8,25 +8,23 @@
 //	First committed on github on 02.05.2018
 
 #include "TraceARay01.hpp"
-#include "vec3.hpp"
-#include "ray.hpp"
 
-bool hit_sphere_old(const vec3& center, float radius, const ray& r)
+// global var to enable console debug
+bool g_debugConsole = false;
+
+// Linear interpolation template function
+template <class T>
+T Lerp(T start, T end, float blend)
 {
-	const vec3 oc = r.origin() - center;
-	const float a = dot(r.direction(), r.direction());
-	const float b = 2.0 * dot(oc, r.direction());
-	const float c = dot(oc, oc) - radius*radius;
-	const float discriminant = b*b - 4*a*c;
-	return (discriminant > 0);
+	return start * (1.0 - blend) + end * blend;
 }
 
-float hit_sphere(const vec3& center, float radius, const ray& r)
+float hit_sphere(const Vec3& center, float radius, const Ray& r)
 {
-	const vec3 oc = r.origin() - center;
-	const float a = dot(r.direction(), r.direction());
-	const float b = 2.0 * dot(oc, r.direction());
-	const float c = dot(oc, oc) - radius*radius;
+	const Vec3 oc = r.GetOrigin() - center;
+	const float a = Dot(r.GetDirection(), r.GetDirection());
+	const float b = 2.0 * Dot(oc, r.GetDirection());
+	const float c = Dot(oc, oc) - radius*radius;
 	const float discriminant = b*b - 4*a*c;
 	if (discriminant > 0)
 		return (-b - sqrt(discriminant)) / (2.0 * a);
@@ -34,146 +32,169 @@ float hit_sphere(const vec3& center, float radius, const ray& r)
 		return -1.0;
 }
 
-bool hit_triangle_old(const vec3& ptA, const vec3& ptB, const vec3& ptC, const ray& r)
+float hit_triangle(const Vec3& ptA, const Vec3& ptB, const Vec3& ptC, const Ray& r)
 {
-	const vec3 vecAB = ptA - ptB;
-	const vec3 vecBC = ptB - ptC;
-	const vec3 vecCA = ptC - ptA;
+	// compute the segments given the three vertexes
+	const Vec3 vecAB = ptA - ptB;
+	const Vec3 vecBC = ptB - ptC;
+	const Vec3 vecCA = ptC - ptA;
 	
-	const vec3 nrmABC = unit_vector(cross(vecAB, vecBC));
-	const float dotDirNrm = dot(unit_vector(r.direction()), nrmABC);
+	// compute the normal
+	const Vec3 nrmABC = Normalize(Cross(vecAB, vecCA));
+	
+	// compute the Dot product (cosine of the angle) between the normal and the ray direction
+	const float dotDirNrm = Dot(Normalize(r.GetDirection()), nrmABC);
+	
+	// check triangle not being perpendicular to ray
 	if (dotDirNrm != 0)
 	{
-		const float k = dot(ptA - r.origin(),nrmABC)/dotDirNrm;
+		const float k = Dot(ptA - r.GetOrigin(), nrmABC) / dotDirNrm;
 		
-		//intersection point
-		const vec3 ptP = r.origin() + unit_vector(r.direction()) * k;
-
-		// vectors to intersection points
-		const vec3 vecAP = ptA - ptP;
-		const vec3 vecBP = ptB - ptP;
-		const vec3 vecCP = ptC - ptP;
-		
-		// normals between triangle edges and vectors to int. points
-		const vec3 crsAB_AP = cross(vecAB, vecAP);
-		const vec3 crsBC_BP = cross(vecBC, vecBP);
-		const vec3 crsCA_CP = cross(vecCA, vecCP);
-		
-		// dot products for checking intersection point position
-		const float dot1 = dot(crsAB_AP, crsBC_BP);
-		const float dot2 = dot(crsBC_BP, crsCA_CP);
-		const float dot3 = dot(crsCA_CP, crsAB_AP);
-		
-		if (dot1 >= 0 && dot2 >= 0 && dot3 >= 0)
-			return true;
-	}
-	return false;
-}
-
-float hit_triangle(const vec3& ptA, const vec3& ptB, const vec3& ptC, const ray& r)
-{
-	const vec3 vecAB = ptA - ptB;
-	const vec3 vecBC = ptB - ptC;
-	const vec3 vecCA = ptC - ptA;
-	
-	const vec3 nrmABC = unit_vector(cross(vecAB, vecCA));
-	const float dotDirNrm = dot(unit_vector(r.direction()), nrmABC);
-	if (dotDirNrm != 0)
-	{
-		const float k = dot(ptA - r.origin(),nrmABC) / dotDirNrm;
-		
-		//intersection point
-		const vec3 ptP = r.origin() + unit_vector(r.direction()) * k;
+		// evalute the intersection point
+		const Vec3 ptP = r.GetOrigin() + Normalize(r.GetDirection()) * k;
 		
 		// vectors to intersection points
-		const vec3 vecAP = ptA - ptP;
-		const vec3 vecBP = ptB - ptP;
-		const vec3 vecCP = ptC - ptP;
+		const Vec3 vecAP = ptA - ptP;
+		const Vec3 vecBP = ptB - ptP;
+		const Vec3 vecCP = ptC - ptP;
 		
 		// normals between triangle edges and vectors to int. points
-		const vec3 crsAB_AP = cross(vecAB, vecAP);
-		const vec3 crsBC_BP = cross(vecBC, vecBP);
-		const vec3 crsCA_CP = cross(vecCA, vecCP);
+		const Vec3 crsAB_AP = Cross(vecAB, vecAP);
+		const Vec3 crsBC_BP = Cross(vecBC, vecBP);
+		const Vec3 crsCA_CP = Cross(vecCA, vecCP);
 		
-		// dot products for checking intersection point position
-		const float dot1 = dot(crsAB_AP, crsBC_BP);
-		const float dot2 = dot(crsBC_BP, crsCA_CP);
-		const float dot3 = dot(crsCA_CP, crsAB_AP);
-		
+		// Dot products for checking intersection point position
+		const float dot1 = Dot(crsAB_AP, crsBC_BP);
+		const float dot2 = Dot(crsBC_BP, crsCA_CP);
+		const float dot3 = Dot(crsCA_CP, crsAB_AP);
+
 		if (dot1 >= 0 && dot2 >= 0 && dot3 >= 0)
 			return k;
 	}
 	return -1.0;
 }
 
-vec3 color_old(const ray& r)
+Vec3 color_const(const Ray& r)
 {
-//	if (hit_sphere_old(vec3(0,0,-1), 0.5, r))
-//		return vec3(1,0,0);
+	// compute the color intersecting a sphere
+	const Vec3 sphereCen(0,0,-1);
+	const float sphereRad = 0.5;
+	if (hit_sphere(sphereCen, sphereRad, r) > 0)
+		return Vec3(1,0,0);
 	
-//	if (hit_triangle_old(vec3(-1.5,0.5,-1), vec3(-0.5,0.5,-1), vec3(-0.5,-0.5,-1), r))
-//		return vec3(0,1,0);
+	// compute the color intersecting a triangle
+	const Vec3 triA = Vec3(-0.5,0.5,-1);
+	const Vec3 triB = Vec3(0.5,0.5,-1);
+	const Vec3 triC = Vec3(0.5,-0.5,-1);
+	if (hit_triangle(triA, triB, triC, r) > 0)
+		return Vec3(0,1,0);
 	
-	vec3 unit_direction = unit_vector(r.direction());
-	float t = 0.5*(unit_direction.y() + 1.0);
-	return vec3(1.0, 1.0, 1.0) * (1.0 -t ) + vec3(0.5, 0.7, 1.0) * t;
+	// compute the background color
+	const Vec3 ray_direction = Normalize(r.GetDirection());
+	const float blend = 0.5 * (ray_direction.y() + 1.0);
+	return Lerp(Vec3(1.0, 1.0, 1.0), Vec3(0.5, 0.7, 1.0), blend);
 }
 
-vec3 color(const ray& r)
+Vec3 color_normals(const Ray& r)
 {
 	float t;
-	const vec3 sphereCen(0,0,-1);
-	const float sphereRad = 0.5;
-	t = hit_sphere(sphereCen, sphereRad, r);
-	if (t > 0.0)
+	
+	if (true)
+	// hit a sphere
 	{
-		const vec3 norm = unit_vector(r.point_at_parameter(t) - sphereCen);
-		return vec3(norm.x()+1, norm.y()+1, norm.z()+1)*0.5;
+		const Vec3 sphereCen(0,0,-1);
+		const float sphereRad = 0.5;
+		t = hit_sphere(sphereCen, sphereRad, r);
+		if (t > 0.0)
+		{
+			// normalize the vector representing the normal at hit point
+			const Vec3 normalAtHitPoint = Normalize(r.PointAtParameter(t) - sphereCen);
+			// convert the normal component [-1,1] to color component [0,1]
+			const Vec3 colorFromNormal = Vec3(
+																				normalAtHitPoint.x()+1,
+																				normalAtHitPoint.y()+1,
+																				normalAtHitPoint.z() + 1) * 0.5;
+			return colorFromNormal;
+		}
 	}
 	
-//	const vec3 triA = vec3(-0.5,0.5,-1);
-//	const vec3 triB = vec3(0.5,0.5,-1);
-//	const vec3 triC = vec3(0.5,-0.5,-1);
-//	t = hit_triangle(triA, triB, triC, r);
-//	if (t > 0.0)
-//	{
-//		const vec3 norm = cross(triA - triB, triC - triA);
-//		return vec3(norm.x()+1, norm.y()+1, norm.z()+1)*0.5;
-//	}
+	if (true)
+	{
+		// hit a triangle
+		const Vec3 triA = Vec3(-0.5,0.5,-1);
+		const Vec3 triB = Vec3(0.5,0.5,-1);
+		const Vec3 triC = Vec3(0.5,-0.5,-1);
+		t = hit_triangle(triA, triB, triC, r);
+		if (t > 0.0)
+		{
+			// normalize the vector representing the normal at hit point
+			const Vec3 normalAtHitPoint = Normalize(Cross(triA - triB, triC - triA));
+			// convert the normal component [-1,1] to color component [0,1]
+			const Vec3 colorFromNormal = Vec3(
+																				normalAtHitPoint.x()+1,
+																				normalAtHitPoint.y()+1,
+																				normalAtHitPoint.z() + 1) * 0.5;
+			return colorFromNormal;
+		}
+	}
 	
-	//	if (hit_triangle(, vec3(-0.5,0.5,-1), , r))
-	//		return vec3(0,1,0);
-	
-	const vec3 ray_direction = unit_vector(r.direction());
+	// compute the background color
+	const Vec3 ray_direction = Normalize(r.GetDirection());
 	const float blend = 0.5 * (ray_direction.y() + 1.0);
-	return vec3(1.0, 1.0, 1.0) * (1.0 - blend) + vec3(0.5, 0.7, 1.0) * blend;
+	return Lerp(Vec3(1.0, 1.0, 1.0), Vec3(0.5, 0.7, 1.0), blend);
 }
 
 int main()
 {
+	// set the film size
+	const Vec3 filmSize (4.0, 4.0, 0.0);
+	const Vec3 lowerLeftCorner( -filmSize.x() / 2, -filmSize.y() / 2, -1.0);
+	const Vec3 horizontal (filmSize.x(), 0.0, 0.0);
+	const Vec3 vertical (0.0, filmSize.y(), 0.0);
+	// set the film ratio
+	const float ratio = float(filmSize.x())/float(filmSize.y());
+	
+	// set the eye position
+	const Vec3 eyePos (0.0, 0.0, 0.0);
+	
+	// set image resolution
 	const int nx = 200;
-	const int ny = 100;
+	const int ny = int(nx / ratio);
+	
+	// allocate the final image
 	std::ofstream image;
 	image.open("/Users/riccardogigante/Desktop/test.ppm", std::ofstream::out);
+	// write the image header
 	image << "P3\n" << nx << " " << ny << "\n255\n";
 	
-	const vec3 lower_left_corner(-2.0, -1.0, -1.0);
-	const vec3 horizontal (4.0, 0.0, 0.0);
-	const vec3 vertical (0.0, 2.0, 0.0);
-	const vec3 origin (0.0, 0.0, 0.0);
+	// loop over the pixel to compute their colors
 	for (int j = ny - 1; j>= 0; --j)
 	{
 		for (int i = 0; i < nx; ++i)
 		{
-			float u = float (i) / float (nx);
-			float v = float (j) / float (ny);
+			// evalute u/v params and create the eye direction
+			const float u = float (i) / float (nx);
+			const float v = float (j) / float (ny);
 			//std::cout << "u: " << u << " / v: " << v << " - ";
-			ray r(origin, lower_left_corner + horizontal*u + vertical*v);
+			const Vec3 eyeDir (lowerLeftCorner + horizontal * u + vertical * v);
 			
-			vec3 col = color(r);
+			// allocate a ray given a certain origin and direction
+			Ray r(eyePos, eyeDir);
+			
+			// evaluate the color given a certain ray
+			const Vec3 col = color_normals(r);
+			
+			// map the value returned by the ray to a meaningful color
 			const int ir = int(255.99 * col.r());
 			const int ig = int(255.99 * col.g());
 			const int ib = int(255.99 * col.b());
+			
+			if (g_debugConsole)
+			{
+				std::cout << "uv [" << u << ", " << v << "] / dir [" << eyeDir.x() << ", " << eyeDir.y() << ", " << eyeDir.z() << "] / col ["<< ir <<", " << ", "<< ig << ", " << ib << "]\n";
+			}
+			
+			// spool the color information to file
 			image << ir << " " << ig << " " << ib << "\n";
 		}
 	}

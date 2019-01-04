@@ -64,12 +64,12 @@
 		630D567F2093682100F925B8 /* Source */ = {
 			isa = PBXGroup;
 			children = (
-				630D56712093621F00F925B8 /* TraceARay01.cpp */,
-				630D56722093621F00F925B8 /* TraceARay01.hpp */,
-				630D568120936C9C00F925B8 /* vec3.hpp */,
-				630D568220936CF300F925B8 /* vec3.cpp */,
 				630D56842093755E00F925B8 /* ray.cpp */,
 				630D56852093755E00F925B8 /* ray.hpp */,
+				630D56712093621F00F925B8 /* TraceARay01.cpp */,
+				630D56722093621F00F925B8 /* TraceARay01.hpp */,
+				630D568220936CF300F925B8 /* vec3.cpp */,
+				630D568120936C9C00F925B8 /* vec3.hpp */,
 			);
 			name = Source;
 			sourceTree = "<group>";
@@ -261,6 +261,7 @@
 				630D567E2093641200F925B8 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

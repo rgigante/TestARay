@@ -12,19 +12,27 @@
 
 #include "vec3.hpp"
 
-class ray
+class Ray
 {
 public:
-	ray(){}
-	ray(const vec3& a, const vec3& b){ A = a; B = b; }
-	vec3 origin() const { return A; }
-	vec3 direction() const { return B; }
-	vec3 point_at_parameter(const float t) const { return (A + B * t); }
+	Ray(){}
+	Ray(const Vec3& a, const Vec3& b){ A = a; B = b; }
+	
+	// retrieve the origin of a ray
+	Vec3 GetOrigin() const { return A; }
+	// retrieve the direction of a ray
+	Vec3 GetDirection() const { return B; }
+	// set the origin of a ray
+	void SetOrigin(const Vec3& pos) { A = pos; }
+	// set the direction of a ray
+	void SetDirection(const Vec3& dir) { B = dir; }
+	// given a parameter for a certain ray, return the position in space at parameter
+	Vec3 PointAtParameter(const float t) const { return (A + B * t); }
 	
 	
-public:
-	vec3 A; // ray firing position
-	vec3 B; // ray firing direction
+private:
+	Vec3 A; // ray firing position
+	Vec3 B; // ray firing direction
 };
 
 #endif /* ray_hpp */
