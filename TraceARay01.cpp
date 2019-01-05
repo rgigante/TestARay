@@ -24,7 +24,19 @@ T Lerp(T start, T end, float blend)
 	return start * (1.0 - blend) + end * blend;
 }
 
-Vec3 ColorHitables(const Ray& r, Hitable* world)
+Vec3 RandomPointOnSphere(float radius = 1)
+{
+	Vec3 p;
+	
+	// algorithm of the rejection method
+	do
+			p = Vec3(drand48(), drand48(), drand48()) * 2 * radius - Vec3( 1, 1, 1) * radius;
+	while (p.SqrLenght() >= radius);
+	
+	return p;
+}
+
+Vec3 ColorNormalsHitables(const Ray& r, HitableArray* world)
 {
 	HitRecord rec;
 	if (world && world->Hit(r, 0.0, MAXFLOAT, rec))
@@ -39,6 +51,23 @@ Vec3 ColorHitables(const Ray& r, Hitable* world)
 	// compute the background color
 	const Vec3 ray_direction = Normalize(r.GetDirection());
 	const float blend = 0.5 * (ray_direction.y() + 1.0);
+	return Lerp(Vec3(1.0, 1.0, 1.0), Vec3(0.5, 0.7, 1.0), blend);
+}
+
+Vec3 ColorDiffuseHitables(const Ray& r, HitableArray* world)
+{
+	HitRecord rec;
+	const float epsHit = 1e-5;
+	if (world && world->Hit(r, epsHit, MAXFLOAT, rec))
+	{
+		const Vec3 target = rec.p + rec.n + RandomPointOnSphere();
+		// recursively compute the color
+		const Vec3 color = ColorDiffuseHitables( Ray( rec.p, target - rec.p), world) * 0.5;
+		return color;
+	}
+	
+	// compute the background color
+	const float blend = 0.5 * (r.GetDirection().y() + 1.0);
 	return Lerp(Vec3(1.0, 1.0, 1.0), Vec3(0.5, 0.7, 1.0), blend);
 }
 
@@ -57,7 +86,7 @@ int main()
 	// set image resolution
 	const int nx = cam.GetXRes();
 	const int ny = cam.GetYRes();
-	const int nSamples = 32;
+	const int nSamples = 16;
 	
 	// allocate the final image
 	std::ofstream image;
@@ -80,10 +109,15 @@ int main()
 				v = float(j + drand48()) / float(ny);
 				r = cam.GetRay(u, v);
 				
-//				Vec3 p = r.PointAtParameter(2.0);
-				col += ColorHitables(r, world);
+				col += ColorDiffuseHitables(r, world);
 			}
+			
+			// divide the final value by the number of samples (get the average value)
 			col = col / float(nSamples);
+			
+			// apply some "minimal" gamma correction (gamma 2 -> x^1/2)
+			col = Vec3(sqrt(col[0]), sqrt(col[1]), sqrt(col[2]));
+			
 			// map the value returned by the ray to a meaningful color
 			const int ir = int(255.99 * col.r());
 			const int ig = int(255.99 * col.g());

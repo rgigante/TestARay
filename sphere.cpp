@@ -16,8 +16,9 @@ bool Sphere::Hit(const Ray &r, float t_min, float t_max, HitRecord &rec) const
 	const float discriminant = b * b - 4 * a * c;
 	if (discriminant > 0)
 	{
+		float t = 0;
 		// evaluate first root
-		float t = (-b - sqrt(discriminant)) / (2 * a);
+		t = ( -b - sqrt(discriminant) ) / (2 * a);
 		if (t > t_min && t < t_max)
 		{
 			rec.t = t;
@@ -27,7 +28,7 @@ bool Sphere::Hit(const Ray &r, float t_min, float t_max, HitRecord &rec) const
 		}
 
 		// evalute second root
-		t = (-b + sqrt(discriminant)) / (2 * a);
+		t = ( -b + sqrt(discriminant) ) / (2 * a);
 		if (t > t_min && t < t_max)
 		{
 			rec.t = t;

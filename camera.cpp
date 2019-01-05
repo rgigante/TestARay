@@ -18,6 +18,7 @@ Camera::Camera(const Vec3& pos, float filmWidth, int xRes, int yRes) : _eyePos(p
 
 Ray Camera::GetRay(float u, float v)
 {
-	const Ray r (_eyePos, _lowerLeftCorner + _hVec * u + _vVec * v);
+	const Vec3 eyeDir = _lowerLeftCorner + _hVec * u + _vVec * v - _eyePos;
+	const Ray r (_eyePos, eyeDir);
 	return r;
 }
