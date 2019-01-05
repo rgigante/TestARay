@@ -9,6 +9,7 @@
 
 #include "TraceARay01.hpp"
 #include "sphere.hpp"
+#include "triangle.hpp"
 #include "hitable.hpp"
 #include "hitablearray.hpp"
 
@@ -183,10 +184,11 @@ int main()
 	const int ny = int(nx / ratio);
 	
 	// define the world (by specifying the hitable elements)
-	const int objsCnt = 2;
+	const int objsCnt = 3;
 	Hitable *objects[objsCnt];
 	objects[0] = new Sphere(Vec3(0, 0, -1), 0.5);
-	objects[1] = new Sphere(Vec3(0, -100.5, -1), 100);
+	objects[1] = new Triangle(Vec3(-2, -0.5, -2), Vec3(2, -0.5, -2), Vec3(2, -0.5, -0));
+	objects[2] = new Triangle(Vec3(2, -0.5, -0), Vec3(-2, -0.5, -0), Vec3(-2, -0.5, -2));
 	Hitable *world = new HitableArray(objects, objsCnt);
 	
 	// allocate the final image
