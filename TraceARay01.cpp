@@ -11,30 +11,12 @@
 #include "camera.hpp"
 #include "sphere.hpp"
 #include "triangle.hpp"
+#include "materials.hpp"
 #include "hitable.hpp"
 #include "hitablearray.hpp"
 
 // global var to enable console debug
 bool g_debugConsole = false;
-
-// Linear interpolation template function
-template <class T>
-T Lerp(T start, T end, float blend)
-{
-	return start * (1.0 - blend) + end * blend;
-}
-
-Vec3 RandomPointOnSphere(float radius = 1)
-{
-	Vec3 p;
-	
-	// algorithm of the rejection method
-	do
-			p = Vec3(drand48(), drand48(), drand48()) * 2 * radius - Vec3( 1, 1, 1) * radius;
-	while (p.SqrLenght() >= radius);
-	
-	return p;
-}
 
 Vec3 ColorNormalsHitables(const Ray& r, HitableArray* world)
 {
@@ -71,22 +53,46 @@ Vec3 ColorDiffuseHitables(const Ray& r, HitableArray* world)
 	return Lerp(Vec3(1.0, 1.0, 1.0), Vec3(0.5, 0.7, 1.0), blend);
 }
 
+Vec3 ColorMaterialsHitables(const Ray& r, HitableArray* world, int depth)
+{
+	HitRecord rec;
+	const float epsHit = 1e-5;
+	Ray scattered(Vec3(0, 0, 0), Vec3(0, 0, 0));
+	Vec3 attenuation(0, 0, 0);
+	if (world && world->Hit(r, epsHit, MAXFLOAT, rec))
+	{
+		if (depth < 50 && rec.mat && rec.mat->Scatter(r, rec, attenuation, scattered))
+		{
+			Vec3 res = attenuation * ColorMaterialsHitables(scattered, world, depth + 1);
+			return res;
+		}
+		
+		return Vec3(0,0,0);
+	}
+	
+	// compute the background color
+	const float blend = 0.5 * (r.GetDirection().y() + 1.0);
+	return Lerp(Vec3(1.0, 1.0, 1.0), Vec3(0.5, 0.7, 1.0), blend);
+}
+
 int main()
 {
-	
 	// define the world (by specifying the hitable elements)
-	const int objsCnt = 3;
+	const int objsCnt = 6;
 	Hitable *objects[objsCnt];
-	objects[0] = new Sphere(Vec3(0, 0, -1), 0.5);
-	objects[1] = new Triangle(Vec3(-2, -0.5, -2), Vec3(2, -0.5, -2), Vec3(2, -0.5, -0));
-	objects[2] = new Triangle(Vec3(2, -0.5, -0), Vec3(-2, -0.5, -0), Vec3(-2, -0.5, -2));
+	objects[0] = new Sphere(Vec3(0, 0, -1), 0.5, new MetalReflector(Vec3(.9,.2,.2)));
+	objects[1] = new Triangle(Vec3(-2, -0.5, -2), Vec3(2, -0.5, -0), Vec3(2, -0.5, -2), new MetalReflector(Vec3(.2,.9,.2)));
+	objects[2] = new Triangle(Vec3(2, -0.5, -0), Vec3(-2, -0.5, -2), Vec3(-2, -0.5, -0), new MetalReflector(Vec3(.2,.2,.9)));
+	objects[3] = new Triangle(Vec3(-0.5, 0.5, -0.5), Vec3(-0.5, -0.5, -1), Vec3(-0.5, 0.5, -1), new MetalReflector(Vec3(.9,.2,.9)));
+	objects[4] = new Triangle(Vec3(-0.5, 0.5, -1), Vec3(0.5, -0.5, -1), Vec3(0.5, 0.5, -1), new MetalReflector(Vec3(.2,.9,.9)));
+	objects[5] = new Triangle(Vec3(0.5, 0.5, -0.5), Vec3(0.5, 0.5, -1), Vec3(0.5, -0.5, -0.5), new MetalReflector(Vec3(.9,.9,.2)));
 	HitableArray *world = new HitableArray(objects, objsCnt);
 	
 	Camera cam (Vec3 (0.0, 0.0, 0.0), 4.0, 200, 200);
 	// set image resolution
 	const int nx = cam.GetXRes();
 	const int ny = cam.GetYRes();
-	const int nSamples = 16;
+	const int nSamples = 32;
 	
 	// allocate the final image
 	std::ofstream image;
@@ -109,7 +115,7 @@ int main()
 				v = float(j + drand48()) / float(ny);
 				r = cam.GetRay(u, v);
 				
-				col += ColorDiffuseHitables(r, world);
+				col += ColorMaterialsHitables(r, world, 0);
 			}
 			
 			// divide the final value by the number of samples (get the average value)

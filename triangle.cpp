@@ -8,18 +8,19 @@
 #include "triangle.hpp"
 
 
-Triangle::Triangle(Vec3 a, Vec3 b, Vec3 c) : _a(a), _b(b), _c(c)
+Triangle::Triangle(Vec3 a, Vec3 b, Vec3 c, Material* m) : _a(a), _b(b), _c(c), _mat(m)
 {
 	_ab = _a - _b;
 	_bc = _b - _c;
 	_ca = _c - _a;
-	_n = Normalize(Cross(_ab, _ca));
+	_n = Normalize(Cross(_ab, -_ca));
 }
 
 bool Triangle::Hit(const Ray &r, float t_min, float t_max, HitRecord &rec) const
 {
 	// compute the Dot product (cosine of the angle) between the normal and the ray direction
 	const float dotDirNrm = Dot(Normalize(r.GetDirection()), _n);
+	rec.mat = _mat;
 	
 	// check triangle not being perpendicular to ray
 	if (dotDirNrm != 0)

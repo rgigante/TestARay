@@ -172,4 +172,28 @@ inline Vec3 Normalize(Vec3 v)
 	return v / v.Lenght();
 }
 
+// Linear interpolation template function
+template <class T>
+T Lerp(T start, T end, float blend)
+{
+	return start * (1.0 - blend) + end * blend;
+}
+
+inline Vec3 RandomPointOnSphere(float radius = 1)
+{
+	Vec3 p;
+	
+	// algorithm of the rejection method
+	do
+		p = Vec3(drand48(), drand48(), drand48()) * 2 * radius - Vec3( 1, 1, 1) * radius;
+	while (p.SqrLenght() >= radius);
+	
+	return p;
+}
+
+inline Vec3 ReflectRay(const Vec3& in, const Vec3& n)
+{
+	return (in - n * 2 * Dot(in, n));
+}
+
 #endif /* vec3_hpp */

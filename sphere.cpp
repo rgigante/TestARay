@@ -14,6 +14,7 @@ bool Sphere::Hit(const Ray &r, float t_min, float t_max, HitRecord &rec) const
 	const float b = 2.0 * Dot(oc, r.GetDirection());
 	const float c = Dot(oc, oc) - _radius * _radius;
 	const float discriminant = b * b - 4 * a * c;
+	rec.mat = _mat;
 	if (discriminant > 0)
 	{
 		float t = 0;
