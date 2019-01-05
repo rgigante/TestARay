@@ -14,6 +14,7 @@
 		63EE6C1721DFBEFE00F4A6AE /* sphere.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 63EE6C1521DFBEFE00F4A6AE /* sphere.cpp */; };
 		63EE6C1A21DFC43400F4A6AE /* hitablearray.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 63EE6C1821DFC43400F4A6AE /* hitablearray.cpp */; };
 		63EE6C1D21E0908800F4A6AE /* triangle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 63EE6C1B21E0908800F4A6AE /* triangle.cpp */; };
+		63EE6C2021E0A37F00F4A6AE /* camera.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 63EE6C1E21E0A37F00F4A6AE /* camera.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -44,6 +45,8 @@
 		63EE6C1921DFC43400F4A6AE /* hitablearray.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = hitablearray.hpp; sourceTree = "<group>"; };
 		63EE6C1B21E0908800F4A6AE /* triangle.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = triangle.cpp; sourceTree = "<group>"; };
 		63EE6C1C21E0908800F4A6AE /* triangle.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = triangle.hpp; sourceTree = "<group>"; };
+		63EE6C1E21E0A37F00F4A6AE /* camera.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = camera.cpp; sourceTree = "<group>"; };
+		63EE6C1F21E0A37F00F4A6AE /* camera.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = camera.hpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -90,6 +93,8 @@
 				63EE6C1921DFC43400F4A6AE /* hitablearray.hpp */,
 				63EE6C1B21E0908800F4A6AE /* triangle.cpp */,
 				63EE6C1C21E0908800F4A6AE /* triangle.hpp */,
+				63EE6C1E21E0A37F00F4A6AE /* camera.cpp */,
+				63EE6C1F21E0A37F00F4A6AE /* camera.hpp */,
 			);
 			name = Source;
 			sourceTree = "<group>";
@@ -154,6 +159,7 @@
 				63EE6C1421DFBE0C00F4A6AE /* hitable.cpp in Sources */,
 				63EE6C1D21E0908800F4A6AE /* triangle.cpp in Sources */,
 				630D568320936CF300F925B8 /* vec3.cpp in Sources */,
+				63EE6C2021E0A37F00F4A6AE /* camera.cpp in Sources */,
 				630D56802093694C00F925B8 /* TraceARay01.cpp in Sources */,
 				63EE6C1721DFBEFE00F4A6AE /* sphere.cpp in Sources */,
 				63EE6C1A21DFC43400F4A6AE /* hitablearray.cpp in Sources */,

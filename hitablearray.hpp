@@ -15,6 +15,7 @@ class HitableArray : public Hitable
 public:
 	HitableArray(){}
 	HitableArray(Hitable** h, int n) { _hitables = h; _hitablesSize = n; }
+	~HitableArray();
 	bool Hit (const Ray& r, float t_min, float t_max, HitRecord& rec) const;
 	
 private:

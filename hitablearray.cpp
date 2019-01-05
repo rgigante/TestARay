@@ -7,6 +7,15 @@
 
 #include "hitablearray.hpp"
 
+HitableArray::~HitableArray()
+{
+	for (int i = 0; i < _hitablesSize; ++i)
+	{
+		delete (_hitables[i]);
+		_hitables[i] = nullptr;
+	}
+}
+
 bool HitableArray::Hit(const Ray &r, float t_min, float t_max, HitRecord &rec) const
 {
 	HitRecord tempRec;
