@@ -41,7 +41,7 @@ public:
 	inline float Length() const { return sqrt(e[0] * e[0] + e[1] * e[1] + e[2] * e[2]); }
 	inline float SqrLength() const { return (e[0] * e[0] + e[1] * e[1] + e[2] * e[2]); }
 	inline void Normalize(); //normalize vector
-	inline Vec3 GetNormalized(); // return normalized vector
+	inline Vec3& GetNormalized(); // return normalized vector
 	
 public:
 	float e[3];
@@ -108,6 +108,12 @@ inline Vec3& Vec3::operator/=(const float t) {
 	e[0]  *= k;
 	e[1]  *= k;
 	e[2]  *= k;
+	return *this;
+}
+
+inline Vec3& Vec3::GetNormalized()
+{
+	Normalize();
 	return *this;
 }
 
@@ -197,12 +203,6 @@ inline Vec3 Cross (const Vec3 &v1, const Vec3 &v2)
 							v1.e[0] * v2.e[1] - v2.e[0] * v1.e[1]);
 }
 
-inline Vec3 Vec3::GetNormalized()
-{
-	Normalize();
-	return *this;
-}
-
 // Linear interpolation template function
 template <class T>
 T Lerp(T start, T end, float blend)
@@ -210,6 +210,7 @@ T Lerp(T start, T end, float blend)
 	return start * (1.0 - blend) + end * blend;
 }
 
+// Generate a random point lying on a sphere
 inline Vec3 RandomPointOnSphere(float radius = 1)
 {
 	Vec3 p;
@@ -222,6 +223,7 @@ inline Vec3 RandomPointOnSphere(float radius = 1)
 	return p;
 }
 
+// Generate a reflected direction given an incident direction and the normal of the reflecting plane
 inline Vec3 ReflectRay(const Vec3& in, const Vec3& n)
 {
 	return (in - 2 * Dot(in, n) * n);
