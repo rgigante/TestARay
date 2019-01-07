@@ -16,9 +16,8 @@ Camera::Camera(const Vec3& pos, float filmWidth, int xRes, int yRes) : _eyePos(p
 	_vVec = Vec3(0.0, _filmHeight, 0.0);
 }
 
-Ray Camera::GetRay(float u, float v)
+Ray Camera::CreateRay(float u, float v)
 {
-	const Vec3 eyeDir = _lowerLeftCorner + _hVec * u + _vVec * v - _eyePos;
-	const Ray r (_eyePos, eyeDir);
-	return r;
+	Vec3 eyeDir = _lowerLeftCorner + _hVec * u + _vVec * v - _eyePos;
+	return Ray(_eyePos, eyeDir.GetNormalized());
 }

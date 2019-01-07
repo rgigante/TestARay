@@ -31,7 +31,7 @@ Vec3 ColorNormalsHitables(const Ray& r, HitableArray* world)
 	}
 	
 	// compute the background color
-	const Vec3 ray_direction = Normalize(r.GetDirection());
+	const Vec3 ray_direction = r.GetDirection();
 	const float blend = 0.5 * (ray_direction.y() + 1.0);
 	return Lerp(Vec3(1.0, 1.0, 1.0), Vec3(0.5, 0.7, 1.0), blend);
 }
@@ -56,7 +56,7 @@ Vec3 ColorDiffuseHitables(const Ray& r, HitableArray* world)
 Vec3 ColorMaterialsHitables(const Ray& r, HitableArray* world, int depth)
 {
 	HitRecord rec;
-	const float epsHit = 1e-5;
+	const float epsHit = 1e-2;
 	Ray scattered(Vec3(0, 0, 0), Vec3(0, 0, 0));
 	Vec3 attenuation(0, 0, 0);
 	if (world && world->Hit(r, epsHit, MAXFLOAT, rec))
@@ -113,7 +113,7 @@ int main()
 			{
 				u = float(i + drand48()) / float(nx);
 				v = float(j + drand48()) / float(ny);
-				r = cam.GetRay(u, v);
+				r = cam.CreateRay(u, v);
 				
 				col += ColorMaterialsHitables(r, world, 0);
 			}

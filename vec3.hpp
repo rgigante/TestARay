@@ -38,9 +38,10 @@ public:
 	inline Vec3& operator*=(const float t);
 	inline Vec3& operator/=(const float t);
 	
-	inline float Lenght() const { return sqrt(e[0] * e[0] + e[1] * e[1] + e[2] * e[2]); }
-	inline float SqrLenght() const { return (e[0] * e[0] + e[1] * e[1] + e[2] * e[2]); }
+	inline float Length() const { return sqrt(e[0] * e[0] + e[1] * e[1] + e[2] * e[2]); }
+	inline float SqrLength() const { return (e[0] * e[0] + e[1] * e[1] + e[2] * e[2]); }
 	inline void Normalize(); //normalize vector
+	inline Vec3 GetNormalized(); // return normalized vector
 	
 public:
 	float e[3];
@@ -49,7 +50,7 @@ public:
 
 inline void Vec3::Normalize()
 {
-	const float k = 1.0 / Lenght();
+	const float k = 1.0 / Length();
 	e[0] *= k; e[1] *= k; e[2] *= k;
 }
 
@@ -91,6 +92,22 @@ inline Vec3& Vec3::operator/=(const Vec3 &v)
 	else
 		e[2] = MAXFLOAT;
 	
+	return *this;
+}
+
+inline Vec3& Vec3::operator*=(const float t) {
+	e[0]  *= t;
+	e[1]  *= t;
+	e[2]  *= t;
+	return *this;
+}
+
+inline Vec3& Vec3::operator/=(const float t) {
+	float k = 1.0/t;
+	
+	e[0]  *= k;
+	e[1]  *= k;
+	e[2]  *= k;
 	return *this;
 }
 
@@ -147,7 +164,20 @@ inline Vec3 operator*(const Vec3 &v, float t)
 	return Vec3(v.e[0] * t, v.e[1] * t, v.e[2] * t);
 }
 
+inline Vec3 operator*(float t, const Vec3 &v)
+{
+	return Vec3(v.e[0] * t, v.e[1] * t, v.e[2] * t);
+}
+
 inline Vec3 operator/(const Vec3 &v, float t)
+{
+	if (t != 0)
+		return Vec3(v.e[0] / t, v.e[1] / t, v.e[2] / t);
+	else
+		return Vec3(MAXFLOAT, MAXFLOAT, MAXFLOAT);
+}
+
+inline Vec3 operator/(float t, const Vec3 &v)
 {
 	if (t != 0)
 		return Vec3(v.e[0] / t, v.e[1] / t, v.e[2] / t);
@@ -167,9 +197,10 @@ inline Vec3 Cross (const Vec3 &v1, const Vec3 &v2)
 							v1.e[0] * v2.e[1] - v2.e[0] * v1.e[1]);
 }
 
-inline Vec3 Normalize(Vec3 v)
+inline Vec3 Vec3::GetNormalized()
 {
-	return v / v.Lenght();
+	Normalize();
+	return *this;
 }
 
 // Linear interpolation template function
@@ -186,14 +217,14 @@ inline Vec3 RandomPointOnSphere(float radius = 1)
 	// algorithm of the rejection method
 	do
 		p = Vec3(drand48(), drand48(), drand48()) * 2 * radius - Vec3( 1, 1, 1) * radius;
-	while (p.SqrLenght() >= radius);
+	while (p.SqrLength() >= radius);
 	
 	return p;
 }
 
 inline Vec3 ReflectRay(const Vec3& in, const Vec3& n)
 {
-	return (in - n * 2 * Dot(in, n));
+	return (in - 2 * Dot(in, n) * n);
 }
 
 #endif /* vec3_hpp */

@@ -24,9 +24,11 @@ bool MetalReflector::Scatter(const Ray &rHit, const HitRecord &rec, Vec3 &attenu
 	const Vec3 rflDir = ReflectRay(rHit.GetDirection(), rec.n);
 	rScatter = Ray(rec.p, rflDir);
 	attenuation = _albedo;
-	const float rSctDotN = Dot(rflDir, rec.n);
-//	Vec3 A = Cross(rflDir, rec.n) - Cross(rec.n, -rHit.GetDirection());
-	if (rSctDotN > 0)
+	
+	const float rflDirCheck = 1e-6;
+	if (((Cross(rflDir, rec.n) - Cross(rec.n, -rHit.GetDirection())).Length()) > rflDirCheck)
+		std::cout << "WARNING - Reflected ray correctness check failed ["<< rflDirCheck <<"]\n"; // this should be almost zero
+	if (Dot(rflDir, rec.n) > 0)
 		return true;
 	
 	return false;

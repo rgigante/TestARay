@@ -10,16 +10,16 @@
 
 Triangle::Triangle(Vec3 a, Vec3 b, Vec3 c, Material* m) : _a(a), _b(b), _c(c), _mat(m)
 {
-	_ab = _a - _b;
+	_ab = _a - _b; 
 	_bc = _b - _c;
 	_ca = _c - _a;
-	_n = Normalize(Cross(_ab, -_ca));
+	_n = Cross(_ab, -_ca).GetNormalized();
 }
 
 bool Triangle::Hit(const Ray &r, float t_min, float t_max, HitRecord &rec) const
 {
 	// compute the Dot product (cosine of the angle) between the normal and the ray direction
-	const float dotDirNrm = Dot(Normalize(r.GetDirection()), _n);
+	const float dotDirNrm = Dot(r.GetDirection(), _n);
 	rec.mat = _mat;
 	
 	// check triangle not being perpendicular to ray
@@ -28,7 +28,7 @@ bool Triangle::Hit(const Ray &r, float t_min, float t_max, HitRecord &rec) const
 		const float t = Dot(_a - r.GetOrigin(), _n) / dotDirNrm;
 		
 		// evalute the intersection point
-		const Vec3 p = r.GetOrigin() + Normalize(r.GetDirection()) * t;
+		const Vec3 p = r.GetOrigin() + r.GetDirection() * t;
 		
 		// vectors to intersection points
 		const Vec3 vecAP = _a - p;

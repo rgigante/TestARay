@@ -21,11 +21,11 @@ public:
 	// retrieve the origin of a ray
 	Vec3 GetOrigin() const { return A; }
 	// retrieve the direction of a ray
-	Vec3 GetDirection() const { return Normalize(B); }
+	Vec3 GetDirection() const { return B; }
 	// set the origin of a ray
 	void SetOrigin(const Vec3& pos) { A = pos; }
 	// set the direction of a ray
-	void SetDirection(const Vec3& dir) { B = Normalize(dir); }
+	void SetDirection(const Vec3& dir) { B = dir; }
 	// given a parameter for a certain ray, return the position in space at parameter
 	Vec3 PointAtParameter(const float t) const { return (A + B * t); }
 	

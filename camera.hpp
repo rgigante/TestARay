@@ -14,7 +14,7 @@ class Camera
 {
 public:
 	Camera(const Vec3& pos, float filmWidth, int xRes, int yRes);
-	Ray GetRay(float u, float v);
+	Ray CreateRay(float u, float v);
 	int GetXRes(){ return _xRes; }
 	int GetYRes(){ return _yRes; }
 	
