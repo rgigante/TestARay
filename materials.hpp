@@ -13,6 +13,7 @@
 class Material
 {
 public:
+	virtual ~Material(){}
 	virtual bool Scatter(const Ray& rHit, const HitRecord& rec, Vec3& attenuation, Ray& rScatter) const = 0;
 };
 
@@ -20,6 +21,7 @@ class LambertianReflector : public Material
 {
 public:
 	LambertianReflector(const Vec3& a);
+	~LambertianReflector(){};
 	bool Scatter(const Ray& rHit, const HitRecord& rec, Vec3& attenuation, Ray& rScatter) const;
 	
 private:
@@ -29,10 +31,12 @@ private:
 class MetalReflector : public Material
 {
 public:
-	MetalReflector(const Vec3& a);
+	MetalReflector(const Vec3& a, float r = 0);
+	~MetalReflector(){};
 	bool Scatter(const Ray& rHit, const HitRecord& rec, Vec3& attenuation, Ray& rScatter) const;
 private:
 	Vec3 _albedo;
+	float _roughness;
 };
 
 #endif /* materials_hpp */

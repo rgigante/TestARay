@@ -7,6 +7,12 @@
 
 #include "sphere.hpp"
 
+Sphere::~Sphere()
+{
+	delete (_mat);
+	_mat = nullptr;
+}
+
 bool Sphere::Hit(const Ray &r, float t_min, float t_max, HitRecord &rec) const
 {
 	const Vec3 oc = r.GetOrigin() - _center;
@@ -41,5 +47,7 @@ bool Sphere::Hit(const Ray &r, float t_min, float t_max, HitRecord &rec) const
 
 	return false;
 }
+
+
 
 

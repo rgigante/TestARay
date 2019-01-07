@@ -9,11 +9,13 @@
 #define sphere_hpp
 
 #include "hitable.hpp"
+#include "materials.hpp"
 
 class Sphere: public Hitable
 {
 public:
 	Sphere(){}
+	~Sphere();
 	Sphere(Vec3 cen, float r, Material* m) : _center(cen), _radius(r), _mat(m) {};
 	bool Hit (const Ray& r, float t_min, float t_max, HitRecord& rec) const;
 	

@@ -16,6 +16,12 @@ Triangle::Triangle(Vec3 a, Vec3 b, Vec3 c, Material* m) : _a(a), _b(b), _c(c), _
 	_n = Cross(_ab, -_ca).GetNormalized();
 }
 
+Triangle::~Triangle()
+{
+	delete (_mat);
+	_mat = nullptr;
+}
+
 bool Triangle::Hit(const Ray &r, float t_min, float t_max, HitRecord &rec) const
 {
 	// compute the Dot product (cosine of the angle) between the normal and the ray direction

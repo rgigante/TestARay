@@ -9,12 +9,14 @@
 #define triangle_hpp
 
 #include "hitable.hpp"
+#include "materials.hpp"
 
 class Triangle: public Hitable
 {
 public:
 	Triangle(){}
 	Triangle(Vec3 a, Vec3 b, Vec3 c, Material* m);
+	~Triangle();
 	bool Hit (const Ray& r, float t_min, float t_max, HitRecord& rec) const;
 	
 private:

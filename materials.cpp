@@ -17,12 +17,15 @@ bool LambertianReflector::Scatter(const Ray& rHit, const HitRecord& rec, Vec3& a
 	return true;
 }
 
-MetalReflector::MetalReflector(const Vec3& a) : _albedo(a){}
+MetalReflector::MetalReflector(const Vec3& a, float r /*= 0*/) : _albedo(a), _roughness(r){}
 
 bool MetalReflector::Scatter(const Ray &rHit, const HitRecord &rec, Vec3 &attenuation, Ray &rScatter) const
 {
 	const Vec3 rflDir = ReflectRay(rHit.GetDirection(), rec.n);
-	rScatter = Ray(rec.p, rflDir);
+	if (_roughness)
+		rScatter = Ray(rec.p, rflDir + RandomPointOnSphere(_roughness));
+	else
+		rScatter = Ray(rec.p, rflDir);
 	attenuation = _albedo;
 	
 	const float rflDirCheck = 1e-6;

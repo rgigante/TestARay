@@ -57,17 +57,18 @@ Vec3 ColorMaterialsHitables(const Ray& r, HitableArray* world, int depth)
 {
 	HitRecord rec;
 	const float epsHit = 1e-2;
+	const int maxDepth = 10;
 	Ray scattered(Vec3(0, 0, 0), Vec3(0, 0, 0));
 	Vec3 attenuation(0, 0, 0);
 	if (world && world->Hit(r, epsHit, MAXFLOAT, rec))
 	{
-		if (depth < 50 && rec.mat && rec.mat->Scatter(r, rec, attenuation, scattered))
+		if (depth < maxDepth && rec.mat && rec.mat->Scatter(r, rec, attenuation, scattered))
 		{
 			Vec3 res = attenuation * ColorMaterialsHitables(scattered, world, depth + 1);
 			return res;
 		}
 		
-		return Vec3(0,0,0);
+		return Vec3(0, 0, 0);
 	}
 	
 	// compute the background color
@@ -80,7 +81,7 @@ int main()
 	// define the world (by specifying the hitable elements)
 	const int objsCnt = 6;
 	Hitable *objects[objsCnt];
-	objects[0] = new Sphere(Vec3(0, 0, -1), 0.5, new MetalReflector(Vec3(.9,.2,.2)));
+	objects[0] = new Sphere(Vec3(0, 0, -1), 0.5, new MetalReflector(Vec3(.9,.9,.9)));
 	objects[1] = new Triangle(Vec3(-2, -0.5, -2), Vec3(2, -0.5, -0), Vec3(2, -0.5, -2), new MetalReflector(Vec3(.2,.9,.2)));
 	objects[2] = new Triangle(Vec3(2, -0.5, -0), Vec3(-2, -0.5, -2), Vec3(-2, -0.5, -0), new MetalReflector(Vec3(.2,.2,.9)));
 	objects[3] = new Triangle(Vec3(-0.5, 0.5, -0.5), Vec3(-0.5, -0.5, -1), Vec3(-0.5, 0.5, -1), new MetalReflector(Vec3(.9,.2,.9)));
