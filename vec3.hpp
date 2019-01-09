@@ -203,11 +203,10 @@ inline Vec3 Cross (const Vec3 &v1, const Vec3 &v2)
 							v1.e[0] * v2.e[1] - v2.e[0] * v1.e[1]);
 }
 
-// Linear interpolation template function
-template <class T>
-T Lerp(T start, T end, float blend)
+inline Vec3 Normalize(Vec3 v)
 {
-	return start * (1.0 - blend) + end * blend;
+	const float k = 1.0 / v.Length();
+	return Vec3(v[0] *= k, v[1] *= k, v[2] *= k);
 }
 
 // Generate a random point lying on a sphere
@@ -227,6 +226,21 @@ inline Vec3 RandomPointOnSphere(float radius = 1)
 inline Vec3 ReflectRay(const Vec3& in, const Vec3& n)
 {
 	return (in - 2 * Dot(in, n) * n);
+}
+
+// Generate a refracted direction given an incident direction, the normal of the reflecting plane and the two indexes of refraction
+inline Vec3 RefractRay(const Vec3& in, const Vec3& n, float ni_over_nt, bool& isRefracted)
+{
+	Vec3 uv = Normalize(in);	
+	float dt = Dot(uv, n);
+	float discriminant = 1.0 - ni_over_nt*ni_over_nt*(1-dt*dt);
+	if (discriminant > 0)
+	{
+		isRefracted = true;
+		return ni_over_nt*(uv - n*dt) - n*sqrt(discriminant);
+	}
+	isRefracted = false;
+	return Vec3(0,0,0);
 }
 
 #endif /* vec3_hpp */

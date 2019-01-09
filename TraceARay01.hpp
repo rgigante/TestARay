@@ -16,5 +16,6 @@
 
 #include "vec3.hpp"
 #include "ray.hpp"
+#include "utils.hpp"
 
 #endif /* TraceARay01_hpp */

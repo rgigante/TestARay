@@ -35,5 +35,40 @@ bool MetalReflector::Scatter(const Ray &rHit, const HitRecord &rec, Vec3 &attenu
 		return true;
 	
 	return false;
-	
+}
+
+Dielectric::Dielectric(float ri) : _refrIndex(ri){}
+
+bool Dielectric::Scatter(const Ray &rHit, const HitRecord &rec, Vec3 &attenuation, Ray &rScatter) const
+{
+	Vec3 adjustedNormal(0,0,0);
+	Vec3 reflDir = ReflectRay(rHit.GetDirection(), rec.n);
+
+	float niOverNt = 0.0, reflProb = 1.0, cosine = 0.0;
+
+	attenuation = Vec3 (1.0, 1.0, 1.0);
+	if (Dot(rHit.GetDirection(), rec.n) > 0)
+	{
+		adjustedNormal = -rec.n;
+		niOverNt = _refrIndex;
+		cosine = _refrIndex * Dot(rHit.GetDirection(), rec.n) / rHit.GetDirection().Length();
+	}
+	else
+	{
+		adjustedNormal = rec.n;
+		niOverNt = 1.0 /_refrIndex;
+		cosine = -Dot(rHit.GetDirection(), rec.n) / rHit.GetDirection().Length();
+	}
+
+	bool isRefracted;
+	const Vec3 refrDir = RefractRay(rHit.GetDirection(), adjustedNormal, niOverNt, isRefracted);
+	if (isRefracted)
+		reflProb = schlick(cosine, _refrIndex);
+
+	if (drand48() < reflProb)
+		rScatter = Ray(rec.p, reflDir);
+	else
+		rScatter = Ray(rec.p, refrDir);
+
+	return true;
 }

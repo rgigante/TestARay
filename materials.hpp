@@ -9,6 +9,7 @@
 #define materials_hpp
 
 #include "hitable.hpp"
+#include "utils.hpp"
 
 class Material
 {
@@ -37,6 +38,16 @@ public:
 private:
 	Vec3 _albedo;
 	float _roughness;
+};
+
+class Dielectric : public Material
+{
+public:
+	Dielectric(float ri);
+	~Dielectric(){};
+	bool Scatter(const Ray& rHit, const HitRecord& rec, Vec3& attenuation, Ray& rScatter) const;
+private:
+	float _refrIndex;
 };
 
 #endif /* materials_hpp */
