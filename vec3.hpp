@@ -222,6 +222,18 @@ inline Vec3 RandomPointOnSphere(float radius = 1)
 	return p;
 }
 
+inline Vec3 RandomPointOnDisk(float radius = 1)
+{
+	Vec3 p;
+	
+	// algorithm of the rejection method
+	do
+		p = Vec3(drand48(), drand48(), 0) * 2 * radius - Vec3( 1, 1, 0) * radius;
+	while (p.SqrLength() >= radius);
+	
+	return p;
+}
+
 // Generate a reflected direction given an incident direction and the normal of the reflecting plane
 inline Vec3 ReflectRay(const Vec3& in, const Vec3& n)
 {

@@ -17,7 +17,9 @@
 #include "hitablearray.hpp"
 
 // global var to enable console debug
-bool g_debugConsole = false;
+const bool g_debugConsole = false;
+const int g_maxDepth = 20;
+const float g_epsHit = 1e-5;
 
 Vec3 ColorNormalsHitables(const Ray& r, HitableArray* world)
 {
@@ -57,13 +59,12 @@ Vec3 ColorDiffuseHitables(const Ray& r, HitableArray* world)
 Vec3 ColorMaterialsHitables(const Ray& r, HitableArray* world, int depth)
 {
 	HitRecord rec;
-	const float epsHit = 1e-3;
-	const int maxDepth = 20;
+	
 	Ray scattered(Vec3(0, 0, 0), Vec3(0, 0, 0));
 	Vec3 attenuation(0, 0, 0);
-	if (world && world->Hit(r, epsHit, MAXFLOAT, rec))
+	if (world && world->Hit(r, g_epsHit, MAXFLOAT, rec))
 	{
-		if (depth < maxDepth && rec.mat && rec.mat->Scatter(r, rec, attenuation, scattered))
+		if (depth < g_maxDepth && rec.mat && rec.mat->Scatter(r, rec, attenuation, scattered))
 		{
 			Vec3 res = attenuation * ColorMaterialsHitables(scattered, world, depth + 1);
 			return res;
@@ -91,9 +92,9 @@ int main()
 	// the small red sphere on the back
 	objects[3] = new Sphere(Vec3(0.35, -0.4, -1), 0.1, new LambertianReflector(Vec3(0.9,0.0,0)));
 	// the green triangle on the floor
-	objects[4] = new Triangle(Vec3(-2, -0.5, -2), Vec3(2, -0.5, -0), Vec3(2, -0.5, -2), new LambertianReflector(Vec3(0, .9, 0)));
+	objects[4] = new Triangle(Vec3(-2, -0.5, -2), Vec3(2, -0.5, 5), Vec3(2, -0.5, -2), new LambertianReflector(Vec3(0, .9, 0)));
 	// the blue triangle on the floor
-	objects[5] = new Triangle(Vec3(2, -0.5, -0), Vec3(-2, -0.5, -2), Vec3(-2, -0.5, -0), new LambertianReflector(Vec3(0, 0, .9)));
+	objects[5] = new Triangle(Vec3(2, -0.5, 5), Vec3(-2, -0.5, -2), Vec3(-2, -0.5, 5), new LambertianReflector(Vec3(0, 0, .9)));
 	// the purple triangle on the left
 	objects[6] = new Triangle(Vec3(-0.5, 0.5, -0.5), Vec3(-0.5, -0.5, -1.5), Vec3(-0.5, 0.5, -1.5), new MetalReflector(Vec3(.9,.2,.9)));
 	// the cyan triangle on the back
@@ -138,7 +139,14 @@ int main()
 	
 //	Camera cam (Vec3 (0.0, 0.0, 0.0), 4.0, 200, 200);
 //	Camera cam (Vec3 (0.0, 0.0, 0.0), 70, 200, 200);
-	Camera cam (Vec3(-2,2,1), Vec3(0,0,-1), Vec3(0,1,0), 30, 200, 200);
+//	Camera cam (Vec3(-2,2,1), Vec3(0,0,-1), Vec3(0,1,0), 30, 200, 200);
+	const Vec3 from (0,-0.3,5);
+	const Vec3 to (0,0.5,-0.5);
+	const Vec3 up (0,1,0);
+	const float fov = 30;
+	const float aperture = 0.05;
+	const float focusDistance = (from - to).Length();
+	Camera cam (from, to, up, fov, aperture, focusDistance, 400, 800);
 	// set image resolution
 	const int nx = cam.GetXRes();
 	const int ny = cam.GetYRes();
