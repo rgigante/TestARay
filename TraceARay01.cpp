@@ -11,6 +11,7 @@
 #include "camera.hpp"
 #include "sphere.hpp"
 #include "triangle.hpp"
+#include "trimesh.hpp"
 #include "materials.hpp"
 #include "hitable.hpp"
 #include "hitablearray.hpp"
@@ -56,8 +57,8 @@ Vec3 ColorDiffuseHitables(const Ray& r, HitableArray* world)
 Vec3 ColorMaterialsHitables(const Ray& r, HitableArray* world, int depth)
 {
 	HitRecord rec;
-	const float epsHit = 1e-2;
-	const int maxDepth = 50;
+	const float epsHit = 1e-3;
+	const int maxDepth = 20;
 	Ray scattered(Vec3(0, 0, 0), Vec3(0, 0, 0));
 	Vec3 attenuation(0, 0, 0);
 	if (world && world->Hit(r, epsHit, MAXFLOAT, rec))
@@ -79,17 +80,60 @@ Vec3 ColorMaterialsHitables(const Ray& r, HitableArray* world, int depth)
 int main()
 {
 	// define the world (by specifying the hitable elements)
-	const int objsCnt = 9;
+	const int objsCnt = 10;
 	Hitable *objects[objsCnt];
+	// the glass sphere
 	objects[0] = new Sphere(Vec3(0, 0, -1), 0.5, new Dielectric(1.2));
-	objects[8] = new Sphere(Vec3(0.25, -0.2, -0.8), -0.05, new Dielectric(1.2));
-	objects[7] = new Sphere(Vec3(-0.35, -0.4, -1), 0.1, new LambertianReflector(Vec3(0.0,0.9,0)));
-	objects[6] = new Sphere(Vec3(0.35, -0.4, -1), 0.1, new LambertianReflector(Vec3(0.9,0.0,0)));
-	objects[1] = new Triangle(Vec3(-2, -0.5, -2), Vec3(2, -0.5, -0), Vec3(2, -0.5, -2), new MetalReflector(Vec3(.2,.9,.2)));
-	objects[2] = new Triangle(Vec3(2, -0.5, -0), Vec3(-2, -0.5, -2), Vec3(-2, -0.5, -0), new MetalReflector(Vec3(.2,.2,.9)));
-	objects[3] = new Triangle(Vec3(-0.5, 0.5, -0.5), Vec3(-0.5, -0.5, -1), Vec3(-0.5, 0.5, -1), new MetalReflector(Vec3(.9,.2,.9)));
-	objects[4] = new Triangle(Vec3(-0.5, 0.5, -1), Vec3(0.5, -0.5, -1), Vec3(0.5, 0.5, -1), new MetalReflector(Vec3(.2,.9,.9)));
-	objects[5] = new Triangle(Vec3(0.5, 0.5, -0.5), Vec3(0.5, 0.5, -1), Vec3(0.5, -0.5, -0.5), new MetalReflector(Vec3(.9,.9,.2)));
+	// the air bubble
+	objects[1] = new Sphere(Vec3(0.25, -0.2, -0.8), -0.05, new Dielectric(1.2));
+	// the small green sphere on the back
+	objects[2] = new Sphere(Vec3(-0.35, -0.4, -1), 0.1, new LambertianReflector(Vec3(0.0,0.9,0)));
+	// the small red sphere on the back
+	objects[3] = new Sphere(Vec3(0.35, -0.4, -1), 0.1, new LambertianReflector(Vec3(0.9,0.0,0)));
+	// the green triangle on the floor
+	objects[4] = new Triangle(Vec3(-2, -0.5, -2), Vec3(2, -0.5, -0), Vec3(2, -0.5, -2), new LambertianReflector(Vec3(0, .9, 0)));
+	// the blue triangle on the floor
+	objects[5] = new Triangle(Vec3(2, -0.5, -0), Vec3(-2, -0.5, -2), Vec3(-2, -0.5, -0), new LambertianReflector(Vec3(0, 0, .9)));
+	// the purple triangle on the left
+	objects[6] = new Triangle(Vec3(-0.5, 0.5, -0.5), Vec3(-0.5, -0.5, -1.5), Vec3(-0.5, 0.5, -1.5), new MetalReflector(Vec3(.9,.2,.9)));
+	// the cyan triangle on the back
+	objects[7] = new Triangle(Vec3(-0.5, 0.5, -1.5), Vec3(0.5, -0.5, -1.5), Vec3(0.5, 0.5, -1.5), new MetalReflector(Vec3(.2,.9,.9)));
+	// the yellow triangle on the right
+	objects[8] = new Triangle(Vec3(0.5, 0.5, -0.5), Vec3(0.5, 0.5, -1.5), Vec3(0.5, -0.5, -0.5), new MetalReflector(Vec3(.9,.9,.2)));
+//	 the red quadrangle on the front
+	const int trisCnt = 2;
+	const int pointsCnt = 4;
+	Vec3* points = new Vec3[pointsCnt];
+	int* indexes = new int[3 * trisCnt];
+	if (points && indexes)
+	{
+		points[0] = Vec3(-0.5, 0.7, -1.5);
+		points[1] = Vec3(0.5, 0.7, -0.5);
+		points[2] = Vec3(-0.5, 0.7, -0.5);
+		points[3] = Vec3(0.5, 0.7, -1.5);
+		
+		
+		indexes[0] = 0;
+		indexes[1] = 1;
+		indexes[2] = 2;
+		indexes[3] = 0;
+		indexes[4] = 3;
+		indexes[5] = 1;
+		
+		TriMesh* mesh = new TriMesh(trisCnt, new MetalReflector(Vec3(.9,.2,.2)));
+		if (mesh)
+		{
+			mesh->SetVertexes(points, pointsCnt);
+			mesh->SetTriIndexes(indexes);
+			if (mesh->Init())
+			{
+				objects[9] = mesh;
+				// dispose the memory used to create the mesh
+				delete[] points; points = nullptr;
+				delete[] indexes; indexes = nullptr;
+			}
+		}
+	}
 	HitableArray *world = new HitableArray(objects, objsCnt);
 	
 	Camera cam (Vec3 (0.0, 0.0, 0.0), 4.0, 200, 200);

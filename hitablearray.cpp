@@ -24,7 +24,7 @@ bool HitableArray::Hit(const Ray &r, float t_min, float t_max, HitRecord &rec) c
 	
 	for (int i = 0; i < _hitablesSize; ++i)
 	{
-		if (_hitables[i]->Hit(r, t_min, closestSoFar, tempRec))
+		if (_hitables[i] && _hitables[i]->Hit(r, t_min, closestSoFar, tempRec))
 		{
 			hitAnything = true;
 			closestSoFar = tempRec.t;

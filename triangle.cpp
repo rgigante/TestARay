@@ -8,7 +8,7 @@
 #include "triangle.hpp"
 
 
-Triangle::Triangle(Vec3 a, Vec3 b, Vec3 c, Material* m) : _a(a), _b(b), _c(c), _mat(m)
+Triangle::Triangle(Vec3 a, Vec3 b, Vec3 c, Material* m, bool isTriMesh) : _a(a), _b(b), _c(c), _mat(m), _isTriMesh(isTriMesh)
 {
 	_ab = _a - _b; 
 	_bc = _b - _c;
@@ -18,8 +18,11 @@ Triangle::Triangle(Vec3 a, Vec3 b, Vec3 c, Material* m) : _a(a), _b(b), _c(c), _
 
 Triangle::~Triangle()
 {
-	delete (_mat);
-	_mat = nullptr;
+	if (_mat && !_isTriMesh)
+	{
+		delete (_mat);
+		_mat = nullptr;
+	}
 }
 
 bool Triangle::Hit(const Ray &r, float t_min, float t_max, HitRecord &rec) const
