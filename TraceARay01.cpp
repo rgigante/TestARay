@@ -81,7 +81,7 @@ Vec3 ColorMaterialsHitables(const Ray& r, HitableArray* world, int depth)
 int main()
 {
 	// define the world (by specifying the hitable elements)
-	const int objsCnt = 10;
+	const int objsCnt = 20;
 	Hitable *objects[objsCnt];
 	// the glass sphere
 	objects[0] = new Sphere(Vec3(0, 0, -1), 0.5, new Dielectric(1.2));
@@ -135,18 +135,26 @@ int main()
 			}
 		}
 	}
+	// the glass sphere
+	objects[10] = new Sphere(Vec3(0, -0.4, 4), 0.1, new LambertianReflector(Vec3(.9,0,0)));
+	objects[11] = new Sphere(Vec3(0, -0.4, 3.5), 0.1, new LambertianReflector(Vec3(.9,.45,0)));
+	objects[12] = new Sphere(Vec3(0, -0.4, 3), 0.1, new LambertianReflector(Vec3(.9,0,0)));
+	objects[13] = new Sphere(Vec3(0, -0.4, 2.5), 0.1, new LambertianReflector(Vec3(.9,.9,0)));
+	objects[14] = new Sphere(Vec3(0, -0.4, 2), 0.1, new LambertianReflector(Vec3(0,0.9,0)));
+	objects[15] = new Sphere(Vec3(0, -0.4, 1.5), 0.1, new LambertianReflector(Vec3(0,0,0.9)));
+	objects[16] = new Sphere(Vec3(0, -0.4, 1), 0.1, new LambertianReflector(Vec3(.29,0,0.51)));
+	objects[17] = new Sphere(Vec3(0, -0.4, 0.5), 0.1, new LambertianReflector(Vec3(.58,0,0.82)));
+	objects[18] = new Sphere(Vec3(0, -0.4, 0), 0.1, new LambertianReflector(Vec3(.9,.9,.9)));
+	objects[19] = new Sphere(Vec3(0, -0.4, -0.5), 0.1, new LambertianReflector(Vec3(.1,.1,.1)));
 	HitableArray *world = new HitableArray(objects, objsCnt);
 	
-//	Camera cam (Vec3 (0.0, 0.0, 0.0), 4.0, 200, 200);
-//	Camera cam (Vec3 (0.0, 0.0, 0.0), 70, 200, 200);
-//	Camera cam (Vec3(-2,2,1), Vec3(0,0,-1), Vec3(0,1,0), 30, 200, 200);
-	const Vec3 from (0,-0.3,5);
-	const Vec3 to (0,0.5,-0.5);
+	const Vec3 from (0, -0.3, 5);
+	const Vec3 to (0, 0.5, -0.5);
 	const Vec3 up (0,1,0);
 	const float fov = 30;
 	const float aperture = 0.05;
-	const float focusDistance = (from - to).Length();
-	Camera cam (from, to, up, fov, aperture, focusDistance, 400, 800);
+	const float focusDistance = 5; //(from - to).Length();
+	Camera cam (from, to, up, fov, aperture, focusDistance, 600, 1200);
 	// set image resolution
 	const int nx = cam.GetXRes();
 	const int ny = cam.GetYRes();
