@@ -13,15 +13,16 @@
 class Camera
 {
 public:
-	Camera(const Vec3& pos, float filmWidth, int xRes, int yRes);
+	Camera(const Vec3& pos, float fFOV, int xRes, int yRes);
+	Camera(const Vec3& from, const Vec3& to, const Vec3& up, float vfov, int xRes, int yRes);
 	Ray CreateRay(float u, float v);
 	int GetXRes(){ return _xRes; }
 	int GetYRes(){ return _yRes; }
 	
 private:
-	Vec3 _eyePos;
+	Vec3 _eyePos, _u, _v, _w;
 	Vec3 _lowerLeftCorner, _hVec, _vVec;
-	float _ratio, _filmWidth, _filmHeight;
+	float _ratio, _filmWidth, _filmHeight, _vFOV;
 	int _xRes, _yRes;
 };
 

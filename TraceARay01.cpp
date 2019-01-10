@@ -136,7 +136,9 @@ int main()
 	}
 	HitableArray *world = new HitableArray(objects, objsCnt);
 	
-	Camera cam (Vec3 (0.0, 0.0, 0.0), 4.0, 200, 200);
+//	Camera cam (Vec3 (0.0, 0.0, 0.0), 4.0, 200, 200);
+//	Camera cam (Vec3 (0.0, 0.0, 0.0), 70, 200, 200);
+	Camera cam (Vec3(-2,2,1), Vec3(0,0,-1), Vec3(0,1,0), 30, 200, 200);
 	// set image resolution
 	const int nx = cam.GetXRes();
 	const int ny = cam.GetYRes();
