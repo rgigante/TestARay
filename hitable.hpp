@@ -14,10 +14,10 @@ class Material;
 
 struct HitRecord
 {
-	float t; // the ray parameter at hit point
-	Vec3 p; // the position in space at hit point
-	Vec3 n; // the normal at hit point
-	Material* mat; // the material found at the hit point
+	float t = 0; // the ray parameter at hit point
+	Vec3 p = Vec3(0,0,0); // the position in space at hit point
+	Vec3 n = Vec3(0,0,0); // the normal at hit point
+	Material* mat = nullptr; // the material found at the hit point
 };
 
 class Hitable

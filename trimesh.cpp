@@ -7,14 +7,14 @@
 
 #include "trimesh.hpp"
 
-TriMesh::TriMesh(int trisCnt, Material* mat) : _trisCnt(trisCnt), _mat(mat)
+TriMesh::TriMesh(char const* name, int trisCnt, Material* mat) : _name(name), _trisCnt(trisCnt), _mat(mat)
 {
 	_tris = new Triangle*[_trisCnt];
 	assert(_tris);
 }
 
 TriMesh::~TriMesh()
-{	
+{
 	if (_tris)
 	{
 		for (int i = 0; i < _trisCnt; ++i)
@@ -63,13 +63,14 @@ bool TriMesh::SetTriIndexes(int* triIndexes)
 
 bool TriMesh::Init()
 {
+	std::cout << "Initiating " << _name << "\n";
 	if (!_vertexes || _vertexesCnt < 1 || !_triIndexes)
 		return false;
 	
 	for (int i = 0; i < _trisCnt; ++i)
 	{
 		const int vIdx[3] = {_triIndexes[3 * i + 0], _triIndexes[3 * i + 1], _triIndexes[3 * i + 2]};
-		_tris[i] = new Triangle(_vertexes[vIdx[0]], _vertexes[vIdx[1]], _vertexes[vIdx[2]], _mat, true);
+		_tris[i] = new Triangle(nullptr, _vertexes[vIdx[0]], _vertexes[vIdx[1]], _vertexes[vIdx[2]], _mat, true);
 	}
 	
 	return true;
@@ -77,24 +78,23 @@ bool TriMesh::Init()
 
 bool TriMesh::Hit(const Ray &r, float t_min, float t_max, HitRecord &rec) const
 {
-	if (!_tris || _trisCnt == 0)
-		return false;
 	
+	bool hasHit = false;
+	float min_t = MAXFLOAT;
+	HitRecord currentRec;
 	for (int i = 0; i < _trisCnt; ++i)
-		if (_tris[i]->Hit(r, t_min, t_max, rec))
-			return true;
-
-	return false;
+	{
+		if (_tris[i]->Hit(r, t_min, t_max, currentRec))
+		{
+			hasHit = true;
+			if (currentRec.t < min_t)
+			{
+				min_t = currentRec.t;
+				rec = currentRec;
+			}
+		}
+	}
 	
-	
-//	HitRecord temp = rec; bool hasHit = false;
-//	for (int i = 0; i < _trisCnt; ++i)
-//	{
-//		hasHit |= _tris[i]->Hit(r, t_min, t_max, temp);
-//		if (temp.t < rec.t)
-//			rec = temp;
-//	}
-//
-//	return hasHit;
+	return hasHit;
 	
 }

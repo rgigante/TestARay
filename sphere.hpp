@@ -16,13 +16,14 @@ class Sphere: public Hitable
 public:
 	Sphere(){}
 	~Sphere();
-	Sphere(Vec3 cen, float r, Material* m) : _center(cen), _radius(r), _mat(m) {};
+	Sphere(char const* name, Vec3 cen, float r, Material* m) : _name(name), _center(cen), _radius(r), _mat(m) {};
 	bool Hit (const Ray& r, float t_min, float t_max, HitRecord& rec) const;
 	
 private:
 	Vec3 _center;
 	float _radius;
 	Material* _mat;
+	char const* _name;
 };
 
 #endif /* sphere_hpp */

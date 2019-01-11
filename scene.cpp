@@ -36,6 +36,5 @@ Scene::~Scene()
 	{
 		delete (_items.at(i));
 		_items.at(i) = nullptr;
-		_items.pop_back();
 	}
 }
