@@ -83,7 +83,18 @@ bool TriMesh::Hit(const Ray &r, float t_min, float t_max, HitRecord &rec) const
 	for (int i = 0; i < _trisCnt; ++i)
 		if (_tris[i]->Hit(r, t_min, t_max, rec))
 			return true;
-	
+
 	return false;
+	
+	
+//	HitRecord temp = rec; bool hasHit = false;
+//	for (int i = 0; i < _trisCnt; ++i)
+//	{
+//		hasHit |= _tris[i]->Hit(r, t_min, t_max, temp);
+//		if (temp.t < rec.t)
+//			rec = temp;
+//	}
+//
+//	return hasHit;
 	
 }

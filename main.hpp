@@ -7,8 +7,8 @@
 //
 //	First committed on github on 02.05.2018
 
-#ifndef TraceARay01_hpp
-#define TraceARay01_hpp
+#ifndef main_hpp
+#define main_hpp
 
 #include <stdio.h>
 #include <iostream>

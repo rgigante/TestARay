@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		630D56802093694C00F925B8 /* TraceARay01.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 630D56712093621F00F925B8 /* TraceARay01.cpp */; };
+		630D56802093694C00F925B8 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 630D56712093621F00F925B8 /* main.cpp */; };
 		630D568320936CF300F925B8 /* vec3.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 630D568220936CF300F925B8 /* vec3.cpp */; };
 		630D56862093755E00F925B8 /* ray.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 630D56842093755E00F925B8 /* ray.cpp */; };
 		636A6F5221E8AB54009713F6 /* scene.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 636A6F5021E8AB54009713F6 /* scene.cpp */; };
@@ -34,8 +34,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		630D56712093621F00F925B8 /* TraceARay01.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = TraceARay01.cpp; sourceTree = "<group>"; };
-		630D56722093621F00F925B8 /* TraceARay01.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = TraceARay01.hpp; sourceTree = "<group>"; };
+		630D56712093621F00F925B8 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
+		630D56722093621F00F925B8 /* main.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = main.hpp; sourceTree = "<group>"; };
 		630D56772093641200F925B8 /* TraceARay01 */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = TraceARay01; sourceTree = BUILT_PRODUCTS_DIR; };
 		630D568120936C9C00F925B8 /* vec3.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = vec3.hpp; sourceTree = "<group>"; };
 		630D568220936CF300F925B8 /* vec3.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = vec3.cpp; sourceTree = "<group>"; };
@@ -105,8 +105,8 @@
 				636A6F5121E8AB54009713F6 /* scene.hpp */,
 				63EE6C1521DFBEFE00F4A6AE /* sphere.cpp */,
 				63EE6C1621DFBEFE00F4A6AE /* sphere.hpp */,
-				630D56712093621F00F925B8 /* TraceARay01.cpp */,
-				630D56722093621F00F925B8 /* TraceARay01.hpp */,
+				630D56712093621F00F925B8 /* main.cpp */,
+				630D56722093621F00F925B8 /* main.hpp */,
 				63EE6C1B21E0908800F4A6AE /* triangle.cpp */,
 				63EE6C1C21E0908800F4A6AE /* triangle.hpp */,
 				63A94B6F21E73C6200F2DF28 /* trimesh.cpp */,
@@ -184,7 +184,7 @@
 				630D568320936CF300F925B8 /* vec3.cpp in Sources */,
 				63EE6C2021E0A37F00F4A6AE /* camera.cpp in Sources */,
 				63A94B7121E73C6200F2DF28 /* trimesh.cpp in Sources */,
-				630D56802093694C00F925B8 /* TraceARay01.cpp in Sources */,
+				630D56802093694C00F925B8 /* main.cpp in Sources */,
 				63EE6C1721DFBEFE00F4A6AE /* sphere.cpp in Sources */,
 				63EE6C1A21DFC43400F4A6AE /* hitablearray.cpp in Sources */,
 			);
