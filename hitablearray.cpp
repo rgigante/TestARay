@@ -33,3 +33,4 @@ bool HitableArray::Hit(const Ray &r, float t_min, float t_max, HitRecord &rec) c
 	}
 	return hitAnything;
 }
+
