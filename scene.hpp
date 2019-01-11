@@ -21,7 +21,6 @@ public:
 	bool Hit (const Ray& r, float t_min, float t_max, HitRecord& rec) const;
 	void AddCamera(Camera* cam){ if (cam) _cam = cam; }
 	Camera* GetCamera(){ return _cam; }
-	long GetItemsCount() { return _items.size(); }
 	
 private:
 	std::vector<Hitable*> _items;

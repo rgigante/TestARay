@@ -10,7 +10,8 @@
 Camera::Camera(const Vec3& from, const Vec3& to, const Vec3& up, float vfov, float aperture, float focusDistance, int xRes, int yRes) : _eyePos(from), _vFOV(vfov), _aperture(aperture), _focusDist(focusDistance), _xRes(xRes), _yRes(yRes)
 {
 	_ratio = float(_xRes) / float(_yRes);
-	_filmHeight = tan((_vFOV * M_PI / 180));
+	const float theta = _vFOV * M_PI / 180;
+	_filmHeight = 2 * tan((theta / 2));
 	_filmWidth = _filmHeight * _ratio;
 	
 	_w = (from - to).GetNormalized();

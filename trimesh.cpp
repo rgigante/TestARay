@@ -63,7 +63,6 @@ bool TriMesh::SetTriIndexes(int* triIndexes)
 
 bool TriMesh::Init()
 {
-	std::cout << "Initiating " << _name << "\n";
 	if (!_vertexes || _vertexesCnt < 1 || !_triIndexes)
 		return false;
 	

@@ -213,14 +213,12 @@ int main()
 	scene->AddItem(new Sphere("indigoSphere", Vec3(0, -0.45, 0.66), 0.05, new LambertianReflector(Vec3(.29,0,0.51))));
 	scene->AddItem(new Sphere("purpleSphere", Vec3(0, -0.45, 0), 0.05, new LambertianReflector(Vec3(.58,0,0.82))));
 	
-	std::cout << "Scene items[" << scene->GetItemsCount() << "]\n";
-	
 	const Vec3 from (0, -0.3, 5);
 	const Vec3 to (0, 0.5, -0.5);
 	const Vec3 up (0,1,0);
-	const float fov = 30;
+	const float fov = 40;
 	const float aperture = .05;
-	const float focusDistance = 5; //(from - to).Length();
+	const float focusDistance = 0.66; //(from - to).Length();
 	
 	// add camera to the scene
 	scene->AddCamera(new Camera(from, to, up, fov, aperture, focusDistance, g_xRes, g_yRes));
