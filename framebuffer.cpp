@@ -10,44 +10,52 @@
 
 Framebuffer::Framebuffer(int xRes, int yRes, int chans):_xRes(xRes), _yRes(yRes), _nChans(chans)
 {
-	_fb = nullptr;
+	_color = nullptr;
+	_normal = nullptr;
 	
 	if (_xRes == 0 || _yRes == 0)
 		return;
 	
-	_fb = new float* [_yRes];
-	if (_fb)
+	_color = new float* [_yRes];
+	_normal = new float* [_yRes];
+	
+	if (_color || !_normal)
 	{
 		for (int i = 0; i < _yRes; ++i)
 		{
-			_fb[i] = new float[_xRes * _nChans];
+			_color[i] = new float[_xRes * _nChans];
+			_normal[i] = new float[_xRes * _nChans];
 		}
 	}
 }
 
 Framebuffer::~Framebuffer()
 {
-	if (!_fb)
+	if (!_color || !_normal)
 		return;
 	
 	for (int i = 0; i < _yRes; ++i)
 	{
-		delete[] _fb[i];
-		_fb[i] = nullptr;
+		delete[] _color[i];
+		delete[] _normal[i];
+		_color[i] = nullptr;
+		_normal[i] = nullptr;
 	}
 	
-	delete[] _fb;
-	_fb = nullptr;
+	delete[] _color;
+	delete[] _normal;
+	_color = nullptr;
+	_normal = nullptr;
 }
 
-bool Framebuffer::SpoolToPPM(std::ofstream& of)
+bool Framebuffer::SpoolToPPM(std::ofstream& of, const char* type)
 {
 	of.seekp(0);
 	
 	// write the image header
 	of << "P3\n" << _xRes << " " << _yRes << "\n255\n";
 	
-	if (!_fb)
+	if (!_color || !_normal)
 		return false;
 	
 	Vec3 col (0,0,0);
@@ -58,12 +66,15 @@ bool Framebuffer::SpoolToPPM(std::ofstream& of)
 		{
 			if (_nChans == 3)
 			{
-				col[0] = _fb[j][3 * i + 0];
-				col[1] = _fb[j][3 * i + 1];
-				col[2] = _fb[j][3 * i + 2];
-				
-				// apply some "minimal" gamma correction (gamma 2 -> x^1/2)
-				of << int(255.99 * sqrt(_fb[j][3 * i + 0])) << " " <<  int(255.99 * sqrt(_fb[j][3 * i + 1])) << " " << int(255.99 * sqrt(_fb[j][3 * i + 2])) << "\n";
+				if (strcmp(type, "color") == 0)
+				{
+					// apply some "minimal" gamma correction (gamma 2 -> x^1/2)
+					of << int(255.99 * sqrt(_color[j][3 * i + 0])) << " " <<  int(255.99 * sqrt(_color[j][3 * i + 1])) << " " << int(255.99 * sqrt(_color[j][3 * i + 2])) << "\n";
+				}
+				if (strcmp(type, "normal") == 0)
+				{
+					of << int(255.99 * _normal[j][3 * i + 0]) << " " <<  int(255.99 * _normal[j][3 * i + 1]) << " " << int(255.99 * _normal[j][3 * i + 2]) << "\n";
+				}
 			}
 		}
 	}

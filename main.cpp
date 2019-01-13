@@ -22,87 +22,34 @@
 const bool g_debugConsole = false;
 const int g_maxDepth = 20;
 const float g_epsHit = 1e-5;
-const int g_samples = 64;
+const int g_samples = 16;
 const int g_xRes = 400;
 const int g_yRes = 800;
 
-Vec3 ColorNormalsHitables(const Ray& r, HitableArray* world)
+void Color(Vec3& col, Vec3& nrm, const Ray& r, Scene* world, int depth = 0)
 {
 	HitRecord rec;
-	if (world && world->Hit(r, 0.0, MAXFLOAT, rec))
-	{
-		const Vec3 colorFromNormal = Vec3(
-																			rec.n.x() + 1,
-																			rec.n.y() + 1,
-																			rec.n.z() + 1) * 0.5;
-		return colorFromNormal;
-	}
-	
-	// compute the background color
-	const Vec3 ray_direction = r.GetDirection();
-	const float blend = 0.5 * (ray_direction.y() + 1.0);
-	return Lerp(Vec3(1.0, 1.0, 1.0), Vec3(0.5, 0.7, 1.0), blend);
-}
-
-Vec3 ColorDiffuseHitables(const Ray& r, HitableArray* world)
-{
-	HitRecord rec;
-	const float epsHit = 1e-5;
-	if (world && world->Hit(r, epsHit, MAXFLOAT, rec))
-	{
-		const Vec3 target = rec.p + rec.n + RandomPointOnSphere();
-		// recursively compute the color
-		const Vec3 color = ColorDiffuseHitables( Ray( rec.p, target - rec.p), world) * 0.5;
-		return color;
-	}
-	
-	// compute the background color
-	const float blend = 0.5 * (r.GetDirection().y() + 1.0);
-	return Lerp(Vec3(1.0, 1.0, 1.0), Vec3(0.5, 0.7, 1.0), blend);
-}
-
-Vec3 ColorMaterialsHitables(const Ray& r, HitableArray* world, int depth)
-{
-	HitRecord rec;
-	
-	Ray scattered(Vec3(0, 0, 0), Vec3(0, 0, 0));
-	Vec3 attenuation(0, 0, 0);
 	if (world && world->Hit(r, g_epsHit, MAXFLOAT, rec))
 	{
+		Ray scattered(Vec3(0, 0, 0), Vec3(0, 0, 0));
+		Vec3 attenuation(0, 0, 0);
 		if (depth < g_maxDepth && rec.mat && rec.mat->Scatter(r, rec, attenuation, scattered))
 		{
-			Vec3 res = attenuation * ColorMaterialsHitables(scattered, world, depth + 1);
-			return res;
+			Color(col, nrm, scattered, world, depth + 1);
+			nrm = Vec3(rec.n.x() + 1, rec.n.y() + 1, rec.n.z() + 1) * 0.5;
+			col *= attenuation;
+			return;
 		}
-		
-		return Vec3(0, 0, 0);
-	}
-	
-	// compute the background color
-	const float blend = 0.5 * (r.GetDirection().y() + 1.0);
-	return Lerp(Vec3(1.0, 1.0, 1.0), Vec3(0.5, 0.7, 1.0), blend);
-}
 
-Vec3 ColorMaterialsScene(const Ray& r, Scene* world, int depth)
-{
-	HitRecord rec;
-	
-	Ray scattered(Vec3(0, 0, 0), Vec3(0, 0, 0));
-	Vec3 attenuation(0, 0, 0);
-	if (world && world->Hit(r, g_epsHit, MAXFLOAT, rec))
-	{
-		if (depth < g_maxDepth && rec.mat && rec.mat->Scatter(r, rec, attenuation, scattered))
-		{
-			Vec3 res = attenuation * ColorMaterialsScene(scattered, world, depth + 1);
-			return res;
-		}
-		
-		return Vec3(0, 0, 0);
+		col = Vec3(1, 0, 0);
+		return;
 	}
 	
 	// compute the background color
 	const float blend = 0.5 * (r.GetDirection().y() + 1.0);
-	return Lerp(Vec3(1.0, 1.0, 1.0), Vec3(0.5, 0.7, 1.0), blend);
+	col = Lerp(Vec3(1.0, 1.0, 1.0), Vec3(0.5, 0.7, 1.0), blend);
+	nrm = Vec3(0,0,0);
+	return;
 }
 
 int main()
@@ -218,7 +165,7 @@ int main()
 	const Vec3 to (0, 0.5, -0.5);
 	const Vec3 up (0,1,0);
 	const float fov = 40;
-	const float aperture = .05;
+	const float aperture = 0.05;
 	const float focusDistance = 6; //(from - to).Length();
 	
 	// add camera to the scene
@@ -228,63 +175,81 @@ int main()
 	const int nx = scene->GetCamera()->GetXRes();
 	const int ny = scene->GetCamera()->GetYRes();
 	
-	std::ofstream fbImage;
-	fbImage.open("/Users/riccardogigante/Desktop/test_fb.ppm", std::ofstream::out);
+	std::ofstream rgbImage, nrmImage;
+	rgbImage.open("/Users/riccardogigante/Desktop/test_color.ppm", std::ofstream::out);
+	nrmImage.open("/Users/riccardogigante/Desktop/test_normal.ppm", std::ofstream::out);
 
 	Framebuffer* fb = new Framebuffer(g_xRes, g_yRes, 3);
 	if (!fb)
 		return -1;
 
-	// loop over the pixel to compute their colors
-	int lrs = 0;
+	// allocate temporary data
+	int lrs = 0; //  last refreshed sample
+	float u = 0, v = 0; //
+	Vec3 rgb(0,0,0);
+	Vec3 nrm(0,0,0);
+	Ray r(Vec3 (0,0,0), Vec3(0,0,0));
+	
+	// loop over samples
 	for (int s = 1; s < g_samples + 1; ++s)
 	{
 		std::cout << "Rendering [" << s << "/" << g_samples << "]\n";
 		float inv_s = 1.0 / float(s);
 		
+		// loop over the pixels to compute their colors
 		for (int j = ny - 1; j>= 0; --j)
 		{
+			const float inv_ny = 1.0 / float(ny);
 			for (int i = 0; i < nx; ++i)
 			{
-				float u = 0, v = 0;
-
-				Vec3 col(0,0,0);
-				Ray r(Vec3 (0,0,0), Vec3(0,0,0));
-
-				u = float(i + drand48()) / float(nx);
-				v = float(j + drand48()) / float(ny);
+				const float inv_nx = 1.0 / float(nx);
+				
+				u = float(i + drand48()) * inv_nx;
+				v = float(j + drand48()) * inv_ny;
 				
 				// create the starting ray from  the camera
 				r = scene->GetCamera()->CreateRay(u, v);
 
 				// add the values returned by the ray recursively exploring the scene by hitting its items
-				col = ColorMaterialsScene(r, scene, 0);
+				Color(rgb, nrm, r, scene);
 
-				fb->GetFloatRGB()[j][3 * i + 0] = (fb->GetFloatRGB()[j][3 * i + 0] * ( s - 1 ) + col[0]) * inv_s;
-				fb->GetFloatRGB()[j][3 * i + 1] = (fb->GetFloatRGB()[j][3 * i + 1] * ( s - 1 ) + col[1]) * inv_s;
-				fb->GetFloatRGB()[j][3 * i + 2] = (fb->GetFloatRGB()[j][3 * i + 2] * ( s - 1 ) + col[2]) * inv_s;
+				// update with color
+				fb->GetColor()[j][3 * i + 0] = (fb->GetColor()[j][3 * i + 0] * ( s - 1 ) + rgb[0]) * inv_s;
+				fb->GetColor()[j][3 * i + 1] = (fb->GetColor()[j][3 * i + 1] * ( s - 1 ) + rgb[1]) * inv_s;
+				fb->GetColor()[j][3 * i + 2] = (fb->GetColor()[j][3 * i + 2] * ( s - 1 ) + rgb[2]) * inv_s;
+				
+				// update with normal
+				fb->GetNormal()[j][3 * i + 0] = (fb->GetNormal()[j][3 * i + 0] * ( s - 1 ) + nrm[0]) * inv_s;
+				fb->GetNormal()[j][3 * i + 1] = (fb->GetNormal()[j][3 * i + 1] * ( s - 1 ) + nrm[1]) * inv_s;
+				fb->GetNormal()[j][3 * i + 2] = (fb->GetNormal()[j][3 * i + 2] * ( s - 1 ) + nrm[2]) * inv_s;
 
 				if (g_debugConsole)
 				{
-					std::cout << "uv [" << u << ", " << v << "] / dir [" << r.GetDirection().x() << ", " << r.GetDirection().y() << ", " << r.GetDirection().z() << "] / col ["<< col[0] <<", " << ", "<< col[1] << ", " << col[2] << "]\n";
+					std::cout << "uv [" << u << ", " << v << "] / dir [" << r.GetDirection().x() << ", " << r.GetDirection().y() << ", " << r.GetDirection().z() << "] / col ["<< rgb[0] <<", " << ", "<< rgb[1] << ", " << rgb[2] << "]\n";
 				}
 			}
 		}
+		
+		// update the framebuffer with an incremental sample count
 		if (s >= lrs * 2)
 		{
 			std::cout << "Spooling [" << s << "]\n";
-			fb->SpoolToPPM(fbImage);
+			fb->SpoolToPPM(rgbImage, "color");
+			fb->SpoolToPPM(nrmImage, "normal");
 			lrs = s;
 		}
 	}
-	fbImage.close();
+	rgbImage.close();
+	nrmImage.close();
 
+	// dispose the framebuffer
 	if (fb)
 	{
 		delete fb;
 		fb = nullptr;
 	}
 	
+	// dispose the scene
 	if (scene)
 	{
 		delete(scene);
