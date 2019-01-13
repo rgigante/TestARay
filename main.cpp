@@ -9,6 +9,7 @@
 
 #include "main.hpp"
 #include "camera.hpp"
+#include "framebuffer.hpp"
 #include "scene.hpp"
 #include "sphere.hpp"
 #include "triangle.hpp"
@@ -21,9 +22,9 @@
 const bool g_debugConsole = false;
 const int g_maxDepth = 20;
 const float g_epsHit = 1e-5;
-const int g_samples = 32;
+const int g_samples = 64;
 const int g_xRes = 400;
-const int g_yRes = 1200;
+const int g_yRes = 800;
 
 Vec3 ColorNormalsHitables(const Ray& r, HitableArray* world)
 {
@@ -218,7 +219,7 @@ int main()
 	const Vec3 up (0,1,0);
 	const float fov = 40;
 	const float aperture = .05;
-	const float focusDistance = 0.66; //(from - to).Length();
+	const float focusDistance = 6; //(from - to).Length();
 	
 	// add camera to the scene
 	scene->AddCamera(new Camera(from, to, up, fov, aperture, focusDistance, g_xRes, g_yRes));
@@ -227,52 +228,61 @@ int main()
 	const int nx = scene->GetCamera()->GetXRes();
 	const int ny = scene->GetCamera()->GetYRes();
 	
-	// allocate the final image
-	std::ofstream image;
-	image.open("/Users/riccardogigante/Desktop/test.ppm", std::ofstream::out);
-	// write the image header
-	image << "P3\n" << nx << " " << ny << "\n255\n";
-	
+	std::ofstream fbImage;
+	fbImage.open("/Users/riccardogigante/Desktop/test_fb.ppm", std::ofstream::out);
+
+	Framebuffer* fb = new Framebuffer(g_xRes, g_yRes, 3);
+	if (!fb)
+		return -1;
+
 	// loop over the pixel to compute their colors
-	for (int j = ny - 1; j>= 0; --j)
+	int lrs = 0;
+	for (int s = 1; s < g_samples + 1; ++s)
 	{
-		for (int i = 0; i < nx; ++i)
+		std::cout << "Rendering [" << s << "/" << g_samples << "]\n";
+		float inv_s = 1.0 / float(s);
+		
+		for (int j = ny - 1; j>= 0; --j)
 		{
-			float u = 0, v = 0;
-			
-			Vec3 col(0,0,0);
-			Ray r(Vec3 (0,0,0), Vec3(0,0,0));
-			for (int s = 0; s < g_samples; ++s)
+			for (int i = 0; i < nx; ++i)
 			{
+				float u = 0, v = 0;
+
+				Vec3 col(0,0,0);
+				Ray r(Vec3 (0,0,0), Vec3(0,0,0));
+
 				u = float(i + drand48()) / float(nx);
 				v = float(j + drand48()) / float(ny);
+				
 				// create the starting ray from  the camera
 				r = scene->GetCamera()->CreateRay(u, v);
-				
+
 				// add the values returned by the ray recursively exploring the scene by hitting its items
-				col += ColorMaterialsScene(r, scene, 0);
-			}
-			
-			// divide the final value by the number of samples (get the average value)
-			col = col / float(g_samples);
-			
-			// apply some "minimal" gamma correction (gamma 2 -> x^1/2)
-			col = Vec3(sqrt(col[0]), sqrt(col[1]), sqrt(col[2]));
-			
-			// map the value returned by the ray to a meaningful color
-			const int ir = int(255.99 * col.r());
-			const int ig = int(255.99 * col.g());
-			const int ib = int(255.99 * col.b());
+				col = ColorMaterialsScene(r, scene, 0);
 
- 			// spool the color information to file
-			image << ir << " " << ig << " " << ib << "\n";
-			
-			if (g_debugConsole)
-			{
-				std::cout << "uv [" << u << ", " << v << "] / dir [" << r.GetDirection().x() << ", " << r.GetDirection().y() << ", " << r.GetDirection().z() << "] / col ["<< ir <<", " << ", "<< ig << ", " << ib << "]\n";
-			}
+				fb->GetFloatRGB()[j][3 * i + 0] = (fb->GetFloatRGB()[j][3 * i + 0] * ( s - 1 ) + col[0]) * inv_s;
+				fb->GetFloatRGB()[j][3 * i + 1] = (fb->GetFloatRGB()[j][3 * i + 1] * ( s - 1 ) + col[1]) * inv_s;
+				fb->GetFloatRGB()[j][3 * i + 2] = (fb->GetFloatRGB()[j][3 * i + 2] * ( s - 1 ) + col[2]) * inv_s;
 
+				if (g_debugConsole)
+				{
+					std::cout << "uv [" << u << ", " << v << "] / dir [" << r.GetDirection().x() << ", " << r.GetDirection().y() << ", " << r.GetDirection().z() << "] / col ["<< col[0] <<", " << ", "<< col[1] << ", " << col[2] << "]\n";
+				}
+			}
 		}
+		if (s >= lrs * 2)
+		{
+			std::cout << "Spooling [" << s << "]\n";
+			fb->SpoolToPPM(fbImage);
+			lrs = s;
+		}
+	}
+	fbImage.close();
+
+	if (fb)
+	{
+		delete fb;
+		fb = nullptr;
 	}
 	
 	if (scene)
@@ -280,6 +290,4 @@ int main()
 		delete(scene);
 		scene = nullptr;
 	}
-	
-	image.close();
 }
