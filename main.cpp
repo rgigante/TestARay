@@ -88,14 +88,14 @@ int main()
 	int* indexes = new int[3 * trisCnt];
 	if (points && indexes)
 	{
-		points[0] = Vec3(-0.5, 0.7, 0);
-		points[1] = Vec3(0.5, 0.7, 0);
-		points[2] = Vec3(0.5, 0.7, 1);
-		points[3] = Vec3(-0.5, 0.7, 1);
-		points[4] = Vec3(-0.5, 1.7, 0);
-		points[5] = Vec3(0.5, 1.7, 0);
-		points[6] = Vec3(0.5, 1.7, 1);
-		points[7] = Vec3(-0.5, 1.7, 1);
+		points[0] = Vec3(-0.5, -0.5, -0.5);
+		points[1] = Vec3(0.5, -0.5, -0.5);
+		points[2] = Vec3(0.5, -0.5, 0.5);
+		points[3] = Vec3(-0.5, -0.5, 0.5);
+		points[4] = Vec3(-0.5, 0.5, -0.5);
+		points[5] = Vec3(0.5, 0.5, -0.5);
+		points[6] = Vec3(0.5, 0.5, 0.5);
+		points[7] = Vec3(-0.5, 0.5, 0.5);
 		
 		// bottom quad 0
 		indexes[0] = 0;
@@ -145,12 +145,12 @@ int main()
 		{
 			mesh->SetVertexes(points, pointsCnt);
 			mesh->SetTriIndexes(indexes);
-			mesh->GetM()->Dump();
-			Matrix translate_x_05;
-			translate_x_05[0][3] = 0.5;
-			translate_x_05.Dump();
-			mesh->SetM(translate_x_05);
-			mesh->GetM()->Dump();
+			Matrix trf;
+			trf.SetRotationY(.25*M_PI);
+			trf.Dump();
+//			trf.SetRotationX(.25*M_PI);
+			mesh->SetMatrix(trf);
+			
 			if (mesh->Init())
 			{
 				scene->AddItem(mesh);
@@ -170,7 +170,7 @@ int main()
 	scene->AddItem(new Sphere("indigoSphere", Vec3(0, -0.45, 0.66), 0.05, new LambertianReflector(Vec3(.29,0,0.51))));
 	scene->AddItem(new Sphere("purpleSphere", Vec3(0, -0.45, 0), 0.05, new LambertianReflector(Vec3(.58,0,0.82))));
 	
-	const Vec3 from (0, -0.3, 5);
+	const Vec3 from (5,5,7); //(0, -0.3, 5);
 	const Vec3 to (0, 0.5, -0.5);
 	const Vec3 up (0,1,0);
 	const float fov = 40;

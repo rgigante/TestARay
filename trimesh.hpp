@@ -23,8 +23,11 @@ public:
 	int GetVertexesCnt(){ return _vertexesCnt; }
 	int GetTrisCnt(){ return _trisCnt; }
 	Triangle* GetTriangleAtIndex(int triIdx);
-	Matrix* GetM() { return &_mtx; }
-	void SetM(const Matrix& mtx) {_mtx = mtx;}
+	Matrix* GetMatrix() { return &_mtx; }
+	void SetMatrix(const Matrix& mtx)
+	{
+		_mtx = mtx;
+	}
 	
 private:
 	Vec3* _vertexes;
