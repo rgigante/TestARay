@@ -8,6 +8,7 @@
 #ifndef trimesh_hpp
 #define trimesh_hpp
 
+#include "matrix.hpp"
 #include "triangle.hpp"
 
 class TriMesh: public Hitable
@@ -22,6 +23,8 @@ public:
 	int GetVertexesCnt(){ return _vertexesCnt; }
 	int GetTrisCnt(){ return _trisCnt; }
 	Triangle* GetTriangleAtIndex(int triIdx);
+	Matrix* GetM() { return &_mtx; }
+	void SetM(const Matrix& mtx) {_mtx = mtx;}
 	
 private:
 	Vec3* _vertexes;
@@ -31,6 +34,8 @@ private:
 	char const *_name;
 	Triangle** _tris;
 	Material* _mat;
+	
+	Matrix _mtx;
 };
 
 #endif /* trimesh_hpp */

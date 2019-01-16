@@ -12,6 +12,7 @@
 		630D56862093755E00F925B8 /* ray.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 630D56842093755E00F925B8 /* ray.cpp */; };
 		6326AAE321EB99B600CA8594 /* framebuffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6326AAE121EB99B600CA8594 /* framebuffer.cpp */; };
 		636A6F5221E8AB54009713F6 /* scene.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 636A6F5021E8AB54009713F6 /* scene.cpp */; };
+		638C56D821EF685E00DB2E84 /* matrix.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 638C56D621EF685E00DB2E84 /* matrix.cpp */; };
 		63A94B7121E73C6200F2DF28 /* trimesh.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 63A94B6F21E73C6200F2DF28 /* trimesh.cpp */; };
 		63DB56A121E6989A004BABF2 /* utils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 63DB569F21E6989A004BABF2 /* utils.cpp */; };
 		63EE6C1421DFBE0C00F4A6AE /* hitable.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 63EE6C1221DFBE0C00F4A6AE /* hitable.cpp */; };
@@ -46,6 +47,8 @@
 		6326AAE221EB99B600CA8594 /* framebuffer.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = framebuffer.hpp; sourceTree = "<group>"; };
 		636A6F5021E8AB54009713F6 /* scene.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = scene.cpp; sourceTree = "<group>"; };
 		636A6F5121E8AB54009713F6 /* scene.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = scene.hpp; sourceTree = "<group>"; };
+		638C56D621EF685E00DB2E84 /* matrix.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = matrix.cpp; sourceTree = "<group>"; };
+		638C56D721EF685E00DB2E84 /* matrix.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = matrix.hpp; sourceTree = "<group>"; };
 		63A94B6F21E73C6200F2DF28 /* trimesh.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = trimesh.cpp; sourceTree = "<group>"; };
 		63A94B7021E73C6200F2DF28 /* trimesh.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = trimesh.hpp; sourceTree = "<group>"; };
 		63DB569F21E6989A004BABF2 /* utils.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = utils.cpp; sourceTree = "<group>"; };
@@ -106,6 +109,8 @@
 				630D56722093621F00F925B8 /* main.hpp */,
 				63EE6C2121E0FBBA00F4A6AE /* materials.cpp */,
 				63EE6C2221E0FBBA00F4A6AE /* materials.hpp */,
+				638C56D621EF685E00DB2E84 /* matrix.cpp */,
+				638C56D721EF685E00DB2E84 /* matrix.hpp */,
 				630D56842093755E00F925B8 /* ray.cpp */,
 				630D56852093755E00F925B8 /* ray.hpp */,
 				636A6F5021E8AB54009713F6 /* scene.cpp */,
@@ -190,6 +195,7 @@
 				630D568320936CF300F925B8 /* vec3.cpp in Sources */,
 				63EE6C2021E0A37F00F4A6AE /* camera.cpp in Sources */,
 				63A94B7121E73C6200F2DF28 /* trimesh.cpp in Sources */,
+				638C56D821EF685E00DB2E84 /* matrix.cpp in Sources */,
 				630D56802093694C00F925B8 /* main.cpp in Sources */,
 				63EE6C1721DFBEFE00F4A6AE /* sphere.cpp in Sources */,
 				63EE6C1A21DFC43400F4A6AE /* hitablearray.cpp in Sources */,

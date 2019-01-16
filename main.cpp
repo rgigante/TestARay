@@ -10,6 +10,7 @@
 #include "main.hpp"
 #include "camera.hpp"
 #include "framebuffer.hpp"
+#include "matrix.hpp"
 #include "scene.hpp"
 #include "sphere.hpp"
 #include "triangle.hpp"
@@ -22,7 +23,7 @@
 const bool g_debugConsole = false;
 const int g_maxDepth = 20;
 const float g_epsHit = 1e-5;
-const int g_samples = 16;
+const int g_samples = 1;
 const int g_xRes = 400;
 const int g_yRes = 800;
 
@@ -78,6 +79,7 @@ int main()
 	scene->AddItem(new Triangle("cyanTri", Vec3(-0.5, 0.5, -1.5), Vec3(0.5, -0.5, -1.5), Vec3(0.5, 0.5, -1.5), new MetalReflector(Vec3(.2,.9,.9))));
 	// the yellow triangle on the right
 	scene->AddItem(new Triangle("yellowTri", Vec3(0.5, 0.5, -0.5), Vec3(0.5, 0.5, -1.5), Vec3(0.5, -0.5, -0.5), new MetalReflector(Vec3(.9,.9,.2))));
+	
 	
 	// the red cube on the top
 	const int trisCnt = 12;
@@ -143,6 +145,12 @@ int main()
 		{
 			mesh->SetVertexes(points, pointsCnt);
 			mesh->SetTriIndexes(indexes);
+			mesh->GetM()->Dump();
+			Matrix translate_x_05;
+			translate_x_05[0][3] = 0.5;
+			translate_x_05.Dump();
+			mesh->SetM(translate_x_05);
+			mesh->GetM()->Dump();
 			if (mesh->Init())
 			{
 				scene->AddItem(mesh);
@@ -152,6 +160,7 @@ int main()
 			}
 		}
 	}
+	
 	// the rainbow spheres
 	scene->AddItem(new Sphere("redSphere", Vec3(0, -0.45, 4), 0.05, new LambertianReflector(Vec3(.9,0,0))));
 	scene->AddItem(new Sphere("orangeSphere", Vec3(0, -0.45, 3.33), 0.05, new LambertianReflector(Vec3(.9,.45,0))));
@@ -165,7 +174,7 @@ int main()
 	const Vec3 to (0, 0.5, -0.5);
 	const Vec3 up (0,1,0);
 	const float fov = 40;
-	const float aperture = 0.05;
+	const float aperture = 0; //0.05;
 	const float focusDistance = 6; //(from - to).Length();
 	
 	// add camera to the scene
