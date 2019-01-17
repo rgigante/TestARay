@@ -41,10 +41,37 @@ public:
 	}
 	
 	double** GetElements() const { return _m; }
+	
 	int GetCol() const { return _col; }
+	
 	int GetRow() const { return _row; }
 	
+	Matrix& SetElements (double n, ...)
+	{
+		va_list vl;
+		va_start(vl, n);
+		
+		int c;
+		double val;
+		int maxAllowed = this->_row * this->_col;
+		
+		if (n > maxAllowed)
+			return *this;
+		
+		for(c = 0; c < n; c++)
+		{
+			val = va_arg(vl, double);
+			int a = int (c / this->_row);
+			int b = int (c % this->_row);
+			this->_m[a][b] = val;
+		}
+		
+		va_end(vl);
+		return *this;
+	}
+	
 	inline double* operator[] (int i) const	{ return _m[i]; }
+	
 	inline double*& operator[] (int i) { return _m[i]; }
 	
 	friend std::ostream& operator<<(std::ostream &os, const Matrix &m)
@@ -257,6 +284,8 @@ public:
 		}
 		return *this;
 	}
+	
+	
 	
 	
 	
