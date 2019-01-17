@@ -46,7 +46,7 @@ public:
 	
 	int GetRow() const { return _row; }
 	
-	Matrix& SetElements (double n, ...)
+	Matrix& SetElements (int n, ...)
 	{
 		va_list vl;
 		va_start(vl, n);
@@ -55,11 +55,11 @@ public:
 		double val;
 		int maxAllowed = this->_row * this->_col;
 		
-		if (n > maxAllowed)
-			return *this;
-		
 		for(c = 0; c < n; c++)
 		{
+			if (c > (maxAllowed - 1))
+				continue;
+			
 			val = va_arg(vl, double);
 			int a = int (c / this->_row);
 			int b = int (c % this->_row);
@@ -67,6 +67,13 @@ public:
 		}
 		
 		va_end(vl);
+		return *this;
+	}
+	
+	Matrix& SetElement (int i, int j, double val)
+	{
+		if (i < this->_row && j < this->_col)
+			this->_m[i][j] = val;
 		return *this;
 	}
 	
