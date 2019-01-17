@@ -9,6 +9,25 @@
 #define matrix_hpp
 
 #include "vec3.hpp"
+#include <exception>
+
+const double g_M_PIon180 = M_PI/180.0;
+const double g_180onM_PI = 180.0/M_PI;
+
+struct MyException : public std::exception
+{
+protected:
+	const char *errorMsg;
+	
+public:
+	MyException (const char* str){
+		errorMsg =  str;
+	}
+	const char * what () const throw ()
+	{
+		return errorMsg;
+	}
+};
 
 class Matrix
 {
@@ -17,6 +36,7 @@ public:
 	{
 		_row = row;
 		_col = col;
+		_scale = Vec3(1,1,1);
 		_m = new double*[row];
 		for (int i = 0; i < _row; ++i)
 		{
@@ -38,13 +58,53 @@ public:
 			delete[] _m[i];
 			_m[i] = nullptr;
 		}
+		delete[] _m;
+		_m = nullptr;
+		_row = 0;
+		_col = 0;
 	}
 	
-	double** GetElements() const { return _m; }
+	inline double** GetElements() const { return _m; }
 	
-	int GetCol() const { return _col; }
+	inline int GetCol() const { return _col; }
 	
-	int GetRow() const { return _row; }
+	inline int GetRow() const { return _row; }
+	
+	inline double* operator[] (int i) const	{ return _m[i]; }
+	
+	inline double*& operator[] (int i) { return _m[i]; }
+	
+	friend std::ostream& operator<<(std::ostream &os, const Matrix &m)
+	{
+		for (int i = 0; i < m.GetRow(); ++i)
+		{
+			for (int j = 0; j < m.GetCol(); ++j)
+			{
+				os << m.GetElements()[i][j] << " ";
+			}
+			os << "\n";
+		}
+		os << "\n";
+		return os;
+	}
+	
+	inline bool operator== (Matrix m)
+	{
+		for(int i = 0; i < _row; i++)
+		{
+			for(int j = 0; j < _col; j++)
+			{
+				if(this->_m[i][j] != m[i][j])
+					return false;
+			}
+		}
+		return true;
+	}
+	
+	inline bool operator!= (Matrix m)
+	{
+		return !((*this) == m);
+	}
 	
 	Matrix& SetElements (int n, ...)
 	{
@@ -67,48 +127,16 @@ public:
 		}
 		
 		va_end(vl);
-		return *this;
+		return (*this);
 	}
 	
 	Matrix& SetElement (int i, int j, double val)
 	{
 		if (i < this->_row && j < this->_col)
-			this->_m[i][j] = val;
-		return *this;
-	}
-	
-	inline double* operator[] (int i) const	{ return _m[i]; }
-	
-	inline double*& operator[] (int i) { return _m[i]; }
-	
-	friend std::ostream& operator<<(std::ostream &os, const Matrix &m)
-	{
-		for (int i = 0; i < m.GetRow(); ++i)
 		{
-			for (int j = 0; j < m.GetCol(); ++j)
-			{
-				os << m.GetElements()[i][j] << " ";
-			}
-			os << "\n";
+			this->_m[i][j] = val;
 		}
-		os << "\n";
-		return os;
-	}
-	
-	inline bool operator== (Matrix m)
-	{
-		for(int i = 0; i < _row; i++){
-			for(int j = 0; j < _col; j++){
-				if((*this)[i][j] != m[i][j])
-					return false;
-			}
-		}
-		return true;
-	}
-	
-	inline bool operator!= (Matrix m)
-	{
-		return !((*this) == m);
+		return (*this);
 	}
 	
 	template<class S> Matrix& operator= (S x)
@@ -117,7 +145,7 @@ public:
 		{
 			for(int j = 0; j < _col; j++)
 			{
-				(*this)[i][j] = (double)x;
+				this->_m[i][j] = (double)x;
 			}
 		}
 		return (*this);
@@ -125,11 +153,14 @@ public:
 	
 	Matrix& operator= (const Matrix& m)
 	{
+		this->_col =  m.GetCol();
+		this->_row =  m.GetRow();
+		
 		for(int i = 0; i < _row; i++)
 		{
 			for(int j = 0; j < _col; j++)
 			{
-				_m[i][j] = m.GetElements()[i][j];
+				this->_m[i][j] = m.GetElements()[i][j];
 			}
 		}
 		return *this;
@@ -142,20 +173,20 @@ public:
 		{
 			for(int j = 0; j < _col; j++)
 			{
-				result[i][j] = (*this)[i][j] + (double)x;
+				result[i][j] = this->_m[i][j] + (double)x;
 			}
 		}
 		return result;
 	}
 	
-	inline	Matrix operator+ (Matrix m)
+	Matrix operator+ (Matrix m)
 	{
 		Matrix result;
 		for(int i = 0; i < _row; i++)
 		{
 			for(int j = 0; j < _col; j++)
 			{
-				result[i][j] = (*this)[i][j] + m[i][j];
+				result[i][j] = this->_m[i][j] + m[i][j];
 			}
 		}
 		return result;
@@ -168,32 +199,30 @@ public:
 		{
 			for(int j = 0; j < _col; j++)
 			{
-				result[i][j] = (*this)[i][j] * x;
+				result[i][j] = this->_m[i][j] * x;
 			}
 		}
 		return result;
 	}
 	
-	inline Matrix operator* (const Matrix& m)
+	Matrix operator* (const Matrix& m)
 	{
-		if(this->_col == m.GetRow())
+		assert(this->_col == m.GetRow());
+
+		Matrix result(this->_row, m.GetCol());
+		result = 0.0;
+		for(int i = 0; i < this->_row; i++)
 		{
-			Matrix result(this->_row, m.GetCol());
-			result = 0.0;
-			for(int i = 0; i < this->_row; i++)
+			for(int j = 0; j < m.GetCol(); j++)
 			{
-				for(int j = 0; j < m.GetCol(); j++)
+				for(int k = 0; k < this->_col; k++)
 				{
-					for(int k = 0; k < this->_col; k++)
-					{
-						double tempVal = (*this)[i][k] * m[k][j];
-						result[i][j] += tempVal;
-					}
+					double tempVal = this->_m[i][k] * m[k][j];
+					result[i][j] += tempVal;
 				}
 			}
-			return result;
 		}
-		return Matrix(this->_row, this->_col);
+		return result;
 	}
 	
 	inline Vec3 operator* (Vec3 v)
@@ -226,35 +255,41 @@ public:
 		return *this;
 	}
 	
-	Matrix& AddRotationX (float angle)
+	Matrix& AddRotationX (const float angle)
 	{
+		assert(this->_col == 4 && this->_row == 4);
 		Matrix rotX;
-		rotX.GetElements()[1][1] = cos(angle);
-		rotX.GetElements()[1][2] = -sin(angle);
-		rotX.GetElements()[2][1] = sin(angle);
-		rotX.GetElements()[2][2] = cos(angle);
+		const double angleRad = angle * g_M_PIon180;
+		rotX.GetElements()[1][1] = cos(angleRad);
+		rotX.GetElements()[1][2] = -sin(angleRad);
+		rotX.GetElements()[2][1] = sin(angleRad);
+		rotX.GetElements()[2][2] = cos(angleRad);
 		*this = rotX * *this;
 		return *this;
 	}
 	
-	Matrix& AddRotationY (float angle)
+	Matrix& AddRotationY (const float angle)
 	{
+		assert(this->_col == 4 && this->_row == 4);
 		Matrix rotY;
-		rotY.GetElements()[0][0] = cos(angle);
-		rotY.GetElements()[0][2] = sin(angle);
-		rotY.GetElements()[2][0] = -sin(angle);
-		rotY.GetElements()[2][2] = cos(angle);
+		const double angleRad = angle * g_M_PIon180;
+		rotY.GetElements()[0][0] = cos(angleRad);
+		rotY.GetElements()[0][2] = sin(angleRad);
+		rotY.GetElements()[2][0] = -sin(angleRad);
+		rotY.GetElements()[2][2] = cos(angleRad);
 		*this = rotY * *this;
 		return *this;
 	}
 	
-	Matrix& AddRotationZ (float angle)
+	Matrix& AddRotationZ (const float angle)
 	{
+		assert(this->_col == 4 && this->_row == 4);
 		Matrix rotZ;
-		rotZ.GetElements()[0][0] = cos(angle);
-		rotZ.GetElements()[0][1] = -sin(angle);
-		rotZ.GetElements()[1][0] = sin(angle);
-		rotZ.GetElements()[1][1] = cos(angle);
+		const double angleRad = angle * g_M_PIon180;
+		rotZ.GetElements()[0][0] = cos(angleRad);
+		rotZ.GetElements()[0][1] = -sin(angleRad);
+		rotZ.GetElements()[1][0] = sin(angleRad);
+		rotZ.GetElements()[1][1] = cos(angleRad);
 		*this = rotZ * *this;
 		return *this;
 	}
@@ -262,6 +297,7 @@ public:
 	Matrix& AddScaleNU (Vec3 nu)
 	{
 		Matrix scaleNU;
+		_scale *= nu;
 		scaleNU.GetElements()[0][0] *= nu[0];
 		scaleNU.GetElements()[1][1] *= nu[1];
 		scaleNU.GetElements()[2][2] *= nu[2];
@@ -272,6 +308,7 @@ public:
 	Matrix& AddScale (double s)
 	{
 		Matrix scaleU;
+		_scale *= Vec3(s,s,s);
 		scaleU.GetElements()[0][0] *= s;
 		scaleU.GetElements()[1][1] *= s;
 		scaleU.GetElements()[2][2] *= s;
@@ -279,27 +316,43 @@ public:
 		return *this;
 	}
 	
-	Matrix& Transpose()
+	Matrix Transpose()
 	{
-		Matrix tmp = *this;
-		for(int i = 0; i < 4; i++)
+		Matrix tmp(this->_col, this->_row);
+		for(int i = 0; i < this->_row; i++)
 		{
-			for(int j = 0; j < 4; j++)
+			for(int j = 0; j < this->_col; j++)
 			{
-				_m[i][j] = tmp.GetElements()[j][i];
+				tmp.GetElements()[j][i] = this->_m[i][j];
 			}
 		}
-		return *this;
+		return tmp;
 	}
 	
-	
-	
-	
-	
+	Matrix operator~()
+	{
+		assert (this->_row == 4 && this->_col == 4);
+		
+		Matrix tmp;
+		for(int i = 0; i < this->_row - 1; i++)
+		{
+			for(int j = 0; j < this->_col - 1; j++)
+			{
+				tmp.GetElements()[i][j] = this->_m[j][i];
+			}
+		}
+		Vec3 offset = Vec3(-this->_m[0][3], -this->_m[1][3], -this->_m[2][3]);
+		tmp.GetElements()[0][3] = (tmp * offset)[0];
+		tmp.GetElements()[1][3] = (tmp * offset)[1];
+		tmp.GetElements()[2][3] = (tmp * offset)[2];
+		
+		return tmp;
+	}
 	
 private:
 	double** _m;
 	int _row, _col;
+	Vec3 _scale;
 };
 
 #endif /* matrix_hpp */

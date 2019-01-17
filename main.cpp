@@ -23,7 +23,7 @@
 const bool g_debugConsole = false;
 const int g_maxDepth = 20;
 const float g_epsHit = 1e-5;
-const int g_samples = 4;
+const int g_samples = 1;
 const int g_xRes = 400;
 const int g_yRes = 800;
 
@@ -93,8 +93,8 @@ int main()
 		points[2] = Vec3(0.5, -0.5, 0.5);
 		points[3] = Vec3(-0.5, -0.5, 0.5);
 		points[4] = Vec3(-0.5, 0.5, -0.5);
-		points[5] = Vec3(0.5, 0.5, -0.5);
-		points[6] = Vec3(0.5, 0.5, 0.5);
+		points[5] = Vec3(0.5, 0.5, -0.05);
+		points[6] = Vec3(0.5, 0.5, 0.05);
 		points[7] = Vec3(-0.5, 0.5, 0.5);
 		
 		// bottom quad 0
@@ -144,13 +144,17 @@ int main()
 		if (mesh)
 		{
 			Matrix trf;
-			trf.AddRotationX(.25 * M_PI);
-			trf.AddScale(0.5);
-			trf.AddRotationY(.33 * M_PI);
-			trf.AddRotationZ(.125 * M_PI);
-			trf.AddScaleNU(Vec3(1,2,.33));
+			trf.AddRotationY(45);
+//			trf.AddScale(0.5);
+			trf.AddRotationY(60);
+			trf.AddRotationZ(12);
+//			trf.AddScaleNU(Vec3(1,.5,.25));
 			trf.AddOffset(Vec3(0,1,0));
-			mesh->SetMatrix(trf);
+			std::cout << "trf\n" << trf;
+			std::cout << "~trf\n" << ~trf;
+			std::cout << "trf * ~trf\n" << trf * ~trf;
+
+			mesh->SetMatrix(trf * ~trf);
 			
 			mesh->SetVertexes(points, pointsCnt);
 			mesh->SetTriIndexes(indexes);
@@ -173,12 +177,12 @@ int main()
 	scene->AddItem(new Sphere("indigoSphere", Vec3(0, -0.45, 0.66), 0.05, new LambertianReflector(Vec3(.29,0,0.51))));
 	scene->AddItem(new Sphere("purpleSphere", Vec3(0, -0.45, 0), 0.05, new LambertianReflector(Vec3(.58,0,0.82))));
 	
-	const Vec3 from (0, -0.3, 5);
+	const Vec3 from (5, 5, 5);
 	const Vec3 to (0, 0.5, -0.5);
 	const Vec3 up (0,1,0);
 	const float fov = 40;
-	const float aperture = 0.05;
-	const float focusDistance = 6; //(from - to).Length();
+	const float aperture = 0; //0.05;
+	const float focusDistance = 5; //(from - to).Length();
 	
 	// add camera to the scene
 	scene->AddCamera(new Camera(from, to, up, fov, aperture, focusDistance, g_xRes, g_yRes));
