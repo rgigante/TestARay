@@ -145,7 +145,7 @@
 			dependencies = (
 			);
 			name = TraceARay;
-			productName = TraceARay01;
+			productName = TraceARay;
 			productReference = 630D56772093641200F925B8 /* TraceARay */;
 			productType = "com.apple.product-type.tool";
 		};
