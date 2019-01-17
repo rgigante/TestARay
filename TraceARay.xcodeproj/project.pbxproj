@@ -38,7 +38,7 @@
 /* Begin PBXFileReference section */
 		630D56712093621F00F925B8 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		630D56722093621F00F925B8 /* main.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = main.hpp; sourceTree = "<group>"; };
-		630D56772093641200F925B8 /* TraceARay01 */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = TraceARay01; sourceTree = BUILT_PRODUCTS_DIR; };
+		630D56772093641200F925B8 /* TraceARay */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = TraceARay; sourceTree = BUILT_PRODUCTS_DIR; };
 		630D568120936C9C00F925B8 /* vec3.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = vec3.hpp; sourceTree = "<group>"; };
 		630D568220936CF300F925B8 /* vec3.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = vec3.cpp; sourceTree = "<group>"; };
 		630D56842093755E00F925B8 /* ray.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ray.cpp; sourceTree = "<group>"; };
@@ -89,7 +89,7 @@
 		630D56782093641200F925B8 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				630D56772093641200F925B8 /* TraceARay01 */,
+				630D56772093641200F925B8 /* TraceARay */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -132,9 +132,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		630D56762093641200F925B8 /* TraceARay01 */ = {
+		630D56762093641200F925B8 /* TraceARay */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 630D567C2093641200F925B8 /* Build configuration list for PBXNativeTarget "TraceARay01" */;
+			buildConfigurationList = 630D567C2093641200F925B8 /* Build configuration list for PBXNativeTarget "TraceARay" */;
 			buildPhases = (
 				630D56732093641200F925B8 /* Sources */,
 				630D56742093641200F925B8 /* Frameworks */,
@@ -144,9 +144,9 @@
 			);
 			dependencies = (
 			);
-			name = TraceARay01;
+			name = TraceARay;
 			productName = TraceARay01;
-			productReference = 630D56772093641200F925B8 /* TraceARay01 */;
+			productReference = 630D56772093641200F925B8 /* TraceARay */;
 			productType = "com.apple.product-type.tool";
 		};
 /* End PBXNativeTarget section */
@@ -163,7 +163,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 630D566E209361C100F925B8 /* Build configuration list for PBXProject "TraceARay01" */;
+			buildConfigurationList = 630D566E209361C100F925B8 /* Build configuration list for PBXProject "TraceARay" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
@@ -175,7 +175,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				630D56762093641200F925B8 /* TraceARay01 */,
+				630D56762093641200F925B8 /* TraceARay */,
 			);
 		};
 /* End PBXProject section */
@@ -311,7 +311,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		630D566E209361C100F925B8 /* Build configuration list for PBXProject "TraceARay01" */ = {
+		630D566E209361C100F925B8 /* Build configuration list for PBXProject "TraceARay" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				630D566F209361C100F925B8 /* Debug */,
@@ -320,7 +320,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		630D567C2093641200F925B8 /* Build configuration list for PBXNativeTarget "TraceARay01" */ = {
+		630D567C2093641200F925B8 /* Build configuration list for PBXNativeTarget "TraceARay" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				630D567D2093641200F925B8 /* Debug */,
