@@ -23,7 +23,7 @@
 const bool g_debugConsole = false;
 const int g_maxDepth = 20;
 const float g_epsHit = 1e-5;
-const int g_samples = 1;
+const int g_samples = 4;
 const int g_xRes = 400;
 const int g_yRes = 800;
 
@@ -143,14 +143,17 @@ int main()
 		TriMesh* mesh = new TriMesh("cubeMesh", trisCnt, new MetalReflector(Vec3(.05,.1,.07), .05));
 		if (mesh)
 		{
-			mesh->SetVertexes(points, pointsCnt);
-			mesh->SetTriIndexes(indexes);
 			Matrix trf;
-			trf.SetRotationY(.25*M_PI);
-			trf.Dump();
-//			trf.SetRotationX(.25*M_PI);
+			trf.AddRotationX(.25 * M_PI);
+			trf.AddScale(0.5);
+			trf.AddRotationY(.33 * M_PI);
+			trf.AddRotationZ(.125 * M_PI);
+			trf.AddScaleNU(Vec3(1,2,.33));
+			trf.AddOffset(Vec3(0,1,0));
 			mesh->SetMatrix(trf);
 			
+			mesh->SetVertexes(points, pointsCnt);
+			mesh->SetTriIndexes(indexes);
 			if (mesh->Init())
 			{
 				scene->AddItem(mesh);
@@ -170,11 +173,11 @@ int main()
 	scene->AddItem(new Sphere("indigoSphere", Vec3(0, -0.45, 0.66), 0.05, new LambertianReflector(Vec3(.29,0,0.51))));
 	scene->AddItem(new Sphere("purpleSphere", Vec3(0, -0.45, 0), 0.05, new LambertianReflector(Vec3(.58,0,0.82))));
 	
-	const Vec3 from (5,5,7); //(0, -0.3, 5);
+	const Vec3 from (0, -0.3, 5);
 	const Vec3 to (0, 0.5, -0.5);
 	const Vec3 up (0,1,0);
 	const float fov = 40;
-	const float aperture = 0; //0.05;
+	const float aperture = 0.05;
 	const float focusDistance = 6; //(from - to).Length();
 	
 	// add camera to the scene
