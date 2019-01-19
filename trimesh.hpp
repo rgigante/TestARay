@@ -8,7 +8,7 @@
 #ifndef trimesh_hpp
 #define trimesh_hpp
 
-#include "matrix.hpp"
+#include "transformation.hpp"
 #include "triangle.hpp"
 
 class TriMesh: public Hitable
@@ -16,7 +16,7 @@ class TriMesh: public Hitable
 public:
 	TriMesh(char const* name, int trisCnt, Material* mat);
 	~TriMesh();
-	bool Hit (const Ray& r, float t_min, float t_max, HitRecord& rec) const;
+	bool Hit (const Ray& r, float t_min, float t_max, HitRecord& rec, bool isInstance = false) const;
 	bool SetVertexes(Vec3* points, int pointsCnt);
 	bool SetTriIndexes(int* triIndexes);
 	bool Init();

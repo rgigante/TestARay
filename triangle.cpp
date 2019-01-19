@@ -28,7 +28,7 @@ Triangle::~Triangle()
 	}
 }
 
-bool Triangle::Hit(const Ray &r, float t_min, float t_max, HitRecord &rec) const
+bool Triangle::Hit(const Ray& r, float t_min, float t_max, HitRecord& rec, bool isInstance) const
 {
 	// compute the Dot product (cosine of the angle) between the normal and the ray direction
 	const float dotDirNrm = Dot(r.GetDirection(), _n);

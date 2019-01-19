@@ -16,7 +16,7 @@ Sphere::~Sphere()
 	}
 }
 
-bool Sphere::Hit(const Ray &r, float t_min, float t_max, HitRecord &rec) const
+bool Sphere::Hit(const Ray& r, float t_min, float t_max, HitRecord& rec, bool isInstance) const
 {
 	const Vec3 oc = r.GetOrigin() - _center;
 	const float a = Dot(r.GetDirection(), r.GetDirection());

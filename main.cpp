@@ -10,13 +10,14 @@
 #include "main.hpp"
 #include "camera.hpp"
 #include "framebuffer.hpp"
-#include "matrix.hpp"
+#include "transformation.hpp"
 #include "scene.hpp"
 #include "sphere.hpp"
 #include "triangle.hpp"
 #include "trimesh.hpp"
 #include "materials.hpp"
 #include "hitable.hpp"
+#include "hitableinstance.hpp"
 #include "hitablearray.hpp"
 
 // global var to enable console debug
@@ -94,6 +95,7 @@ int main()
 	const int pointsCnt = 8;
 	Vec3* points = new Vec3[pointsCnt];
 	int* indexes = new int[3 * trisCnt];
+	TriMesh* mesh = nullptr;
 	if (points && indexes)
 	{
 		points[0] = Vec3(-0.5, -0.5, -0.5);
@@ -148,23 +150,23 @@ int main()
 		indexes[34] = 5;
 		indexes[35] = 1;
 		
-		TriMesh* mesh = new TriMesh("cubeMesh", trisCnt, new MetalReflector(Vec3(.05,.1,.07), .05));
+		mesh = new TriMesh("cubeMesh", trisCnt, new MetalReflector(Vec3(.05,.1,.07), .05));
 		if (mesh)
 		{
 			// test the transformation stack
 			// allocate a transformation and define it
 			Transformation trf;
-			trf.AddRotationX(22);
-			trf.AddScale(0.5);
-			trf.AddRotationY(0);
-			trf.AddScaleNU(Vec3(2,.5,.25));
-			trf.AddRotationZ(12);
-			trf.AddOffset(Vec3(-1,1,0));
+//			trf.AddRotationX(22);
+//			trf.AddScale(1);
+//			trf.AddRotationY(0);
+//			trf.AddScaleNU(Vec3(2,.5,.25));
+//			trf.AddRotationZ(12);
+			trf.AddOffset(Vec3(0,.5,0));
 			// add the first transformation to the stack
-			mesh->AddTransformation(trf);
+//			mesh->AddTransformation(trf);
 			// reset the transformation for a new one
-			trf.Reset();
-			trf.AddRotationY(90);
+//			trf.Reset();
+//			trf.AddRotationY(90);
 			// add the second transformation to the stack
 			mesh->AddTransformation(trf);
 			
@@ -180,6 +182,14 @@ int main()
 		}
 	}
 	
+	{
+		HitableInstance* inst = new HitableInstance(mesh);
+		Transformation trf2;
+		trf2.AddOffset(Vec3(-1,0,0));
+		inst->AddTransformation(trf2);
+		scene->AddItem(inst);
+	}
+//
 	// the rainbow spheres
 	scene->AddItem(new Sphere("redSphere", Vec3(0, -0.45, 4), 0.05, new LambertianReflector(Vec3(.9,0,0))));
 	scene->AddItem(new Sphere("orangeSphere", Vec3(0, -0.45, 3.33), 0.05, new LambertianReflector(Vec3(.9,.45,0))));

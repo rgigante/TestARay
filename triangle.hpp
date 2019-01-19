@@ -17,7 +17,7 @@ public:
 	Triangle(char const* name, Vec3 a, Vec3 b, Vec3 c, Material* m, bool isTriMesh = false);
 	~Triangle();
 	bool SetName(char const* name){ _name = name; return (!name) ? false : true; };
-	bool Hit (const Ray& r, float t_min, float t_max, HitRecord& rec) const;
+	bool Hit (const Ray& r, float t_min, float t_max, HitRecord& rec, bool isInstance = false) const;
 	
 private:
 	Vec3 _a, _b, _c;

@@ -69,43 +69,51 @@ bool TriMesh::Init()
 	for (int i = 0; i < _trisCnt; ++i)
 	{
 		const int vIdx[3] = {_triIndexes[3 * i + 0], _triIndexes[3 * i + 1], _triIndexes[3 * i + 2]};
-		
-		Vec3 a = _vertexes[vIdx[0]];
-		Vec3 b = _vertexes[vIdx[1]];
-		Vec3 c = _vertexes[vIdx[2]];
-		
-		for (int j = 0; j < _trfs.size(); ++j)
-		{
-			a = _trfs[j] * a;
-			b = _trfs[j] * b;
-			c = _trfs[j] * c;
-		}
-		
-		_tris[i] = new Triangle(nullptr, a, b, c, _mat, true);
+		_tris[i] = new Triangle(nullptr, _vertexes[vIdx[0]], _vertexes[vIdx[1]], _vertexes[vIdx[2]], _mat, true);
 	}
 	
 	return true;
 }
 
-bool TriMesh::Hit(const Ray &r, float t_min, float t_max, HitRecord &rec) const
-{
-	
+bool TriMesh::Hit(const Ray& r, float t_min, float t_max, HitRecord& rec, bool isInstance) const
+{	
 	bool hasHit = false;
 	float min_t = MAXFLOAT;
 	HitRecord currentRec;
-	for (int i = 0; i < _trisCnt; ++i)
-	{
-		if (_tris[i]->Hit(r, t_min, t_max, currentRec))
+	
+	Vec3 pos = r.GetOrigin();
+	if (!isInstance)
+		for (int j = 0; j < _trfs.size(); ++j)
 		{
-			hasHit = true;
-			if (currentRec.t < min_t)
+			Transformation trf = _trfs[j];
+			pos = trf * pos;
+			for (int i = 0; i < _trisCnt; ++i)
 			{
-				min_t = currentRec.t;
-				rec = currentRec;
+				if (_tris[i]->Hit(Ray(pos, r.GetDirection()), t_min, t_max, currentRec))
+				{
+					hasHit = true;
+					if (currentRec.t < min_t)
+					{
+						min_t = currentRec.t;
+						rec = currentRec;
+					}
+				}
+			}
+		}
+	else
+	{
+		for (int i = 0; i < _trisCnt; ++i)
+		{
+			if (_tris[i]->Hit(r, t_min, t_max, currentRec))
+			{
+				hasHit = true;
+				if (currentRec.t < min_t)
+				{
+					min_t = currentRec.t;
+					rec = currentRec;
+				}
 			}
 		}
 	}
-	
 	return hasHit;
-	
 }
