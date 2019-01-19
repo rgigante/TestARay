@@ -151,6 +151,8 @@ int main()
 		TriMesh* mesh = new TriMesh("cubeMesh", trisCnt, new MetalReflector(Vec3(.05,.1,.07), .05));
 		if (mesh)
 		{
+			// test the transformation stack
+			// allocate a transformation and define it
 			Transformation trf;
 			trf.AddRotationX(22);
 			trf.AddScale(0.5);
@@ -158,9 +160,12 @@ int main()
 			trf.AddScaleNU(Vec3(2,.5,.25));
 			trf.AddRotationZ(12);
 			trf.AddOffset(Vec3(-1,1,0));
+			// add the first transformation to the stack
 			mesh->AddTransformation(trf);
+			// reset the transformation for a new one
 			trf.Reset();
 			trf.AddRotationY(90);
+			// add the second transformation to the stack
 			mesh->AddTransformation(trf);
 			
 			mesh->SetVertexes(points, pointsCnt);

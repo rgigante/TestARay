@@ -24,11 +24,8 @@ public:
 	int GetTrisCnt(){ return _trisCnt; }
 	Triangle* GetTriangleAtIndex(int triIdx);
 	const Transformation& GetTransformationAt(int idx) { return _trfs[idx]; }
-	bool DropTransformationAt();
-	void AddTransformation(Transformation trf)
-	{
-		_trfs.push_back(trf);
-	}
+	void DropTransformationAt(int idx){	_trfs.erase(_trfs.begin() + idx);	}
+	void AddTransformation(Transformation trf){	_trfs.push_back(trf);	}
 	
 private:
 	Vec3* _vertexes;

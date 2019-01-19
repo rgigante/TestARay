@@ -336,9 +336,7 @@ public:
 	
 	inline const Vec3& GetInvScl() const { return this->_invscl; }
 	inline Vec3 GetInvScl() { return this->_invscl; }
-	
-	
-	
+		
 	friend std::ostream& operator<<(std::ostream &os, const Transformation &m)
 	{
 		os << "[rot]\n" << m.GetRot() << "[off]\n" << m.GetOff() << "[scl]\n" << m.GetScl() << "\n";
