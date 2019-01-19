@@ -17,8 +17,8 @@ class Vec3
 {
 public:
 	Vec3() {}
-	Vec3(float e0, float e1, float e2) { e[0] = e0; e[1] = e1; e[2] = e2; }
-	
+	Vec3(float e0, float e1, float e2) {	e[0] = e0; e[1] = e1; e[2] = e2; }
+	~Vec3()	{}
 	inline float x() const { return e[0]; }
 	inline float y() const { return e[1]; }
 	inline float z() const { return e[2]; }
@@ -31,6 +31,8 @@ public:
 	inline float operator[](int i) const { return e[i]; }
 	inline float& operator[](int i) { return e[i]; }
 	
+	inline bool  operator==(const Vec3 &v);
+	inline bool  operator!=(const Vec3 &v);
 	inline Vec3& operator+=(const Vec3 &v);
 	inline Vec3& operator-=(const Vec3 &v);
 	inline Vec3& operator*=(const Vec3 &v);
@@ -47,6 +49,19 @@ public:
 	float e[3];
 	
 };
+
+inline bool Vec3::operator==(const Vec3 &v)
+{
+	if (e[0] != v.e[0] || e[1] != v.e[1] || e[2] != v.e[2])
+		return false;
+	
+	return true;
+}
+
+inline bool Vec3::operator!=(const Vec3 &v)
+{
+	return !((*this)==v);
+}
 
 inline void Vec3::Normalize()
 {
@@ -125,7 +140,7 @@ inline std::istream& operator>>(std::istream &is, Vec3 &t)
 
 inline std::ostream& operator<<(std::ostream &os, const Vec3 &t)
 {
-	os << t.e[0] << " " << t.e[1] << " " << t.e[2] << "\n";
+	os << "\t" << t.e[0] << " " << t.e[1] << " " << t.e[2] << "\n";
 	return os;
 }
 

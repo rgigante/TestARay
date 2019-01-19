@@ -23,10 +23,11 @@ public:
 	int GetVertexesCnt(){ return _vertexesCnt; }
 	int GetTrisCnt(){ return _trisCnt; }
 	Triangle* GetTriangleAtIndex(int triIdx);
-	Matrix* GetMatrix() { return &_mtx; }
-	void SetMatrix(const Matrix& mtx)
+	const Transformation& GetTransformationAt(int idx) { return _trfs[idx]; }
+	bool DropTransformationAt();
+	void AddTransformation(Transformation trf)
 	{
-		_mtx = mtx;
+		_trfs.push_back(trf);
 	}
 	
 private:
@@ -38,7 +39,7 @@ private:
 	Triangle** _tris;
 	Material* _mat;
 	
-	Matrix _mtx;
+	std::vector<Transformation> _trfs;
 };
 
 #endif /* trimesh_hpp */

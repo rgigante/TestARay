@@ -55,6 +55,14 @@ void Color(Vec3& col, Vec3& nrm, const Ray& r, Scene* world, int depth = 0)
 
 int main()
 {
+//	{
+//		Transformation t;
+//		std::cout << t;
+//		t.GetValue(0, 0) = -1.5;
+//		double test[4][4] = t.GetValues();
+//		std::cout << "t.GetValues()[2][2] " <<t.GetValues()[0][0] << "\n";
+//
+//	}
 	// init the scene
 	Scene* scene = new Scene();
 	// allocate a glass material
@@ -143,18 +151,17 @@ int main()
 		TriMesh* mesh = new TriMesh("cubeMesh", trisCnt, new MetalReflector(Vec3(.05,.1,.07), .05));
 		if (mesh)
 		{
-			Matrix trf;
-			trf.AddRotationY(45);
-//			trf.AddScale(0.5);
-			trf.AddRotationY(60);
+			Transformation trf;
+			trf.AddRotationX(22);
+			trf.AddScale(0.5);
+			trf.AddRotationY(0);
+			trf.AddScaleNU(Vec3(2,.5,.25));
 			trf.AddRotationZ(12);
-//			trf.AddScaleNU(Vec3(1,.5,.25));
-			trf.AddOffset(Vec3(0,1,0));
-			std::cout << "trf\n" << trf;
-			std::cout << "~trf\n" << ~trf;
-			std::cout << "trf * ~trf\n" << trf * ~trf;
-
-			mesh->SetMatrix(trf * ~trf);
+			trf.AddOffset(Vec3(-1,1,0));
+			mesh->AddTransformation(trf);
+			trf.Reset();
+			trf.AddRotationY(90);
+			mesh->AddTransformation(trf);
 			
 			mesh->SetVertexes(points, pointsCnt);
 			mesh->SetTriIndexes(indexes);

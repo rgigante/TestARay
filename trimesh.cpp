@@ -69,7 +69,19 @@ bool TriMesh::Init()
 	for (int i = 0; i < _trisCnt; ++i)
 	{
 		const int vIdx[3] = {_triIndexes[3 * i + 0], _triIndexes[3 * i + 1], _triIndexes[3 * i + 2]};
-		_tris[i] = new Triangle(nullptr, _mtx * _vertexes[vIdx[0]], _mtx * _vertexes[vIdx[1]], _mtx * _vertexes[vIdx[2]], _mat, true);
+		
+		Vec3 a = _vertexes[vIdx[0]];
+		Vec3 b = _vertexes[vIdx[1]];
+		Vec3 c = _vertexes[vIdx[2]];
+		
+		for (int j = 0; j < _trfs.size(); ++j)
+		{
+			a = _trfs[j] * a;
+			b = _trfs[j] * b;
+			c = _trfs[j] * c;
+		}
+		
+		_tris[i] = new Triangle(nullptr, a, b, c, _mat, true);
 	}
 	
 	return true;
