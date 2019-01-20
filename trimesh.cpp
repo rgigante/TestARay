@@ -82,24 +82,38 @@ bool TriMesh::Hit(const Ray& r, float t_min, float t_max, HitRecord& rec, bool i
 	HitRecord currentRec;
 	
 	Vec3 pos = r.GetOrigin();
+	Vec3 dir = r.GetDirection();
 	if (!isInstance)
-		for (int j = 0; j < _trfs.size(); ++j)
+	{
+		Transformation trf, itrf;
+		for (int j = _trfs.size()-1; j >= 0; j--)
 		{
-			Transformation trf = _trfs[j];
-			pos = trf * pos;
-			for (int i = 0; i < _trisCnt; ++i)
+			trf = _trfs[j];
+			itrf = ~trf;
+			pos = itrf * pos;
+			dir = itrf * dir;
+		}
+		
+		for (int i = 0; i < _trisCnt; ++i)
+		{
+			if (_tris[i]->Hit(Ray(pos, dir), t_min, t_max, currentRec))
 			{
-				if (_tris[i]->Hit(Ray(pos, r.GetDirection()), t_min, t_max, currentRec))
+				hasHit = true;
+				for (int j = _trfs.size()-1; j >= 0; j--)
 				{
-					hasHit = true;
-					if (currentRec.t < min_t)
-					{
-						min_t = currentRec.t;
-						rec = currentRec;
-					}
+					trf = _trfs[j];
+					itrf = ~trf;
+					currentRec.p = trf * currentRec.p;
+					currentRec.n = trf * currentRec.n;
+				}
+				if (currentRec.t < min_t)
+				{
+					min_t = currentRec.t;
+					rec = currentRec;
 				}
 			}
 		}
+	}
 	else
 	{
 		for (int i = 0; i < _trisCnt; ++i)

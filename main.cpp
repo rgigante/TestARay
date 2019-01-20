@@ -26,7 +26,7 @@ const int g_maxDepth = 20;
 const float g_epsHit = 1e-5;
 const int g_samples = 1;
 const int g_xRes = 400;
-const int g_yRes = 800;
+const int g_yRes = 400;
 
 void Color(Vec3& col, Vec3& nrm, const Ray& r, Scene* world, int depth = 0)
 {
@@ -56,14 +56,29 @@ void Color(Vec3& col, Vec3& nrm, const Ray& r, Scene* world, int depth = 0)
 
 int main()
 {
-//	{
-//		Transformation t;
-//		std::cout << t;
-//		t.GetValue(0, 0) = -1.5;
-//		double test[4][4] = t.GetValues();
-//		std::cout << "t.GetValues()[2][2] " <<t.GetValues()[0][0] << "\n";
-//
-//	}
+	{
+		Matrix m4(4,4);
+		m4.AddRotationY(32);
+		m4.AddRotationX(45);
+		m4.AddRotationZ(56);
+		m4.AddOffset(Vec3(1,2,3));
+		m4.AddScale(Vec3(1,2,3));
+		m4.AddScale(Vec3(10,10,10));
+		
+		Vec3 v(1,2,3);
+		std::cout << v;
+		Matrix invm4 = m4.GetInverse();
+		Vec3 v1 = m4 * v;
+		std::cout << v1;
+		Vec3 v2 = invm4 * v1;
+		std::cout << v2;
+		
+		std::cout <<  invm4 * m4 << "\n";
+		std::cout <<  m4 * invm4 << "\n";
+		
+		return 0;
+
+	}
 	// init the scene
 	Scene* scene = new Scene();
 	// allocate a glass material
@@ -156,18 +171,18 @@ int main()
 			// test the transformation stack
 			// allocate a transformation and define it
 			Transformation trf;
-//			trf.AddRotationX(22);
-//			trf.AddScale(1);
-//			trf.AddRotationY(0);
+//			trf.AddRotationX(90);
+//			trf.AddScale(.5);
+//			trf.AddRotationY(12);
 //			trf.AddScaleNU(Vec3(2,.5,.25));
 //			trf.AddRotationZ(12);
-			trf.AddOffset(Vec3(0,.5,0));
+//			trf.AddOffset(Vec3(.2,0,0));
 			// add the first transformation to the stack
-//			mesh->AddTransformation(trf);
+			mesh->AddTransformation(trf);
 			// reset the transformation for a new one
-//			trf.Reset();
-//			trf.AddRotationY(90);
-			// add the second transformation to the stack
+			trf.Reset();
+			trf.AddRotationY(-180);
+////			// add the second transformation to the stack
 			mesh->AddTransformation(trf);
 			
 			mesh->SetVertexes(points, pointsCnt);
@@ -182,14 +197,14 @@ int main()
 		}
 	}
 	
-	{
-		HitableInstance* inst = new HitableInstance(mesh);
-		Transformation trf2;
-		trf2.AddOffset(Vec3(-1,0,0));
-		inst->AddTransformation(trf2);
-		scene->AddItem(inst);
-	}
-//
+//	{
+//		HitableInstance* inst = new HitableInstance(mesh);
+//		Transformation trf2;
+//		trf2.AddOffset(Vec3(-1,0,0));
+//		inst->AddTransformation(trf2);
+//		scene->AddItem(inst);
+//	}
+
 	// the rainbow spheres
 	scene->AddItem(new Sphere("redSphere", Vec3(0, -0.45, 4), 0.05, new LambertianReflector(Vec3(.9,0,0))));
 	scene->AddItem(new Sphere("orangeSphere", Vec3(0, -0.45, 3.33), 0.05, new LambertianReflector(Vec3(.9,.45,0))));

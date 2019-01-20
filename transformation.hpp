@@ -21,34 +21,38 @@ public:
 	{
 		_row = row;
 		_col = col;
-		_rot.resize(_row);
+		_mat.resize(_row);
 		for (int i = 0; i < _row; ++i)
 		{
-			_rot[i].resize(_col);
+			_mat[i].resize(_col);
 			for (int j = 0; j < _col; j++)
 			{
 				if ( i == j)
-					_rot[i][j] = 1;
+					_mat[i][j] = 1;
 				else
-					_rot[i][j] = 0;
+					_mat[i][j] = 0;
 			}
 		}
 	}
 	
 	~Matrix()
 	{
-		_rot.clear();
+		_mat.clear();
 		_row = 0;
 		_col = 0;
 	}
 	
-	inline std::vector<double>& operator[](int i) { return _rot[i]; }
+	inline std::vector<double>& operator[](int i) { return _mat[i]; }
 	
-	inline std::vector<double> operator[](int i) const { return _rot[i]; }
+	inline std::vector<double> operator[](int i) const { return _mat[i]; }
 	
 	inline int GetCol() const { return _col; }
 	
 	inline int GetRow() const { return _row; }
+	
+	inline void SetCol(int col) { _mat.clear(); _col = col; }
+	
+	inline void SetRow(int row) { _mat.clear(); _row = row; }
 	
 	friend std::ostream& operator<<(std::ostream &os, const Matrix& m)
 	{
@@ -73,7 +77,7 @@ public:
 		{
 			for(int j = 0; j < _col; j++)
 			{
-				if(this->_rot[i][j] != m[i][j])
+				if(this->_mat[i][j] != m[i][j])
 					return false;
 			}
 		}
@@ -92,7 +96,7 @@ public:
 		{
 			for(int j = 0; j < _col; j++)
 			{
-				result[i][j] = this->_rot[i][j] + (double)x;
+				result[i][j] = this->_mat[i][j] + (double)x;
 			}
 		}
 		return result;
@@ -105,7 +109,7 @@ public:
 		{
 			for(int j = 0; j < _col; j++)
 			{
-				result[i][j] = this->_rot[i][j] * x;
+				result[i][j] = this->_mat[i][j] * x;
 			}
 		}
 		return result;
@@ -118,7 +122,7 @@ public:
 		{
 			for(int j = 0; j < _col; j++)
 			{
-				result[i][j] = this->_rot[i][j] + m[i][j];
+				result[i][j] = this->_mat[i][j] + m[i][j];
 			}
 		}
 		return result;
@@ -136,7 +140,7 @@ public:
 			{
 				for(int k = 0; k < this->_col; k++)
 				{
-					result[i][j] += this->_rot[i][k] * m[k][j];
+					result[i][j] += this->_mat[i][k] * m[k][j];
 				}
 			}
 		}
@@ -149,9 +153,18 @@ public:
 		if (this->_col == 3)
 		{
 			Vec3 result;
-			result[0] = (this->_rot[0][0] * v[0] + this->_rot[0][1] * v[1] + this->_rot[0][2] * v[2]);
-			result[1] = (this->_rot[1][0] * v[0] + this->_rot[1][1] * v[1] + this->_rot[1][2] * v[2]);
-			result[2] = (this->_rot[2][0] * v[0] + this->_rot[2][1] * v[1] + this->_rot[2][2] * v[2]);
+			result[0] = (this->_mat[0][0] * v[0] + this->_mat[0][1] * v[1] + this->_mat[0][2] * v[2]);
+			result[1] = (this->_mat[1][0] * v[0] + this->_mat[1][1] * v[1] + this->_mat[1][2] * v[2]);
+			result[2] = (this->_mat[2][0] * v[0] + this->_mat[2][1] * v[1] + this->_mat[2][2] * v[2]);
+			return result;
+		}
+		
+		if (this->_col == 4)
+		{
+			Vec3 result;
+			result[0] = (this->_mat[0][0] * v[0] + this->_mat[0][1] * v[1] + this->_mat[0][2] * v[2]) + this->_mat[0][3];
+			result[1] = (this->_mat[1][0] * v[0] + this->_mat[1][1] * v[1] + this->_mat[1][2] * v[2]) + this->_mat[1][3];
+			result[2] = (this->_mat[2][0] * v[0] + this->_mat[2][1] * v[1] + this->_mat[2][2] * v[2]) + this->_mat[2][3];
 			return result;
 		}
 		
@@ -164,7 +177,7 @@ public:
 		{
 			for(int j = 0; j < _col; j++)
 			{
-				this->_rot[i][j] = (double)x;
+				this->_mat[i][j] = (double)x;
 			}
 		}
 		return (*this);
@@ -187,9 +200,9 @@ public:
 			for(int j = 0; j < _col; j++)
 			{
 				if ( i == j)
-					this->_rot[i][j] = 1.0;
+					this->_mat[i][j] = 1.0;
 				else
-					this->_rot[i][j] = 0.0;
+					this->_mat[i][j] = 0.0;
 			}
 		}
 		return (*this);
@@ -212,7 +225,7 @@ public:
 			val = va_arg(vl, double);
 			int a = int (c / this->_row);
 			int b = int (c % this->_row);
-			this->_rot[a][b] = val;
+			this->_mat[a][b] = val;
 		}
 		
 		va_end(vl);
@@ -223,15 +236,15 @@ public:
 	{
 		if (i < this->_row && j < this->_col)
 		{
-			this->_rot[i][j] = val;
+			this->_mat[i][j] = val;
 		}
 		return (*this);
 	}
 	
 	Matrix& AddRotationX (const float angle)
 	{
-		assert(this->_col == 3 && this->_row == 3);
-		Matrix rotX;
+		assert(this->_col >= 3 && this->_row >= 3);
+		Matrix rotX(_row, _col);
 		const double angleRad = angle * g_M_PIon180;
 		rotX[1][1] = cos(angleRad);
 		rotX[1][2] = -sin(angleRad);
@@ -243,8 +256,8 @@ public:
 	
 	Matrix& AddRotationY (const float angle)
 	{
-		assert(this->_col == 3 && this->_row == 3);
-		Matrix rotY;
+		assert(this->_col >= 3 && this->_row >= 3);
+		Matrix rotY(_row, _col);
 		const double angleRad = angle * g_M_PIon180;
 		rotY[0][0] = cos(angleRad);
 		rotY[0][2] = sin(angleRad);
@@ -256,8 +269,8 @@ public:
 	
 	Matrix& AddRotationZ (const float angle)
 	{
-		assert(this->_col == 3 && this->_row == 3);
-		Matrix rotZ;
+		assert(this->_col >= 3 && this->_row >= 3);
+		Matrix rotZ(_row, _col);
 		const double angleRad = angle * g_M_PIon180;
 		rotZ[0][0] = cos(angleRad);
 		rotZ[0][1] = -sin(angleRad);
@@ -267,6 +280,24 @@ public:
 		return *this;
 	}
 	
+	Matrix& AddOffset (const Vec3 offset)
+	{
+		assert(this->_col > 3 && this->_row > 3);
+		this->_mat[0][3] = offset[0];
+		this->_mat[1][3] = offset[1];
+		this->_mat[2][3] = offset[2];
+		return (*this);
+	}
+	
+	Matrix& AddScale (const Vec3 scale)
+	{
+		assert(this->_col > 3 && this->_row > 3);
+		this->_mat[0][0] *= scale[0];
+		this->_mat[1][1] *= scale[1];
+		this->_mat[2][2] *= scale[2];
+		return (*this);
+	}
+	
 	Matrix Transpose()
 	{
 		Matrix tmp(this->_col, this->_row);
@@ -274,15 +305,44 @@ public:
 		{
 			for(int j = 0; j < this->_col; j++)
 			{
-				tmp[j][i] = this->_rot[i][j];
+				tmp[j][i] = this->_mat[i][j];
 			}
 		}
 		return tmp;
 	}
 	
+	double Determinant()
+	{
+		double value = _mat[0][3]*_mat[1][2]*_mat[2][1]*_mat[3][0] - _mat[0][2]*_mat[1][3]*_mat[2][1]*_mat[3][0] - _mat[0][3]*_mat[1][1]*_mat[2][2]*_mat[3][0] + _mat[0][1]*_mat[1][3]*_mat[2][2]*_mat[3][0] + _mat[0][2]*_mat[1][1]*_mat[2][3]*_mat[3][0] - _mat[0][1]*_mat[1][2]*_mat[2][3]*_mat[3][0] - _mat[0][3]*_mat[1][2]*_mat[2][0]*_mat[3][1] + _mat[0][2]*_mat[1][3]*_mat[2][0]*_mat[3][1]+_mat[0][3]*_mat[1][0]*_mat[2][2]*_mat[3][1] - _mat[0][0]*_mat[1][3]*_mat[2][2]*_mat[3][1] - _mat[0][2]*_mat[1][0]*_mat[2][3]*_mat[3][1] + _mat[0][0]*_mat[1][2]*_mat[2][3]*_mat[3][1]+_mat[0][3]*_mat[1][1]*_mat[2][0]*_mat[3][2] - _mat[0][1]*_mat[1][3]*_mat[2][0]*_mat[3][2] - _mat[0][3]*_mat[1][0]*_mat[2][1]*_mat[3][2] + _mat[0][0]*_mat[1][3]*_mat[2][1]*_mat[3][2]+_mat[0][1]*_mat[1][0]*_mat[2][3]*_mat[3][2] - _mat[0][0]*_mat[1][1]*_mat[2][3]*_mat[3][2] - _mat[0][2]*_mat[1][1]*_mat[2][0]*_mat[3][3] + _mat[0][1]*_mat[1][2]*_mat[2][0]*_mat[3][3]+_mat[0][2]*_mat[1][0]*_mat[2][1]*_mat[3][3] - _mat[0][0]*_mat[1][2]*_mat[2][1]*_mat[3][3] - _mat[0][1]*_mat[1][0]*_mat[2][2]*_mat[3][3] + _mat[0][0]*_mat[1][1]*_mat[2][2]*_mat[3][3];
+		return value;
+	}
+	
+	Matrix GetInverse()
+	{
+		Matrix res(4,4);
+		double invdet = 1/Determinant();
+		res[0][0] = (_mat[1][2]*_mat[2][3]*_mat[3][1] - _mat[1][3]*_mat[2][2]*_mat[3][1] + _mat[1][3]*_mat[2][1]*_mat[3][2] - _mat[1][1]*_mat[2][3]*_mat[3][2] - _mat[1][2]*_mat[2][1]*_mat[3][3] + _mat[1][1]*_mat[2][2]*_mat[3][3])*invdet;
+		res[0][1] = (_mat[0][3]*_mat[2][2]*_mat[3][1] - _mat[0][2]*_mat[2][3]*_mat[3][1] - _mat[0][3]*_mat[2][1]*_mat[3][2] + _mat[0][1]*_mat[2][3]*_mat[3][2] + _mat[0][2]*_mat[2][1]*_mat[3][3] - _mat[0][1]*_mat[2][2]*_mat[3][3])*invdet;
+		res[0][2] = (_mat[0][2]*_mat[1][3]*_mat[3][1] - _mat[0][3]*_mat[1][2]*_mat[3][1] + _mat[0][3]*_mat[1][1]*_mat[3][2] - _mat[0][1]*_mat[1][3]*_mat[3][2] - _mat[0][2]*_mat[1][1]*_mat[3][3] + _mat[0][1]*_mat[1][2]*_mat[3][3])*invdet;
+		res[0][3] = (_mat[0][3]*_mat[1][2]*_mat[2][1] - _mat[0][2]*_mat[1][3]*_mat[2][1] - _mat[0][3]*_mat[1][1]*_mat[2][2] + _mat[0][1]*_mat[1][3]*_mat[2][2] + _mat[0][2]*_mat[1][1]*_mat[2][3] - _mat[0][1]*_mat[1][2]*_mat[2][3])*invdet;
+		res[1][0] = (_mat[1][3]*_mat[2][2]*_mat[3][0] - _mat[1][2]*_mat[2][3]*_mat[3][0] - _mat[1][3]*_mat[2][0]*_mat[3][2] + _mat[1][0]*_mat[2][3]*_mat[3][2] + _mat[1][2]*_mat[2][0]*_mat[3][3] - _mat[1][0]*_mat[2][2]*_mat[3][3])*invdet;
+		res[1][1] = (_mat[0][2]*_mat[2][3]*_mat[3][0] - _mat[0][3]*_mat[2][2]*_mat[3][0] + _mat[0][3]*_mat[2][0]*_mat[3][2] - _mat[0][0]*_mat[2][3]*_mat[3][2] - _mat[0][2]*_mat[2][0]*_mat[3][3] + _mat[0][0]*_mat[2][2]*_mat[3][3])*invdet;
+		res[1][2] = (_mat[0][3]*_mat[1][2]*_mat[3][0] - _mat[0][2]*_mat[1][3]*_mat[3][0] - _mat[0][3]*_mat[1][0]*_mat[3][2] + _mat[0][0]*_mat[1][3]*_mat[3][2] + _mat[0][2]*_mat[1][0]*_mat[3][3] - _mat[0][0]*_mat[1][2]*_mat[3][3])*invdet;
+		res[1][3] = (_mat[0][2]*_mat[1][3]*_mat[2][0] - _mat[0][3]*_mat[1][2]*_mat[2][0] + _mat[0][3]*_mat[1][0]*_mat[2][2] - _mat[0][0]*_mat[1][3]*_mat[2][2] - _mat[0][2]*_mat[1][0]*_mat[2][3] + _mat[0][0]*_mat[1][2]*_mat[2][3])*invdet;
+		res[2][0] = (_mat[1][1]*_mat[2][3]*_mat[3][0] - _mat[1][3]*_mat[2][1]*_mat[3][0] + _mat[1][3]*_mat[2][0]*_mat[3][1] - _mat[1][0]*_mat[2][3]*_mat[3][1] - _mat[1][1]*_mat[2][0]*_mat[3][3] + _mat[1][0]*_mat[2][1]*_mat[3][3])*invdet;
+		res[2][1] = (_mat[0][3]*_mat[2][1]*_mat[3][0] - _mat[0][1]*_mat[2][3]*_mat[3][0] - _mat[0][3]*_mat[2][0]*_mat[3][1] + _mat[0][0]*_mat[2][3]*_mat[3][1] + _mat[0][1]*_mat[2][0]*_mat[3][3] - _mat[0][0]*_mat[2][1]*_mat[3][3])*invdet;
+		res[2][2] = (_mat[0][1]*_mat[1][3]*_mat[3][0] - _mat[0][3]*_mat[1][1]*_mat[3][0] + _mat[0][3]*_mat[1][0]*_mat[3][1] - _mat[0][0]*_mat[1][3]*_mat[3][1] - _mat[0][1]*_mat[1][0]*_mat[3][3] + _mat[0][0]*_mat[1][1]*_mat[3][3])*invdet;
+		res[2][3] = (_mat[0][3]*_mat[1][1]*_mat[2][0] - _mat[0][1]*_mat[1][3]*_mat[2][0] - _mat[0][3]*_mat[1][0]*_mat[2][1] + _mat[0][0]*_mat[1][3]*_mat[2][1] + _mat[0][1]*_mat[1][0]*_mat[2][3] - _mat[0][0]*_mat[1][1]*_mat[2][3])*invdet;
+		res[3][0] = (_mat[1][2]*_mat[2][1]*_mat[3][0] - _mat[1][1]*_mat[2][2]*_mat[3][0] - _mat[1][2]*_mat[2][0]*_mat[3][1] + _mat[1][0]*_mat[2][2]*_mat[3][1] + _mat[1][1]*_mat[2][0]*_mat[3][2] - _mat[1][0]*_mat[2][1]*_mat[3][2])*invdet;
+		res[3][1] = (_mat[0][1]*_mat[2][2]*_mat[3][0] - _mat[0][2]*_mat[2][1]*_mat[3][0] + _mat[0][2]*_mat[2][0]*_mat[3][1] - _mat[0][0]*_mat[2][2]*_mat[3][1] - _mat[0][1]*_mat[2][0]*_mat[3][2] + _mat[0][0]*_mat[2][1]*_mat[3][2])*invdet;
+		res[3][2] = (_mat[0][2]*_mat[1][1]*_mat[3][0] - _mat[0][1]*_mat[1][2]*_mat[3][0] - _mat[0][2]*_mat[1][0]*_mat[3][1] + _mat[0][0]*_mat[1][2]*_mat[3][1] + _mat[0][1]*_mat[1][0]*_mat[3][2] - _mat[0][0]*_mat[1][1]*_mat[3][2])*invdet;
+		res[3][3] = (_mat[0][1]*_mat[1][2]*_mat[2][0] - _mat[0][2]*_mat[1][1]*_mat[2][0] + _mat[0][2]*_mat[1][0]*_mat[2][1] - _mat[0][0]*_mat[1][2]*_mat[2][1] - _mat[0][1]*_mat[1][0]*_mat[2][2] + _mat[0][0]*_mat[1][1]*_mat[2][2])*invdet;
+		return res;
+	}
+	
 private:
 	int _col, _row;
-	std::vector<std::vector<double>> _rot;
+	std::vector<std::vector<double>> _mat;
 };
 
 class Transformation
@@ -414,29 +474,23 @@ public:
 		
 		return (*this);
 	}
-//	Transformation operator~()
-//	{
-//		assert (this->_row == 4 && this->_col == 4);
-//
-//		Transformation tmp;
-//		for(int i = 0; i < this->_row - 1; i++)
-//		{
-//			for(int j = 0; j < this->_col - 1; j++)
-//			{
-//				tmp.GetRot()[i][j] = this->_rot[j][i];
-//			}
-//		}
-//		Vec3 offset = Vec3(-this->_rot[0][3], -this->_rot[1][3], -this->_rot[2][3]);
-//		tmp.GetRot()[0][3] = (tmp * offset)[0];
-//		tmp.GetRot()[1][3] = (tmp * offset)[1];
-//		tmp.GetRot()[2][3] = (tmp * offset)[2];
-//
-//		return tmp;
-//	}
+	Transformation operator~()
+	{
+		Transformation result;
+		result._off = -_off;
+		result._scl = _invscl;
+		result._invscl = _scl;
+		result._rot = _rot.Transpose();
+		
+		return result;
+	}
+	
+
 	
 private:
 	Vec3 _scl, _invscl, _off;
 	Matrix _rot;
+	Matrix _full;
 //	double _values[4][4];
 };
 

@@ -13,7 +13,7 @@ bool HitableInstance::Hit(const Ray& r, float t_min, float t_max, HitRecord& rec
 	for (int i = 0; i < _trfs.size(); ++i)
 	{
 		Transformation trf = _trfs[i];
-		pos = trf * pos;
+		pos = ~trf * pos;
 	}
 	return (_obj->Hit(Ray(pos, r.GetDirection()), t_min, t_max, rec, true));
 }
