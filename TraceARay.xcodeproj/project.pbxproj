@@ -18,7 +18,6 @@
 		63DB56A121E6989A004BABF2 /* utils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 63DB569F21E6989A004BABF2 /* utils.cpp */; };
 		63EE6C1421DFBE0C00F4A6AE /* hitable.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 63EE6C1221DFBE0C00F4A6AE /* hitable.cpp */; };
 		63EE6C1721DFBEFE00F4A6AE /* sphere.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 63EE6C1521DFBEFE00F4A6AE /* sphere.cpp */; };
-		63EE6C1A21DFC43400F4A6AE /* hitablearray.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 63EE6C1821DFC43400F4A6AE /* hitablearray.cpp */; };
 		63EE6C1D21E0908800F4A6AE /* triangle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 63EE6C1B21E0908800F4A6AE /* triangle.cpp */; };
 		63EE6C2021E0A37F00F4A6AE /* camera.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 63EE6C1E21E0A37F00F4A6AE /* camera.cpp */; };
 		63EE6C2321E0FBBA00F4A6AE /* materials.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 63EE6C2121E0FBBA00F4A6AE /* materials.cpp */; };
@@ -60,8 +59,6 @@
 		63EE6C1321DFBE0C00F4A6AE /* hitable.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = hitable.hpp; sourceTree = "<group>"; };
 		63EE6C1521DFBEFE00F4A6AE /* sphere.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = sphere.cpp; sourceTree = "<group>"; };
 		63EE6C1621DFBEFE00F4A6AE /* sphere.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = sphere.hpp; sourceTree = "<group>"; };
-		63EE6C1821DFC43400F4A6AE /* hitablearray.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = hitablearray.cpp; sourceTree = "<group>"; };
-		63EE6C1921DFC43400F4A6AE /* hitablearray.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = hitablearray.hpp; sourceTree = "<group>"; };
 		63EE6C1B21E0908800F4A6AE /* triangle.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = triangle.cpp; sourceTree = "<group>"; };
 		63EE6C1C21E0908800F4A6AE /* triangle.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = triangle.hpp; sourceTree = "<group>"; };
 		63EE6C1E21E0A37F00F4A6AE /* camera.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = camera.cpp; sourceTree = "<group>"; };
@@ -106,8 +103,6 @@
 				6326AAE221EB99B600CA8594 /* framebuffer.hpp */,
 				63EE6C1221DFBE0C00F4A6AE /* hitable.cpp */,
 				63EE6C1321DFBE0C00F4A6AE /* hitable.hpp */,
-				63EE6C1821DFC43400F4A6AE /* hitablearray.cpp */,
-				63EE6C1921DFC43400F4A6AE /* hitablearray.hpp */,
 				6383492B21F3C786005AB34B /* hitableinstance.cpp */,
 				6383492C21F3C786005AB34B /* hitableinstance.hpp */,
 				630D56712093621F00F925B8 /* main.cpp */,
@@ -204,7 +199,6 @@
 				638C56D821EF685E00DB2E84 /* transformation.cpp in Sources */,
 				630D56802093694C00F925B8 /* main.cpp in Sources */,
 				63EE6C1721DFBEFE00F4A6AE /* sphere.cpp in Sources */,
-				63EE6C1A21DFC43400F4A6AE /* hitablearray.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
