@@ -43,7 +43,7 @@ public:
 	inline float Length() const { return sqrt(e[0] * e[0] + e[1] * e[1] + e[2] * e[2]); }
 	inline float SqrLength() const { return (e[0] * e[0] + e[1] * e[1] + e[2] * e[2]); }
 	inline void Normalize(); //normalize vector
-	inline Vec3& GetNormalized(); // return normalized vector
+	inline Vec3 GetNormalized(); // return normalized vector
 	
 public:
 	float e[3];
@@ -126,10 +126,14 @@ inline Vec3& Vec3::operator/=(const float t) {
 	return *this;
 }
 
-inline Vec3& Vec3::GetNormalized()
+inline Vec3 Vec3::GetNormalized()
 {
-	Normalize();
-	return *this;
+	Vec3 res;
+	const float k = (1.0 / this->Length());
+	res[0] = this->e[0] * k;
+	res[1] = this->e[1] * k;
+	res[2] = this->e[2] * k;
+	return res;
 }
 
 inline std::istream& operator>>(std::istream &is, Vec3 &t)
@@ -140,7 +144,7 @@ inline std::istream& operator>>(std::istream &is, Vec3 &t)
 
 inline std::ostream& operator<<(std::ostream &os, const Vec3 &t)
 {
-	os << "\t" << t.e[0] << " " << t.e[1] << " " << t.e[2] << "\n";
+	os << t.e[0] << " " << t.e[1] << " " << t.e[2];
 	return os;
 }
 

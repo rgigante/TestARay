@@ -17,7 +17,7 @@ const double g_180onM_PI = 180.0/M_PI;
 class Matrix
 {
 public:
-	Matrix(int row = 3, int col = 3)
+	Matrix(int row = 4, int col = 4)
 	{
 		_row = row;
 		_col = col;
@@ -68,7 +68,7 @@ public:
 		return os;
 	}
 	
-	inline bool operator== (Matrix m)
+	inline bool operator== (const Matrix& m)
 	{
 		if (this->_col != m.GetCol() ||	this->_row != m.GetRow())
 			return false;
@@ -84,7 +84,7 @@ public:
 		return true;
 	}
 	
-	inline bool operator!= (Matrix m)
+	inline bool operator!= (const Matrix& m)
 	{
 		return !((*this) == m);
 	}
@@ -115,7 +115,7 @@ public:
 		return result;
 	}
 	
-	Matrix operator+ (Matrix m)
+	Matrix operator+ (const Matrix& m)
 	{
 		Matrix result;
 		for(int i = 0; i < _row; i++)
@@ -128,7 +128,7 @@ public:
 		return result;
 	}
 	
-	Matrix operator* (Matrix m)
+	Matrix operator* (const Matrix& m)
 	{
 		assert(this->_col == m.GetRow());
 		
@@ -148,6 +148,29 @@ public:
 		return result;
 	}
 	
+	Matrix Get3x3()
+	{
+		Matrix res(3,3);
+		res[0][0] = _mat[0][0];
+		res[0][1] = _mat[0][1];
+		res[0][2] = _mat[0][2];
+		res[1][0] = _mat[1][0];
+		res[1][1] = _mat[1][1];
+		res[1][2] = _mat[1][2];
+		res[2][0] = _mat[2][0];
+		res[2][1] = _mat[2][1];
+		res[2][2] = _mat[2][2];
+		return res;
+	}
+	
+	Vec3 GetOff()
+	{
+		Vec3 res;
+		res[0] = _mat[3][0];
+		res[1] = _mat[3][1];
+		res[2] = _mat[3][2];
+		return res;
+	}
 	inline Vec3 operator* (Vec3 v)
 	{
 		if (this->_col == 3)
@@ -171,28 +194,6 @@ public:
 		return Vec3(0,0,0);
 	}
 	
-	Matrix& SetTo (double x)
-	{
-		for(int i = 0; i < _row; i++)
-		{
-			for(int j = 0; j < _col; j++)
-			{
-				this->_mat[i][j] = (double)x;
-			}
-		}
-		return (*this);
-	}
-	
-	Matrix& Zero()
-	{
-		return (this->SetTo(0));
-	}
-	
-	Matrix& Ones()
-	{
-		return (this->SetTo(1));
-	}
-	
 	Matrix& Identity()
 	{
 		for(int i = 0; i < _row; i++)
@@ -203,6 +204,18 @@ public:
 					this->_mat[i][j] = 1.0;
 				else
 					this->_mat[i][j] = 0.0;
+			}
+		}
+		return (*this);
+	}
+	
+	Matrix& SetAllElements (double x)
+	{
+		for(int i = 0; i < _row; i++)
+		{
+			for(int j = 0; j < _col; j++)
+			{
+				this->_mat[i][j] = (double)x;
 			}
 		}
 		return (*this);
@@ -239,6 +252,16 @@ public:
 			this->_mat[i][j] = val;
 		}
 		return (*this);
+	}
+	
+	Matrix& Zero()
+	{
+		return (this->SetAllElements(0));
+	}
+	
+	Matrix& Ones()
+	{
+		return (this->SetAllElements(1));
 	}
 	
 	Matrix& AddRotationX (const float angle)
@@ -496,8 +519,6 @@ public:
 private:
 	Vec3 _scl, _invscl, _off;
 	Matrix _rot;
-	Matrix _full;
-//	double _values[4][4];
 };
 
 #endif /* matrix_hpp */

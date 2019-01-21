@@ -19,7 +19,7 @@ public:
 	bool Hit (const Ray& r, float t_min, float t_max, HitRecord& rec, bool isInstance = false) const;
 	bool SetVertexes(Vec3* points, int pointsCnt);
 	bool SetTriIndexes(int* triIndexes);
-	bool Init();
+	bool Init(bool evaluateMatrixes = false);
 	int GetVertexesCnt(){ return _vertexesCnt; }
 	int GetTrisCnt(){ return _trisCnt; }
 	Triangle* GetTriangleAtIndex(int triIdx);
@@ -38,10 +38,12 @@ private:
 	char const *_name;
 	Triangle** _tris;
 	Material* _mat;
+	bool _evalMatrixStackOnInit;
 	
 	std::vector<Transformation> _trfs;
 	std::vector<Matrix> _mtrs;
 	std::vector<Matrix> _invmtrs;
+	Matrix _gm, _gim;
 };
 
 #endif /* trimesh_hpp */

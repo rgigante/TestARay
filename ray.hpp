@@ -16,23 +16,27 @@ class Ray
 {
 public:
 	Ray(){}
-	Ray(const Vec3& a, const Vec3& b){ A = a; B = b; }
+	Ray(const Vec3& pos, const Vec3& dir):_pos(pos), _dir(dir){}
+	Ray(const Vec3& pos, const Vec3& dir, const float u, const float v):_pos(pos), _dir(dir), _u(u), _v(v){}
 	
 	// retrieve the origin of a ray
-	Vec3 GetOrigin() const { return A; }
+	Vec3 GetOrigin() const { return _pos; }
 	// retrieve the direction of a ray
-	Vec3 GetDirection() const { return B; }
+	Vec3 GetDirection() const { return _dir; }
+	
+	Vec3 GetUV() const { return Vec3(_u, _v, 0); }
 	// set the origin of a ray
-	void SetOrigin(const Vec3& pos) { A = pos; }
+	void SetOrigin(const Vec3& pos) { _pos = pos; }
 	// set the direction of a ray
-	void SetDirection(const Vec3& dir) { B = dir; }
+	void SetDirection(const Vec3& dir) { _dir = dir; }
 	// given a parameter for a certain ray, return the position in space at parameter
-	Vec3 PointAtParameter(const float t) const { return (A + B * t); }
+	Vec3 PointAtParameter(const float t) const { return (_pos + _dir * t); }
 	
 	
 private:
-	Vec3 A; // ray firing position
-	Vec3 B; // ray firing direction
+	Vec3 _pos; // ray firing position
+	Vec3 _dir; // ray firing direction
+	float _u, _v;
 };
 
 #endif /* ray_hpp */
