@@ -298,6 +298,12 @@ public:
 		return (*this);
 	}
 	
+	Matrix& Reset()
+	{
+		Identity();		
+		return (*this);
+	}
+	
 	Matrix Transpose()
 	{
 		Matrix tmp(this->_col, this->_row);

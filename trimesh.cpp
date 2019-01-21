@@ -72,6 +72,11 @@ bool TriMesh::Init()
 		_tris[i] = new Triangle(nullptr, _vertexes[vIdx[0]], _vertexes[vIdx[1]], _vertexes[vIdx[2]], _mat, true);
 	}
 	
+	for (int i = 0; i < _mtrs.size(); ++i)
+	{
+		_invmtrs.push_back(_mtrs[i].GetInverse());
+	}
+	
 	return true;
 }
 
@@ -85,13 +90,12 @@ bool TriMesh::Hit(const Ray& r, float t_min, float t_max, HitRecord& rec, bool i
 	Vec3 dir = r.GetDirection();
 	if (!isInstance)
 	{
-		Transformation trf, itrf;
-		for (int j = _trfs.size()-1; j >= 0; j--)
+		Matrix m, im;
+		for (int j = _invmtrs.size()-1; j >= 0; j--)
 		{
-			trf = _trfs[j];
-			itrf = ~trf;
-			pos = itrf * pos;
-			dir = itrf * dir;
+			im = _invmtrs[j];
+			pos = im * pos;
+			dir = im * dir;
 		}
 		
 		for (int i = 0; i < _trisCnt; ++i)
@@ -101,10 +105,10 @@ bool TriMesh::Hit(const Ray& r, float t_min, float t_max, HitRecord& rec, bool i
 				hasHit = true;
 				for (int j = _trfs.size()-1; j >= 0; j--)
 				{
-					trf = _trfs[j];
-					itrf = ~trf;
-					currentRec.p = trf * currentRec.p;
-					currentRec.n = trf * currentRec.n;
+					m = _mtrs[j];
+					im = _invmtrs[j];
+					currentRec.p = m * currentRec.p;
+					currentRec.n = m * currentRec.n;
 				}
 				if (currentRec.t < min_t)
 				{

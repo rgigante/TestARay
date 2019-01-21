@@ -26,6 +26,9 @@ public:
 	const Transformation& GetTransformationAt(int idx) { return _trfs[idx]; }
 	void DropTransformationAt(int idx){	_trfs.erase(_trfs.begin() + idx);	}
 	void AddTransformation(Transformation trf){	_trfs.push_back(trf);	}
+	const Matrix& GetMatrixAt(int idx) { return _mtrs[idx]; }
+	void DropMatrixAt(int idx){	_mtrs.erase(_mtrs.begin() + idx);	}
+	void AddMatrix(Matrix trf){	_mtrs.push_back(trf);	}
 	
 private:
 	Vec3* _vertexes;
@@ -37,6 +40,8 @@ private:
 	Material* _mat;
 	
 	std::vector<Transformation> _trfs;
+	std::vector<Matrix> _mtrs;
+	std::vector<Matrix> _invmtrs;
 };
 
 #endif /* trimesh_hpp */
