@@ -72,12 +72,13 @@ bool TriMesh::Init(bool evaluateMatrixes)
 	// create global trf matrixes
 	for (int i = 0; i < _mtrs.size(); ++i)
 	{
-		_gm = _mtrs[i] * _gm;
+		_gm = _gm * _mtrs[i];
 		std::cout << "_mtrs[" << i <<"]\n" << _mtrs[i];
 		_invmtrs.push_back(_mtrs[i].GetInverse());
 		std::cout << "_invmtrs[" << i <<"]\n" << _invmtrs[i];
-		_gim = _gim * _invmtrs[i];
+//		_gim = _gim * _invmtrs[i];
 	}
+	_gim = _gm.GetInverse();
 	std::cout << "_gm\n" << _gm;
 	std::cout << "_gim\n" << _gim;
 	
@@ -110,26 +111,26 @@ bool TriMesh::Hit(const Ray& r, float t_min, float t_max, HitRecord& rec, bool i
 		Matrix gm = _gm;
 		Matrix gim = _gim;
 		Vec3 rpos = gim * r.GetOrigin();
-		Vec3 rdir = gim * r.GetDirection();
+		Vec3 rdir = gim.Get3x3() * r.GetDirection();
 		
 		for (int i = 0; i < _trisCnt; ++i)
 		{
 			bool isHit = _tris[i]->Hit(Ray(rpos, rdir), t_min, t_max, currentRec);
 			if (isHit)
 			{
-				std::cout << "i[" << i  << "]\n"
-				<< "\tray pos: " << r.GetOrigin() << " / " << rpos << "\n"
-				<< "\tray dir: " << r.GetDirection() << " / " << rdir << "\n"
-				<< "\tcurrentRec.t: " << currentRec.t << "\n"
-				<< "\tcurrentRec.p: " << currentRec.p << " / " << gm * currentRec.p <<"\n"
-				<< "\tcurrentRec.n: " << currentRec.n << " / " << gim.Get3x3() * currentRec.n <<"\n";
+				std::cout << "\ttriangle [" << i  << "]\n"
+				<< "\t\tray pos: " << r.GetOrigin() << " / " << rpos << "\n"
+				<< "\t\tray dir: " << r.GetDirection() << " / " << rdir << "\n"
+				<< "\t\tcurrentRec.t: " << currentRec.t << "\n"
+				<< "\t\tcurrentRec.p: " << currentRec.p << " / " << gm * currentRec.p <<"\n"
+				<< "\t\tcurrentRec.n: " << currentRec.n << " / " << (gm.Get3x3() * currentRec.n).GetNormalized() <<"\n";
 				hasHit = true;
 				if (currentRec.t < min_t)
 				{
 					min_t = currentRec.t;
 					rec = currentRec;
-					rec.p = (gm * rec.p);
-					rec.n = (gim.Get3x3() * rec.n);
+					rec.p = (gm * currentRec.p);
+					rec.n = (gm.Get3x3() * currentRec.n).GetNormalized();
 				}
 			}
 		}
@@ -140,17 +141,19 @@ bool TriMesh::Hit(const Ray& r, float t_min, float t_max, HitRecord& rec, bool i
 		{
 			if (_tris[i]->Hit(r, t_min, t_max, currentRec))
 			{
-				std::cout << "i[" << i  << "]\n"
-				<< "\trpos: " << r.GetOrigin() << "\n"
-				<< "\trdir: " << r.GetDirection() << "\n"
-				<< "\tcurrentRec.t: " << currentRec.t << "\n"
-				<< "\tcurrentRec.p: " << currentRec.p << "\n"
-				<< "\tcurrentRec.n: " << currentRec.n << "\n";
+				std::cout << "\ttriangle [" << i  << "]\n"
+				<< "\t\trpos: " << r.GetOrigin() << "\n"
+				<< "\t\trdir: " << r.GetDirection() << "\n"
+				<< "\t\tcurrentRec.t: " << currentRec.t << "\n"
+				<< "\t\tcurrentRec.p: " << currentRec.p << "\n"
+				<< "\t\tcurrentRec.n: " << currentRec.n.GetNormalized() << "\n";
 				hasHit = true;
 				if (currentRec.t < min_t)
 				{
 					min_t = currentRec.t;
 					rec = currentRec;
+					rec.p = (currentRec.p);
+					rec.n = (currentRec.n).GetNormalized();
 				}
 			}
 		}

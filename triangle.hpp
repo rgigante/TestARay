@@ -15,7 +15,7 @@
 class Triangle: public Hitable
 {
 public:
-	Triangle(char const* name, Vec3 a, Vec3 b, Vec3 c, Material* m, bool isTriMesh = false);
+//	Triangle(char const* name, Vec3 a, Vec3 b, Vec3 c, Material* m, bool isTriMesh = false);
 	Triangle(char const* name, Vec3 a, Vec3 b, Vec3 c, Material* m, bool isTriMesh = false, Matrix gm = Matrix(), Matrix gim = Matrix());
 	~Triangle();
 	bool SetName(char const* name){ _name = name; return (!name) ? false : true; };

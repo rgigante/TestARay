@@ -25,8 +25,8 @@ const bool g_debugConsole = false;
 const int g_maxDepth = 20;
 const float g_epsHit = 1e-5;
 const int g_samples = 1;
-const int g_xRes = 8;
-const int g_yRes = 8;
+const int g_xRes = 20;
+const int g_yRes = 32;
 
 void Color(Vec3& col, Vec3& nrm, const Ray& r, Scene* world, int depth = 0)
 {
@@ -40,10 +40,11 @@ void Color(Vec3& col, Vec3& nrm, const Ray& r, Scene* world, int depth = 0)
 			Color(col, nrm, scattered, world, depth + 1);
 			nrm = Vec3(rec.n.x() + 1, rec.n.y() + 1, rec.n.z() + 1) * 0.5;
 			col *= attenuation;
+			std::cout << "\tdepth["<<depth<<"], col["<<col<<"], nrm["<<nrm<<"], ray["<<r.GetOrigin()<<" / "<<r.GetDirection()<<"]\n";
 			return;
 		}
-
 		col = Vec3(1, 1, 0);
+		std::cout << "\tdepth["<<depth<<"], col["<<col<<"], nrm["<<nrm<<"], ray["<<r.GetOrigin()<<" / "<<r.GetDirection()<<"]\n";
 		return;
 	}
 	
@@ -51,6 +52,7 @@ void Color(Vec3& col, Vec3& nrm, const Ray& r, Scene* world, int depth = 0)
 	const float blend = 0.5 * (r.GetDirection().y() + 1.0);
 	col = Lerp(Vec3(1.0, 1.0, 1.0), Vec3(0.5, 0.7, 1.0), blend);
 	nrm = Vec3(0,0,0);
+	std::cout << "\tdepth["<<depth<<"], col["<<col<<"], nrm["<<nrm<<"], ray["<<r.GetOrigin()<<" / "<<r.GetDirection()<<"]\n";
 	return;
 }
 
@@ -106,7 +108,7 @@ int main()
 	
 	
 	// the red cube on the top
-	const int trisCnt = 2;//2;
+	const int trisCnt = 12;//12;
 	const int pointsCnt = 8;
 	Vec3* points = new Vec3[pointsCnt];
 	int* indexes = new int[3 * trisCnt];
@@ -122,60 +124,56 @@ int main()
 		points[6] = Vec3(0.5, 0.5, 0.5);
 		points[7] = Vec3(-0.5, 0.5, 0.5);
 		
-//		// bottom quad 0
-//		indexes[0] = 0;
-//		indexes[1] = 1;
-//		indexes[2] = 2;
-//		indexes[3] = 0;
-//		indexes[4] = 2;
-//		indexes[5] = 3;
-//		// right quad 2
-//		indexes[6] = 1;
-//		indexes[7] = 5;
-//		indexes[8] = 6;
-//		indexes[9] = 1;
-//		indexes[10] = 6;
-//		indexes[11] = 2;
-//		// top quad 4
-//		indexes[12] = 4;
-//		indexes[13] = 6;
-//		indexes[14] = 5;
-//		indexes[15] = 4;
-//		indexes[16] = 7;
-//		indexes[17] = 6;
-//		// left quad 6
-//		indexes[18] = 0;
-//		indexes[19] = 3;
-//		indexes[20] = 7;
-//		indexes[21] = 0;
-//		indexes[22] = 7;
-//		indexes[23] = 4;
-//		// front quad
-//		indexes[24] = 2;
-//		indexes[25] = 6;
-//		indexes[26] = 7;
-//		indexes[27] = 2;
-//		indexes[28] = 7;
-//		indexes[29] = 3;
-//		// back quad
-//		indexes[30] = 0;
-//		indexes[31] = 4;
-//		indexes[32] = 5;
-//		indexes[33] = 0;
-//		indexes[34] = 5;
-//		indexes[35] = 1;
-		
-//		// bottom quad 0
+		// bottom quad 0
 		indexes[0] = 0;
-		indexes[1] = 4;
-		indexes[2] = 5;
-//		indexes[3] = 0;
-//		indexes[4] = 5;
-//		indexes[5] = 1;
+		indexes[1] = 1;
+		indexes[2] = 2;
+		indexes[3] = 0;
+		indexes[4] = 2;
+		indexes[5] = 3;
+		// right quad 2
+		indexes[6] = 1;
+		indexes[7] = 5;
+		indexes[8] = 6;
+		indexes[9] = 1;
+		indexes[10] = 6;
+		indexes[11] = 2;
+		// top quad 4
+		indexes[12] = 4;
+		indexes[13] = 6;
+		indexes[14] = 5;
+		indexes[15] = 4;
+		indexes[16] = 7;
+		indexes[17] = 6;
+		// left quad 6
+		indexes[18] = 0;
+		indexes[19] = 3;
+		indexes[20] = 7;
+		indexes[21] = 0;
+		indexes[22] = 7;
+		indexes[23] = 4;
+		// front quad
+		indexes[24] = 2;
+		indexes[25] = 6;
+		indexes[26] = 7;
+		indexes[27] = 2;
+		indexes[28] = 7;
+		indexes[29] = 3;
+		// back quad
+		indexes[30] = 0;
+		indexes[31] = 4;
+		indexes[32] = 5;
+		indexes[33] = 0;
+		indexes[34] = 5;
+		indexes[35] = 1;
 		
-		indexes[3] = 2;
-		indexes[4] = 6;
-		indexes[5] = 7;
+//		// test tri over tri
+//		indexes[0] = 0;
+//		indexes[1] = 4;
+//		indexes[2] = 5;
+//		indexes[3] = 2;
+//		indexes[4] = 7;
+//		indexes[5] = 3;
 		
 		mesh = new TriMesh("cubeMesh", trisCnt, new MetalReflector(Vec3(.5,.5,.5)));
 		if (mesh)
@@ -183,20 +181,47 @@ int main()
 			// test the transformation stack
 			// allocate a transformation and define it
 			Matrix mtx;
-			mtx.AddScale(Vec3(1,1,.5));
-//			mtx.AddOffset(Vec3(.5,0,0));
+			
+			// define first transformation
+			mtx.AddScale(Vec3(1,2,1));
+//			mtx.AddRotationY(45);
+//			mtx.AddOffset(Vec3(.05,0,.05));
 			// add the first transformation to the stack
 			mesh->AddMatrix(mtx);
-			// reset the transformation for a new one
-//			mtx.Reset();
-//			mtx.AddRotationX(90);
-//			mtx.AddRotationY(45);
+			
+//			// define second transformation
+//			// reset the transformation for a new one
+			mtx.Reset();
+			mtx.AddRotationX(15);
+//			mtx.AddRotationY(16);
 			// add the second transformation to the stack
+			mesh->AddMatrix(mtx);
+//
+//			// define third transformation
+//			// reset the transformation for a new one
+//			mtx.Reset();
+//			mtx.AddRotationZ(-5);
+//			// add the second transformation to the stack
+//			mesh->AddMatrix(mtx);
+//
+//			// define forth transformation
+//			// reset the transformation for a new one
+//			mtx.Reset();
+//			mtx.AddOffset(Vec3(-.05,0,0));
+//			mtx.AddRotationY(-5);
+//			// add the first transformation to the stack
+//			mesh->AddMatrix(mtx);
+//
+//			// define fifth transformation
+//			// reset the transformation for a new one
+//			mtx.Reset();
+//			mtx.AddScale(Vec3(1.1,1.1,1.1));
+//			// add the first transformation to the stack
 //			mesh->AddMatrix(mtx);
 			
 			mesh->SetVertexes(points, pointsCnt);
 			mesh->SetTriIndexes(indexes);
-			if (mesh->Init(false))
+			if (mesh->Init(true))
 			{
 				scene->AddItem(mesh);
 				// dispose the memory used to create the mesh
@@ -223,10 +248,10 @@ int main()
 //	scene->AddItem(new Sphere("indigoSphere", Vec3(0, -0.45, 0.66), 0.05, new LambertianReflector(Vec3(.29,0,0.51))));
 //	scene->AddItem(new Sphere("purpleSphere", Vec3(0, -0.45, 0), 0.05, new LambertianReflector(Vec3(.58,0,0.82))));
 	
-	const Vec3 from (-5, 5, -5);
+	const Vec3 from (0,0, -10);
 	const Vec3 to (0,0,0);
 	const Vec3 up (0,1,0);
-	const float fov = 1;
+	const float fov = 10;
 	const float aperture = 0; //0.05;
 	const float focusDistance = 5; //(from - to).Length();
 	
@@ -265,7 +290,7 @@ int main()
 			for (int i = 0; i < nx; ++i)
 			{
 				const float inv_nx = 1.0 / float(nx);
-				
+				std::cout << "--- start pixel ["<<i<<","<<j<<"]\n";
 //				u = float(i + drand48()) * inv_nx;
 //				v = float(j + drand48()) * inv_ny;
 				u = float(i) * inv_nx;
@@ -276,6 +301,7 @@ int main()
 
 				// add the values returned by the ray recursively exploring the scene by hitting its items
 				Color(rgb, nrm, r, scene);
+				std::cout << "--- end pixel ["<< rgb <<"]\n";
 
 				// update with color
 				fb->GetColor()[j][3 * i + 0] = (fb->GetColor()[j][3 * i + 0] * ( s - 1 ) + rgb[0]) * inv_s;
