@@ -9,22 +9,25 @@
 #define hitable_instance_hpp
 
 #include "hitable.hpp"
-#include "transformation.hpp"
+#include "matrix.hpp"
 
 class HitableInstance : public Hitable
 {
 public:
 	HitableInstance(Hitable* obj):_obj(obj){}
 	~HitableInstance(){}
-	bool Hit (const Ray& r, float t_min, float t_max, HitRecord& rec, bool isInstance = false) const;
-	const Transformation& GetTransformationAt(int idx) { return _trfs[idx]; }
-	void DropTransformationAt(int idx){	_trfs.erase(_trfs.begin() + idx);	}
-	void AddTransformation(Transformation trf){	_trfs.push_back(trf);	}
-	
+	bool Hit (const Ray& r, float t_min, float t_max, HitRecord& rec, Matrix* gm = nullptr);
+	bool Init();
+	const Matrix& GetMatrixAt(int idx) { return _mtrs[idx]; }
+	void DropMatrixAt(int idx){	_mtrs.erase(_mtrs.begin() + idx);	}
+	void AddMatrix(Matrix trf){	_mtrs.push_back(trf);	}
 private:
 	Hitable* _obj;
 	
-	std::vector<Transformation> _trfs;
+	std::vector<Matrix> _mtrs;
+	std::vector<Matrix> _invmtrs;
+	Matrix _gm, _gim;
+	Material *_mat;
 };
 
 #endif /* hitable_instance_hpp */

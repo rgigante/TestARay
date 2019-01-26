@@ -7,13 +7,20 @@
 
 #include "hitableinstance.hpp"
 
-bool HitableInstance::Hit(const Ray& r, float t_min, float t_max, HitRecord& rec, bool isInstance) const
+bool HitableInstance::Hit(const Ray& r, float t_min, float t_max, HitRecord& rec, Matrix* gm)
 {
-	Vec3 pos = r.GetOrigin();
-	for (int i = 0; i < _trfs.size(); ++i)
+	return (_obj->Hit(r, t_min, t_max, rec, &_gm));
+}
+
+bool HitableInstance::Init()
+{
+	// create global trf matrixes
+	for (int i = 0; i < _mtrs.size(); ++i)
 	{
-		Transformation trf = _trfs[i];
-		pos = ~trf * pos;
+		_gm = _gm * _mtrs[i];
+		_invmtrs.push_back(_mtrs[i].GetInverse());
 	}
-	return (_obj->Hit(Ray(pos, r.GetDirection()), t_min, t_max, rec, true));
+	_gim = _gm.GetInverse();
+	
+	return true;
 }

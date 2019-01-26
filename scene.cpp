@@ -15,7 +15,7 @@ bool Scene::Hit(const Ray &r, float t_min, float t_max, HitRecord &rec) const
 	
 	for (int i = 0; i < _items.size(); ++i)
 	{
-		if (_items.at(i) && _items.at(i)->Hit(r, t_min, closestSoFar, tempRec))
+		if (_items[i] && _items[i]->Hit(r, t_min, closestSoFar, tempRec))
 		{
 			hitAnything = true;
 			closestSoFar = tempRec.t;

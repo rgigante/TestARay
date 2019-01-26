@@ -11,6 +11,7 @@
 #include "ray.hpp"
 
 class Material;
+class Matrix;
 
 struct HitRecord
 {
@@ -24,7 +25,7 @@ class Hitable
 {
 public:
 	virtual ~Hitable(){}
-	virtual bool Hit (const Ray& r, float t_min, float t_max, HitRecord& rec, bool isInstance = false) const = 0;
+	virtual bool Hit (const Ray& r, float t_min, float t_max, HitRecord& rec, Matrix* gm = nullptr) = 0;
 };
 
 #endif /* hitable_hpp */

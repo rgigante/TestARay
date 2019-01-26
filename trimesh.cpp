@@ -10,7 +10,7 @@
 #include <fstream>
 #include "trimesh.hpp"
 
-TriMesh::TriMesh(char const* name, int trisCnt, Material* mat) : _name(name), _trisCnt(trisCnt), _mat(mat), _evalMatrixStackOnInit(false)
+TriMesh::TriMesh(char const* name, int trisCnt, Material* mat) : _name(name), _trisCnt(trisCnt), _mat(mat)
 {
 	_tris = new Triangle*[_trisCnt];
 	assert(_tris);
@@ -64,7 +64,7 @@ bool TriMesh::SetTriIndexes(int* triIndexes)
 	
 }
 
-bool TriMesh::Init(bool evaluateMatrixes)
+bool TriMesh::Init()
 {
 	if (!_vertexes || _vertexesCnt < 1 || !_triIndexes)
 		return false;
@@ -73,93 +73,41 @@ bool TriMesh::Init(bool evaluateMatrixes)
 	for (int i = 0; i < _mtrs.size(); ++i)
 	{
 		_gm = _gm * _mtrs[i];
-		std::cout << "_mtrs[" << i <<"]\n" << _mtrs[i];
 		_invmtrs.push_back(_mtrs[i].GetInverse());
-		std::cout << "_invmtrs[" << i <<"]\n" << _invmtrs[i];
-//		_gim = _gim * _invmtrs[i];
 	}
 	_gim = _gm.GetInverse();
-	std::cout << "_gm\n" << _gm;
-	std::cout << "_gim\n" << _gim;
-	
-	_evalMatrixStackOnInit = evaluateMatrixes;
 	
 	for (int i = 0; i < _trisCnt; ++i)
 	{
 		const int vIdx[3] = {_triIndexes[3 * i + 0], _triIndexes[3 * i + 1], _triIndexes[3 * i + 2]};
-		if (_evalMatrixStackOnInit)
 		{
-			_tris[i] = new Triangle(nullptr, _gm * _vertexes[vIdx[0]],_gm * _vertexes[vIdx[1]],_gm * _vertexes[vIdx[2]], _mat, true);
-		}
-		else
-		{
-		_tris[i] = new Triangle(nullptr, _vertexes[vIdx[0]], _vertexes[vIdx[1]], _vertexes[vIdx[2]], _mat, true);
+		_tris[i] = new Triangle(nullptr, _vertexes[vIdx[0]], _vertexes[vIdx[1]], _vertexes[vIdx[2]], _mat, true, &_gm);
 		}
 	}
 	
 	return true;
 }
 
-bool TriMesh::Hit(const Ray& r, float t_min, float t_max, HitRecord& rec, bool isInstance) const
-{	
-	bool hasHit = false;
-	float min_t = MAXFLOAT;
-	HitRecord currentRec;
-	
-	if (!_evalMatrixStackOnInit)
-	{
-		Matrix gm = _gm;
-		Matrix gim = _gim;
-		Vec3 rpos = gim * r.GetOrigin();
-		Vec3 rdir = gim.Get3x3() * r.GetDirection();
-		
-		for (int i = 0; i < _trisCnt; ++i)
-		{
-			bool isHit = _tris[i]->Hit(Ray(rpos, rdir), t_min, t_max, currentRec);
-			if (isHit)
-			{
-				std::cout << "\ttriangle [" << i  << "]\n"
-				<< "\t\tray pos: " << r.GetOrigin() << " / " << rpos << "\n"
-				<< "\t\tray dir: " << r.GetDirection() << " / " << rdir << "\n"
-				<< "\t\tcurrentRec.t: " << currentRec.t << "\n"
-				<< "\t\tcurrentRec.p: " << currentRec.p << " / " << gm * currentRec.p <<"\n"
-				<< "\t\tcurrentRec.n: " << currentRec.n << " / " << (gm.Get3x3() * currentRec.n).GetNormalized() <<"\n";
-				hasHit = true;
-				if (currentRec.t < min_t)
-				{
-					min_t = currentRec.t;
-					rec = currentRec;
-					rec.p = (gm * currentRec.p);
-					rec.n = (gm.Get3x3() * currentRec.n).GetNormalized();
-				}
-			}
-		}
-	}
+bool TriMesh::Hit(const Ray& r, float t_min, float t_max, HitRecord& rec, Matrix* gm)
+{
+	Matrix* localgm;
+	if (gm)
+		localgm = gm;
 	else
+		localgm = &_gm;
+	
+	HitRecord tempRec;
+	bool hitAnything = false;
+	double closestSoFar = t_max;
+	
+	for (int i = 0; i < _trisCnt; ++i)
 	{
-		for (int i = 0; i < _trisCnt; ++i)
+		if (_tris[i]->Hit(r, t_min, closestSoFar, tempRec, localgm))
 		{
-			if (_tris[i]->Hit(r, t_min, t_max, currentRec))
-			{
-				std::cout << "\ttriangle [" << i  << "]\n"
-				<< "\t\trpos: " << r.GetOrigin() << "\n"
-				<< "\t\trdir: " << r.GetDirection() << "\n"
-				<< "\t\tcurrentRec.t: " << currentRec.t << "\n"
-				<< "\t\tcurrentRec.p: " << currentRec.p << "\n"
-				<< "\t\tcurrentRec.n: " << currentRec.n.GetNormalized() << "\n";
-				hasHit = true;
-				if (currentRec.t < min_t)
-				{
-					min_t = currentRec.t;
-					rec = currentRec;
-					rec.p = (currentRec.p);
-					rec.n = (currentRec.n).GetNormalized();
-				}
-			}
+			hitAnything = true;
+			closestSoFar = tempRec.t;
+			rec = tempRec;
 		}
 	}
-	std::cout << "\trec.t: " << rec.t << "\n"
-	<< "\trec.p: " << rec.p << "\n"
-	<< "\trec.n: " << rec.n << "\n";
-	return hasHit;
+	return hitAnything;
 }
