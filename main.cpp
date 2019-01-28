@@ -23,7 +23,7 @@
 const bool g_debugConsole = false;
 const int g_maxDepth = 20;
 const float g_epsHit = 1e-5;
-const int g_samples = 4;
+const int g_samples = 16;
 const int g_xRes = 400;
 const int g_yRes = 400;
 
@@ -81,8 +81,8 @@ int main()
 	scene->AddItem(new Triangle("cyanTri", Vec3(-0.5, 0.5, -1.5), Vec3(0.5, -0.5, -1.5), Vec3(0.5, 0.5, -1.5), new MetalReflector(Vec3(.2,.9,.9))));
 	// the yellow triangle on the right
 	scene->AddItem(new Triangle("yellowTri", Vec3(0.5, 0.5, -0.5), Vec3(0.5, 0.5, -1.5), Vec3(0.5, -0.5, -0.5), new MetalReflector(Vec3(.9,.9,.2))));
-	
-	
+
+
 	// the red cube on the top
 	const int trisCnt = 12;//12;
 	const int pointsCnt = 8;
@@ -99,7 +99,7 @@ int main()
 		points[5] = Vec3(0.5, 0.5, -0.5);
 		points[6] = Vec3(0.5, 0.5, 0.05);
 		points[7] = Vec3(-0.5, 0.5, 0.5);
-		
+
 		// bottom quad 0
 		indexes[0] = 0;
 		indexes[1] = 1;
@@ -142,7 +142,7 @@ int main()
 		indexes[33] = 0;
 		indexes[34] = 5;
 		indexes[35] = 1;
-		
+
 		mesh = new TriMesh("cubeMesh", trisCnt, new MetalReflector(Vec3(.5,.5,.5)));
 		if (mesh)
 		{
@@ -187,7 +187,7 @@ int main()
 			mtx.AddUniformScale(.3);
 			// add the first transformation to the stack
 			mesh->AddMatrix(mtx);
-			
+
 			mesh->SetVertexes(points, pointsCnt);
 			mesh->SetTriIndexes(indexes);
 			if (mesh->Init())
@@ -200,23 +200,29 @@ int main()
 		}
 	}
 	
-	{
-		HitableInstance* inst = new HitableInstance(mesh);
-		Matrix trf2;
-		trf2.AddOffset(1.05,0,0);
-		trf2.AddNonUniformScale(1, .5, 1);
-		inst->AddMatrix(trf2);
-		inst->Init();
-		scene->AddItem(inst);
-		
-		HitableInstance* inst2 = new HitableInstance(mesh);
-		trf2.Reset();
-		trf2.AddOffset(-1.05,0,0);
-		trf2.AddNonUniformScale(.5, 1, 1);
-		inst2->AddMatrix(trf2);
-		inst2->Init();
-		scene->AddItem(inst2);
-	}
+	HitableInstance* inst = new HitableInstance(mesh);
+	Matrix trf2;
+	trf2.AddOffset(1.05,0,0);
+	trf2.AddNonUniformScale(1, .5, 1);
+	inst->AddMatrix(trf2);
+	inst->Init();
+	scene->AddItem(inst);
+	
+	HitableInstance* inst2 = new HitableInstance(new Triangle("cyanTri", Vec3(-0.5, 0.5, -1.5), Vec3(0.5, -0.5, -1.5), Vec3(0.5, 0.5, -1.5), new MetalReflector(Vec3(.2,.9,.9))));
+	trf2.Reset();
+	trf2.AddOffset(-1,1,0);
+//		trf2.AddNonUniformScale(.5, 1, 1);
+	inst2->AddMatrix(trf2);
+	inst2->Init();
+	scene->AddItem(inst2);
+	
+	HitableInstance* inst3 = new HitableInstance(new Sphere("bigSphere", Vec3(0, 0, 0), 0.2, glass));
+	trf2.Reset();
+	trf2.AddOffset(-.5, .5, 0);
+	trf2.AddNonUniformScale(1, 1, .33);
+	inst3->AddMatrix(trf2);
+	inst3->Init();
+	scene->AddItem(inst3);
 
 	// the rainbow spheres
 	scene->AddItem(new Sphere("redSphere", Vec3(0, -0.45, 4), 0.05, new LambertianReflector(Vec3(.9,0,0))));
@@ -227,7 +233,7 @@ int main()
 	scene->AddItem(new Sphere("indigoSphere", Vec3(0, -0.45, 0.66), 0.05, new LambertianReflector(Vec3(.29,0,0.51))));
 	scene->AddItem(new Sphere("purpleSphere", Vec3(0, -0.45, 0), 0.05, new LambertianReflector(Vec3(.58,0,0.82))));
 	
-	const Vec3 from (0,0.1, 5);
+	const Vec3 from (0,0,5);
 	const Vec3 to (0,0.5,0);
 	const Vec3 up (0,1,0);
 	const float fov = 40;

@@ -330,6 +330,9 @@ public:
 		this->_mat[0][0] *= scale;
 		this->_mat[1][1] *= scale;
 		this->_mat[2][2] *= scale;
+		_sclNU[0] *= scale;
+		_sclNU[1] *= scale;
+		_sclNU[2] *= scale;
 		return (*this);
 	}
 	
@@ -339,12 +342,16 @@ public:
 		this->_mat[0][0] *= scl_x;
 		this->_mat[1][1] *= scl_y;
 		this->_mat[2][2] *= scl_z;
+		_sclNU[0] *= scl_x;
+		_sclNU[1] *= scl_y;
+		_sclNU[2] *= scl_z;
 		return (*this);
 	}
 	
 	Matrix& Reset()
 	{
-		Identity();		
+		Identity();
+		_sclNU = Vec3(1,1,1);
 		return (*this);
 	}
 	

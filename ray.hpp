@@ -31,6 +31,9 @@ public:
 	void SetDirection(const Vec3& dir) { _dir = dir; }
 	// given a parameter for a certain ray, return the position in space at parameter
 	Vec3 PointAtParameter(const float t) const { return (_pos + _dir * t); }
+	float ParameterAtPoint(const Vec3 pnt) const {
+//		assert ((pnt[0] - _pos[0])/_dir[0] == (pnt[1] - _pos[1])/_dir[1] && (pnt[1] - _pos[1])/_dir[1] == (pnt[2] - _pos[2])/_dir[2]);
+		return (pnt[0] - _pos[0])/_dir[0]; }
 	
 	
 private:
