@@ -13,6 +13,18 @@
 #include <math.h>
 #include <iostream>
 
+#define WIN
+#ifdef WIN
+#define _USE_MATH_DEFINES
+#define MAXFLOAT FLT_MAX 
+#include <cassert>
+#include <stdio.h>
+#include <stdarg.h>
+#include <float.h>
+#include "drand48.h"
+#endif
+
+
 class Vec3
 {
 public:
