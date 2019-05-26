@@ -16,7 +16,9 @@
 #define WIN
 #ifdef WIN
 #define _USE_MATH_DEFINES
-#define MAXFLOAT FLT_MAX 
+#ifndef MAXFLOAT
+#define MAXFLOAT FLT_MAX
+#endif
 #include <cassert>
 #include <stdio.h>
 #include <stdarg.h>
