@@ -112,11 +112,8 @@ bool Sphere2::SolveQuadratic(const float &a, const float &b, const float &c, flo
 
 bool Sphere2::Hit(const Ray& r, float t_min, float t_max, HitRecord& rec, Matrix* gm)
 {
-	Matrix invgm;
-	if (gm)
-		invgm = gm->GetInverse();
+	Ray ray = r;
 	
-	Ray ray = Ray(invgm * r.GetOrigin(), (invgm.Get3x3() * r.GetDirection()).GetNormalized());
 	const Vec3 rpos = ray.GetOrigin();
 	const Vec3 rdir = ray.GetDirection();
 	const Vec3 oc = rpos - _center;
@@ -135,12 +132,6 @@ bool Sphere2::Hit(const Ray& r, float t_min, float t_max, HitRecord& rec, Matrix
 		rec.t = t0;
 		rec.p = ray.PointAtParameter(t0);
 		rec.n = (rec.p - _center) / _radius;
-//		if (gm)
-//		{
-//			rec.p = *gm  * ray.PointAtParameter(t0);
-//			rec.n = (gm->Get3x3() * ((ray.PointAtParameter(t0)   - _center) / _radius)).GetNormalized();
-//			rec.t = r.ParameterAtPoint(rec.p);
-//		}
 		
 		if (rec.t > t_min && rec.t < t_max)
 			return true;

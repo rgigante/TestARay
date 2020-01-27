@@ -79,14 +79,7 @@ Triangle2::~Triangle2()
 
 bool Triangle2::Hit(const Ray& r, float t_min, float t_max, HitRecord& rec, Matrix* gm)
 {
-	
-	Matrix invgm;
-	if (gm)
-		invgm = gm->GetInverse();
-	
-	Ray ray = Ray(invgm * r.GetOrigin(), (invgm.Get3x3() * r.GetDirection()).GetNormalized());
-//	std::cout << "ray " << ray;
-//	std::cout << "r	  " << r;
+	Ray ray = r;
 	
 	Vec3 ab = _a - _b;
 	Vec3 bc = _b - _c;

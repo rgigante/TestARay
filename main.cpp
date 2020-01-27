@@ -34,29 +34,42 @@ int main()
 		
 		// allocate lambertians
 		LambertianReflector*  white = new LambertianReflector("white", Vec3(0.9, 0.9, 0.9));
+		MetalReflector*  red = new MetalReflector("red", Vec3(0.9, 0, 0));
+		MetalReflector*  green = new MetalReflector("green", Vec3(0, 0.9, 0));
+		MetalReflector*  blue = new MetalReflector("blue", Vec3(0, 0, 0.9));
 		scene->AddMaterial(white);
 		
-		scene->AddItem(new Triangle("tr1", Vec3(-2, -0.5, -2), Vec3(2, -0.5, 5), Vec3(2, -0.5, -2), white));
-		// the blue triangle on the floor
-		scene->AddItem(new Triangle("tri2", Vec3(2, -0.5, 5), Vec3(-2, -0.5, -2), Vec3(-2, -0.5, 5), white));
+//		scene->AddItem(new Triangle("tr1", Vec3(-2, -0.5, -2), Vec3(2, -0.5, 5), Vec3(2, -0.5, -2), white));
+//		// the blue triangle on the floor
+//		scene->AddItem(new Triangle("tri2", Vec3(2, -0.5, 5), Vec3(-2, -0.5, -2), Vec3(-2, -0.5, 5), white));
 		
-		Triangle2* tri = new Triangle2("tri", Vec3(-0.5, 0.5, 0), Vec3(0.5, -0.5, 0), Vec3(0.5, 0.5, 0), white);
-//		scene->AddItem(tri);
+		Triangle2* tri = new Triangle2("tri", Vec3(0.5, 0.5, 0), Vec3(1.5, -0.5, 0), Vec3(1.5, 0.5, 0), red);
+		scene->AddItem(tri);
+//		Triangle2* tri2 = new Triangle2("tri", Vec3(0.5, 0.5, 0), Vec3(1.5, -0.5, 0), Vec3(1.5, 0.5, 0), green);
+//		scene->AddItem(tri2);
 		
 		
-		// allocate a sphere primitive
-//		Sphere2* testSphere = new Sphere2("testSphere", Vec3(-1, 0, -1), .5, white);
+//		// allocate a sphere primitive
+//		Sphere2* testSphere = new Sphere2("testSphere", Vec3(-1, 0, -1), .5, green);
 //		scene->AddItem(testSphere);
 //
-		HitableInstance* instance = new HitableInstance(tri);
+//		HitableInstance* instance = new HitableInstance(testSphere);
+//		Matrix trf;
+//		trf.AddNonUniformScale(.5, 1, 1);
+//		trf.AddOffset(1, 0, 0);
+//		instance->AddMatrix(trf);
+//		instance->Init();
+//		scene->AddItem(instance);
+		//
+		HitableInstance* instance2 = new HitableInstance(tri);
 		Matrix trf;
-		trf.AddOffset(0, 0, 0);
-		trf.AddRotationX(-45);
-		instance->AddMatrix(trf);
-		instance->Init();
-		scene->AddItem(instance);
+		trf.Reset();
+		trf.AddOffset(0, 0, .5);
+		instance2->AddMatrix(trf);
+		instance2->Init();
+		scene->AddItem(instance2);
 		
-		const Vec3 from (0,0,5);
+		const Vec3 from (0,2,5);
 		const Vec3 to (0,0.5,0);
 		const Vec3 up (0,1,0);
 		const float fov = 40;

@@ -9,7 +9,15 @@
 
 bool HitableInstance::Hit(const Ray& r, float t_min, float t_max, HitRecord& rec, Matrix* gm)
 {
-	return (_obj->Hit(r, t_min, t_max, rec, &_gm));
+	Ray ray = Ray(_gim * r.GetOrigin(), (_gim.Get3x3() * r.GetDirection()).GetNormalized());
+	bool hit = _obj->Hit(ray, t_min, t_max, rec, &_gm);
+	float tAtR = r.ParameterAtPoint(rec.p);
+	float tAtRay = ray.ParameterAtPoint(rec.p);
+//	std::cout << "tAtR [ "<<tAtR<<" ] - " << "tAtRay [ "<<tAtRay<<" ] \n";
+//	if (hit)
+//		assert (tAtR != tAtRay);
+
+	return (hit);
 }
 
 bool HitableInstance::Init()
