@@ -7,7 +7,7 @@
 
 #include "materials.hpp"
 
-LambertianReflector::LambertianReflector(const Vec3& a) : _albedo(a){}
+LambertianReflector::LambertianReflector (char const* name, const Vec3& a) : _albedo(a), _name(name){}
 
 bool LambertianReflector::Scatter(const Ray& rHit, const HitRecord& rec, Vec3& attenuation, Ray& rScatter) const
 {
@@ -17,7 +17,7 @@ bool LambertianReflector::Scatter(const Ray& rHit, const HitRecord& rec, Vec3& a
 	return true;
 }
 
-MetalReflector::MetalReflector(const Vec3& a, float r /*= 0*/) : _albedo(a), _roughness(r){}
+MetalReflector::MetalReflector(char const* name, const Vec3& a, float r /*= 0*/) : _albedo(a), _roughness(r), _name(name){}
 
 bool MetalReflector::Scatter(const Ray &rHit, const HitRecord &rec, Vec3 &attenuation, Ray &rScatter) const
 {
@@ -37,7 +37,7 @@ bool MetalReflector::Scatter(const Ray &rHit, const HitRecord &rec, Vec3 &attenu
 	return false;
 }
 
-Dielectric::Dielectric(float ri) : _refrIndex(ri){}
+Dielectric::Dielectric(char const* name, float ri) : _refrIndex(ri), _name(name){}
 
 bool Dielectric::Scatter(const Ray &rHit, const HitRecord &rec, Vec3 &attenuation, Ray &rScatter) const
 {

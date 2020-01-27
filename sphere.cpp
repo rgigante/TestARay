@@ -12,11 +12,6 @@
 
 Sphere::~Sphere()
 {
-	if (_mat)
-	{
-		delete (_mat);
-		_mat = nullptr;
-	}
 }
 
 bool Sphere::Hit(const Ray& r, float t_min, float t_max, HitRecord& rec, Matrix* gm)

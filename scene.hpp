@@ -10,6 +10,8 @@
 
 #include "hitable.hpp"
 #include "camera.hpp"
+#include "framebuffer.hpp"
+#include "materials.hpp"
 #include <vector>
 
 class Scene
@@ -17,14 +19,23 @@ class Scene
 public:
 	Scene(){}
 	~Scene();
-	void AddItem(Hitable* item) { _items.push_back(item); }
+	
+	void AddItem(Hitable* item) { if (item) _items.push_back(item); }
+	
+	void AddMaterial(Material* material) { if(material) _materials.push_back(material); }
+	
+	void AddCamera(Camera* cam){ if (cam) _cams.push_back(cam); }
+	Camera* GetCamera(const int i){ return _cams.at(i); }
+	
+	bool Render(const int samples, const int activeCamIdx, Framebuffer* const fb, std::ofstream& color, std::ofstream& normal);
 	bool Hit (const Ray& r, float t_min, float t_max, HitRecord& rec) const;
-	void AddCamera(Camera* cam){ if (cam) _cam = cam; }
-	Camera* GetCamera(){ return _cam; }
+	void Color(Vec3& col, Vec3& nrm, const Ray& r, int depth = 0);
+	
 	
 private:
 	std::vector<Hitable*> _items;
-	Camera* _cam;
+	std::vector<Material*> _materials;
+	std::vector<Camera*> _cams;
 };
 
 #endif /* scene_hpp */

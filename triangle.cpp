@@ -12,14 +12,6 @@ Triangle::Triangle(char const* name, Vec3 a, Vec3 b, Vec3 c, Material* m, bool i
 
 Triangle::~Triangle()
 {
-	if (!_isTriMesh)
-	{
-		if (_mat)
-		{
-			delete (_mat);
-			_mat = nullptr;
-		}
-	}
 }
 
 bool Triangle::Hit(const Ray& r, float t_min, float t_max, HitRecord& rec, Matrix* gm)

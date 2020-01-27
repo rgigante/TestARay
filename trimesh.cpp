@@ -29,11 +29,6 @@ TriMesh::~TriMesh()
 		_tris = nullptr;
 	}
 	
-	if (_mat)
-	{
-		delete _mat;
-		_mat = nullptr;
-	}
 }
 
 Triangle* TriMesh::GetTriangleAtIndex(int triIdx)
