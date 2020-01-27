@@ -28,8 +28,11 @@ bool Scene::Hit(const Ray &r, float t_min, float t_max, HitRecord &rec) const
 Scene::~Scene()
 {
 	// dispose camera
-	delete _cam;
-	_cam = nullptr;
+	if (_cam)
+	{
+		delete _cam;
+		_cam = nullptr;
+	}
 	
 	// dispose geometries
 	for (int i = 0; i < _items.size(); ++i)
