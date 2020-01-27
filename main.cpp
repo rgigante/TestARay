@@ -25,6 +25,77 @@ const int g_yRes = 400;
 
 int main()
 {
+//	MatrixTests();
+//	return 0;
+	
+	{
+		// init the scene
+		Scene* scene = new Scene();
+		
+		// allocate lambertians
+		LambertianReflector*  white = new LambertianReflector("white", Vec3(0.9, 0.9, 0.9));
+		scene->AddMaterial(white);
+		
+		scene->AddItem(new Triangle("tr1", Vec3(-2, -0.5, -2), Vec3(2, -0.5, 5), Vec3(2, -0.5, -2), white));
+		// the blue triangle on the floor
+		scene->AddItem(new Triangle("tri2", Vec3(2, -0.5, 5), Vec3(-2, -0.5, -2), Vec3(-2, -0.5, 5), white));
+		
+		Triangle2* tri = new Triangle2("tri", Vec3(-0.5, 0.5, 0), Vec3(0.5, -0.5, 0), Vec3(0.5, 0.5, 0), white);
+//		scene->AddItem(tri);
+		
+		
+		// allocate a sphere primitive
+//		Sphere2* testSphere = new Sphere2("testSphere", Vec3(-1, 0, -1), .5, white);
+//		scene->AddItem(testSphere);
+//
+		HitableInstance* instance = new HitableInstance(tri);
+		Matrix trf;
+		trf.AddOffset(0, 0, 0);
+		trf.AddRotationX(-45);
+		instance->AddMatrix(trf);
+		instance->Init();
+		scene->AddItem(instance);
+		
+		const Vec3 from (0,0,5);
+		const Vec3 to (0,0.5,0);
+		const Vec3 up (0,1,0);
+		const float fov = 40;
+		const float aperture = 0; //0.05;
+		const float focusDistance = 5; //(from - to).Length();
+		
+		// add camera to the scene
+		scene->AddCamera(new Camera(from, to, up, fov, aperture, focusDistance, g_xRes, g_yRes));
+		
+		std::ofstream rgbImage, nrmImage;
+		rgbImage.open("/Users/riccardogigante/Desktop/test_color.ppm", std::ofstream::out);
+		nrmImage.open("/Users/riccardogigante/Desktop/test_normal.ppm", std::ofstream::out);
+		
+		Framebuffer* fb = new Framebuffer(g_xRes, g_yRes, 3);
+		if (!fb)
+			return -1;
+		
+		scene->Render(1, 0, fb, rgbImage, nrmImage);
+		
+		rgbImage.close();
+		nrmImage.close();
+		
+		// dispose the framebuffer
+		if (fb)
+		{
+			delete fb;
+			fb = nullptr;
+		}
+		
+		// dispose the scene (camera, items and materials)
+		if (scene)
+		{
+			delete(scene);
+			scene = nullptr;
+		}
+		
+		return 0;
+	}
+	
 	// init the scene
 	Scene* scene = new Scene();
 	

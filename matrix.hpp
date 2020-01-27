@@ -57,6 +57,7 @@ public:
 	
 	friend std::ostream& operator<<(std::ostream &os, const Matrix& m)
 	{
+		std::cout << std::fixed;
 		for (int i = 0; i < m.GetRow(); ++i)
 		{
 			os << "\t";
@@ -66,8 +67,25 @@ public:
 			}
 			os << "\n";
 		}
+		os << "\t------------------------\n";
 		os << "\t" << m.GetScaleNU() << "\n";
 		return os;
+	}
+	
+	inline bool Compare (const Matrix& m, const double eps )
+	{
+		if (this->_col != m.GetCol() ||	this->_row != m.GetRow())
+			return false;
+		
+		for(int i = 0; i < _row; i++)
+		{
+			for(int j = 0; j < _col; j++)
+			{
+				if(abs(_mat[i][j] - m[i][j]) > eps)
+					return false;
+			}
+		}
+		return true;
 	}
 	
 	inline bool operator== (const Matrix& m)
@@ -377,7 +395,9 @@ public:
 	Matrix GetInverse()
 	{
 		Matrix res(4,4);
-		double invdet = 1/Determinant();
+		double det = Determinant();
+		assert (det != 0.0f);
+		double invdet = 1/det;
 		res[0][0] = (_mat[1][2]*_mat[2][3]*_mat[3][1] - _mat[1][3]*_mat[2][2]*_mat[3][1] + _mat[1][3]*_mat[2][1]*_mat[3][2] - _mat[1][1]*_mat[2][3]*_mat[3][2] - _mat[1][2]*_mat[2][1]*_mat[3][3] + _mat[1][1]*_mat[2][2]*_mat[3][3])*invdet;
 		res[0][1] = (_mat[0][3]*_mat[2][2]*_mat[3][1] - _mat[0][2]*_mat[2][3]*_mat[3][1] - _mat[0][3]*_mat[2][1]*_mat[3][2] + _mat[0][1]*_mat[2][3]*_mat[3][2] + _mat[0][2]*_mat[2][1]*_mat[3][3] - _mat[0][1]*_mat[2][2]*_mat[3][3])*invdet;
 		res[0][2] = (_mat[0][2]*_mat[1][3]*_mat[3][1] - _mat[0][3]*_mat[1][2]*_mat[3][1] + _mat[0][3]*_mat[1][1]*_mat[3][2] - _mat[0][1]*_mat[1][3]*_mat[3][2] - _mat[0][2]*_mat[1][1]*_mat[3][3] + _mat[0][1]*_mat[1][2]*_mat[3][3])*invdet;
@@ -405,5 +425,7 @@ private:
 	std::vector<std::vector<double>> _mat;
 	Vec3 _sclNU;
 };
+
+void MatrixTests();
 
 #endif /* matrix_hpp */

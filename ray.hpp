@@ -35,6 +35,13 @@ public:
 //		assert ((pnt[0] - _pos[0])/_dir[0] == (pnt[1] - _pos[1])/_dir[1] && (pnt[1] - _pos[1])/_dir[1] == (pnt[2] - _pos[2])/_dir[2]);
 		return (pnt[0] - _pos[0])/_dir[0]; }
 	
+	friend std::ostream& operator<<(std::ostream &os, const Ray& r)
+	{
+		std::cout << std::fixed;
+		os << "p/d: " << r.GetOrigin() << " / " << r.GetDirection() << "\n";
+		return os;
+	}
+	
 	
 private:
 	Vec3 _pos; // ray firing position
