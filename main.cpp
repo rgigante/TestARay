@@ -61,13 +61,13 @@ int main()
 //		instance->Init();
 //		scene->AddItem(instance);
 		//
-//		HitableInstance* instance2 = new HitableInstance(tri);
-//		Matrix trf;
-//		trf.Reset();
-//		trf.AddOffset(0, 0, .5);
-//		instance2->AddMatrix(trf);
-//		instance2->Init();
-//		scene->AddItem(instance2);
+		HitableInstance* instance2 = new HitableInstance(tri);
+		Matrix trf;
+		trf.Reset();
+		trf.AddOffset(0, 0, .5);
+		instance2->AddMatrix(trf);
+		instance2->Init();
+		scene->AddItem(instance2);
 		
 		const Vec3 from (0,0,2);
 		const Vec3 to (0,0,0);
@@ -80,11 +80,12 @@ int main()
 		scene->AddCamera(new Camera(from, to, up, fov, aperture, focusDistance, g_xRes, g_yRes));
 		
 		Vec3 pixelCol;
-		scene->ColorPixel(0, 0); //ok
-		scene->ColorPixel(64, 0); //ok
-		scene->ColorPixel(64, 64); //ok
-		scene->ColorPixel(0, 63); //ko
-		
+		scene->ColorPixel(0, 0); // bottom-left
+		scene->ColorPixel(63, 0); // bottom-right
+		scene->ColorPixel(63, 63); // top-right
+		scene->ColorPixel(0, 63); //top-left
+		scene->ColorPixel(53, 53); //hit top-right
+		scene->ColorPixel(10, 10); //no hit bottom-left
 #if 1
 		Framebuffer* fb = new Framebuffer(g_xRes, g_yRes, 3);
 		if (!fb)

@@ -103,8 +103,8 @@ bool Scene::ColorPixel(const int xPix/* = 1*/, const int yPix/* = 1*/, const int
 	const int x = xPix;
 	const int y = yPix;
 
-	const float inv_ny = 1.0 / float(ny);
-	const float inv_nx = 1.0 / float(nx);
+	const float inv_ny = 1.0 / float(ny - 1);
+	const float inv_nx = 1.0 / float(nx - 1);
 	const float u = float(x) * inv_nx;
 	const float v = float(y) * inv_ny;
 	std::cout << "--- start pixel ["<<x<<" ("<<u<<"), "<<y<<" ("<<v<<")]\n";
