@@ -19,7 +19,7 @@ public:
 	Triangle(char const* name, Vec3 a, Vec3 b, Vec3 c, Material* m, bool isTriMesh = false, Matrix* gm = nullptr);
 	~Triangle();
 	bool SetName(char const* name){ _name = name; return (!name) ? false : true; };
-	bool Hit (const Ray& r, float t_min, float t_max, HitRecord& rec, Matrix* gm = nullptr);
+	bool Hit (const Ray& r, float t_min, float t_max, HitRecord& rec, Matrix* gm = nullptr, bool debugRay = false);
 	
 private:
 	Vec3 _a, _b, _c, _ab, _bc, _ca, _n;
@@ -36,7 +36,7 @@ public:
 	Triangle2(char const* name, Vec3 a, Vec3 b, Vec3 c, Material* m, bool isTriMesh = false, Matrix* gm = nullptr);
 	~Triangle2();
 	bool SetName(char const* name){ _name = name; return (!name) ? false : true; };
-	bool Hit (const Ray& r, float t_min, float t_max, HitRecord& rec, Matrix* gm = nullptr);
+	bool Hit (const Ray& r, float t_min, float t_max, HitRecord& rec, Matrix* gm = nullptr, bool debugRay = false);
 	
 private:
 	Vec3 _a, _b, _c, _ab, _bc, _ca, _n;

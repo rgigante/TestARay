@@ -38,7 +38,7 @@ public:
 	friend std::ostream& operator<<(std::ostream &os, const Ray& r)
 	{
 		std::cout << std::fixed;
-		os << "p/d: " << r.GetOrigin() << " / " << r.GetDirection() << "\n";
+		os << "p [" << r.GetOrigin() << "] / d[" << r.GetDirection() << "]";
 		return os;
 	}
 	

@@ -17,7 +17,7 @@ public:
 	TriMesh(char const* name, int trisCnt, Material* mat);
 	~TriMesh();
 	
-	bool Hit (const Ray& r, float t_min, float t_max, HitRecord& rec, Matrix* gm = nullptr);
+	bool Hit (const Ray& r, float t_min, float t_max, HitRecord& rec, Matrix* gm = nullptr, bool debugRay = false);
 	
 	bool SetVertexes(Vec3* points, int pointsCnt);
 	bool SetTriIndexes(int* triIndexes);

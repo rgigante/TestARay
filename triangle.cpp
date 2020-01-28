@@ -14,7 +14,7 @@ Triangle::~Triangle()
 {
 }
 
-bool Triangle::Hit(const Ray& r, float t_min, float t_max, HitRecord& rec, Matrix* gm)
+bool Triangle::Hit(const Ray& r, float t_min, float t_max, HitRecord& rec, Matrix* gm, bool debugRay /*= false*/)
 {
 	Vec3 a,b,c;
 	a = _a; b = _b; c = _c;
@@ -77,7 +77,7 @@ Triangle2::~Triangle2()
 {
 }
 
-bool Triangle2::Hit(const Ray& r, float t_min, float t_max, HitRecord& rec, Matrix* gm)
+bool Triangle2::Hit(const Ray& r, float t_min, float t_max, HitRecord& rec, Matrix* gm, bool debugRay /*= false*/)
 {
 	Ray ray = r;
 	

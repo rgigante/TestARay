@@ -28,14 +28,21 @@ public:
 	Camera* GetCamera(const int i){ return _cams.at(i); }
 	
 	bool Render(const int samples, const int activeCamIdx, Framebuffer* const fb, std::ofstream& color, std::ofstream& normal);
-	bool Hit (const Ray& r, float t_min, float t_max, HitRecord& rec) const;
+	bool Hit (const Ray& r, float t_min, float t_max, HitRecord& rec, bool debugRay = false) const;
 	void Color(Vec3& col, Vec3& nrm, const Ray& r, int depth = 0);
+	
+	void DebugColor(Vec3& col, const Ray& r, int depth = 0);
+	bool ColorPixel(const int x = 1, const int y = 1, const int activeCamIdx = 0);
+	
 	
 	
 private:
 	std::vector<Hitable*> _items;
 	std::vector<Material*> _materials;
 	std::vector<Camera*> _cams;
+	
+	float _epsHit = 1e-5;
+	int _maxDepth = 20;
 };
 
 #endif /* scene_hpp */

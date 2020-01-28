@@ -10,7 +10,7 @@
 
 #define A
 
-bool Sphere::Hit(const Ray& r, float t_min, float t_max, HitRecord& rec, Matrix* gm)
+bool Sphere::Hit(const Ray& r, float t_min, float t_max, HitRecord& rec, Matrix* gm, bool debugRay /*= false*/)
 {
 	Ray ray = r;
 	Vec3 rpos = ray.GetOrigin();
@@ -110,7 +110,7 @@ bool Sphere2::SolveQuadratic(const float &a, const float &b, const float &c, flo
 	return true;
 }
 
-bool Sphere2::Hit(const Ray& r, float t_min, float t_max, HitRecord& rec, Matrix* gm)
+bool Sphere2::Hit(const Ray& r, float t_min, float t_max, HitRecord& rec, Matrix* gm, bool debugRay  /*= false*/)
 {
 	Ray ray = r;
 	

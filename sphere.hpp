@@ -17,7 +17,7 @@ public:
 	Sphere(){}
 	~Sphere(){}
 	Sphere(char const* name, Vec3 cen, float r, Material* m) : _name(name), _center(cen), _radius(r), _mat(m) {};
-	bool Hit (const Ray& r, float t_min, float t_max, HitRecord& rec, Matrix* gm = nullptr);
+	bool Hit (const Ray& r, float t_min, float t_max, HitRecord& rec, Matrix* gm = nullptr, bool debugRay = false);
 	
 private:
 	Vec3 _center;
@@ -33,7 +33,7 @@ public:
 	Sphere2(){}
 	~Sphere2(){}
 	Sphere2(char const* name, Vec3 cen, float r, Material* m) : _name(name), _center(cen), _radius(r), _mat(m) {};
-	bool Hit (const Ray& r, float t_min, float t_max, HitRecord& rec, Matrix* gm = nullptr);
+	bool Hit (const Ray& r, float t_min, float t_max, HitRecord& rec, Matrix* gm = nullptr, bool debugRay = false);
 	bool SolveQuadratic(const float &a, const float &b, const float &c, float &x0, float &x1);
 	
 private:

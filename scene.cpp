@@ -7,7 +7,7 @@
 
 #include "scene.hpp"
 
-bool Scene::Hit(const Ray &r, float t_min, float t_max, HitRecord &rec) const
+bool Scene::Hit(const Ray &r, float t_min, float t_max, HitRecord &rec, bool debugRay /*= false*/) const
 {
 	HitRecord tempRec;
 	bool hitAnything = false;
@@ -15,11 +15,16 @@ bool Scene::Hit(const Ray &r, float t_min, float t_max, HitRecord &rec) const
 	
 	for (int i = 0; i < _items.size(); ++i)
 	{
-		if (_items[i] && _items[i]->Hit(r, t_min, closestSoFar, tempRec))
+		Hitable* currentItem = _items[i];
+		if (currentItem)
 		{
-			hitAnything = true;
-			closestSoFar = tempRec.t;
-			rec = tempRec;
+			bool hitCheck = currentItem->Hit(r, t_min, closestSoFar, tempRec);
+			if (hitCheck)
+			{
+				hitAnything = true;
+				closestSoFar = tempRec.t;
+				rec = tempRec;
+			}
 		}
 	}
 	return hitAnything;
@@ -27,14 +32,12 @@ bool Scene::Hit(const Ray &r, float t_min, float t_max, HitRecord &rec) const
 
 void Scene::Color(Vec3& col, Vec3& nrm, const Ray& r, int depth/* = 0*/)
 {
-	const float epsHit = 1e-5;
-	const int maxDepth = 20;
 	HitRecord rec;
-	if (Hit(r, epsHit, MAXFLOAT, rec))
+	if (Hit(r, _epsHit, MAXFLOAT, rec))
 	{
 		Ray scattered(Vec3(0, 0, 0), Vec3(0, 0, 0));
 		Vec3 attenuation(0, 0, 0);
-		if (depth < maxDepth && rec.mat && rec.mat->Scatter(r, rec, attenuation, scattered))
+		if (depth < _maxDepth && rec.mat && rec.mat->Scatter(r, rec, attenuation, scattered))
 		{
 			Color(col, nrm, scattered, depth + 1);
 			nrm = Vec3(rec.n.x() + 1, rec.n.y() + 1, rec.n.z() + 1) * 0.5;
@@ -48,13 +51,80 @@ void Scene::Color(Vec3& col, Vec3& nrm, const Ray& r, int depth/* = 0*/)
 	}
 	
 	// compute the background color
-	const float blend = 0.5 * (r.GetDirection().y() + 1.0);
-	col = Lerp(Vec3(1.0, 1.0, 1.0), Vec3(0.5, 0.7, 1.0), blend);
+//	const float blend = 0.5 * (r.GetDirection().y() + 1.0);
+//	col = Lerp(Vec3(1.0, 1.0, 1.0), Vec3(0.5, 0.7, 1.0), blend);
+	const float blendY = 0.5 * (r.GetDirection().y() + 1.0);
+	const float blendX = 0.5 * (r.GetDirection().x() + 1.0);
+	col = Lerp(Vec3(1,0,0), Vec3(0,0,1), blendY) + Lerp(Vec3(0,0,0), Vec3(0,1,0), blendX);
 	nrm = Vec3(0,0,0);
-	//	std::cout << "\tdepth["<<depth<<"], col["<<col<<"], nrm["<<nrm<<"], ray["<<r.GetOrigin()<<" / "<<r.GetDirection()<<"]\n";
+//		std::cout << "\tdepth["<<depth<<"], col["<<col<<"], nrm["<<nrm<<"], ray["<<r.GetOrigin()<<" / "<<r.GetDirection()<<"]\n";
 	return;
 }
 
+void Scene::DebugColor(Vec3& col, const Ray& r, int depth/* = 0*/)
+{
+	HitRecord rec;
+	if (Hit(r, _epsHit, MAXFLOAT, rec))
+	{
+		Ray scattered(Vec3(0, 0, 0), Vec3(0, 0, 0));
+		Vec3 attenuation(0, 0, 0);
+		if (depth < _maxDepth && rec.mat && rec.mat->Scatter(r, rec, attenuation, scattered))
+		{
+			DebugColor(col, scattered, depth + 1);
+			col *= attenuation;
+			std::cout << "\t- depth["<<depth<<"]\n\t- col["<<col<<"]\n\t- ray["<<r<<"]\n\t- rec["<<rec<<"]\n";
+			return;
+		}
+		col = Vec3(1, 1, 0);
+		std::cout << "\t- depth["<<depth<<"]\n\t- col["<<col<<"]\n\t- ray["<<r<<"]\n\t- rec["<<rec<<"]\n";
+		return;
+	}
+	const float blendY = 0.5 * (r.GetDirection().y() + 1.0);
+	const float blendX = 0.5 * (r.GetDirection().x() + 1.0);
+	col = Lerp(Vec3(1,0,0), Vec3(0,0,1), blendY) + Lerp(Vec3(0,0,0), Vec3(0,1,0), blendX);
+	std::cout << "\t- depth["<<depth<<"]\n\t- col["<<col<<"]\n\t- ray["<<r<<"]\n\t- rec["<<rec<<"]\n";
+	return;
+}
+
+bool Scene::ColorPixel(const int xPix/* = 1*/, const int yPix/* = 1*/, const int activeCamIdx /* = 0*/)
+{
+	Camera* const activeCam = _cams.at(activeCamIdx);
+	if (!activeCam)
+		return false;
+	
+	const int nx = activeCam->GetXRes();
+	const int ny = activeCam->GetYRes();
+	
+	// allocate temporary data
+	Vec3 rgb(0,0,0);
+	Vec3 nrm(0,0,0);
+	Ray r(Vec3 (0,0,0), Vec3(0,0,0));
+	
+	const int x = xPix;
+	const int y = yPix;
+
+	const float inv_ny = 1.0 / float(ny);
+	const float inv_nx = 1.0 / float(nx);
+	const float u = float(x) * inv_nx;
+	const float v = float(y) * inv_ny;
+	std::cout << "--- start pixel ["<<x<<" ("<<u<<"), "<<y<<" ("<<v<<")]\n";
+
+	// create the starting ray from  the camera
+	r = activeCam->CreateRay(u, v);
+	std::cout << "--- ray "<< r << "\n";
+
+	// add the values returned by the ray recursively exploring the scene by hitting its items
+	DebugColor(rgb, r);
+	Color(rgb, nrm, r);
+	std::cout << "--- end pixel ["<< rgb <<"]\n\n";
+
+
+	//				std::cout << "uv [" << u << ", " << v << "] / dir [" << r.GetDirection().x() << ", " << r.GetDirection().y() << ", " << r.GetDirection().z() << "] / col ["<< rgb[0] <<", " << ", "<< rgb[1] << ", " << rgb[2] << "]\n";
+	
+
+	
+	return true;
+}
 
 bool Scene::Render(const int samples/* = 1*/, const int activeCamIdx /* = 0*/, Framebuffer* const fb, std::ofstream& color, std::ofstream& normal)
 {

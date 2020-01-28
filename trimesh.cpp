@@ -83,7 +83,7 @@ bool TriMesh::Init()
 	return true;
 }
 
-bool TriMesh::Hit(const Ray& r, float t_min, float t_max, HitRecord& rec, Matrix* gm)
+bool TriMesh::Hit(const Ray& r, float t_min, float t_max, HitRecord& rec, Matrix* gm, bool debugRay /*= false*/)
 {
 	Matrix* localgm;
 	if (gm)

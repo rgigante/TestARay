@@ -7,7 +7,7 @@
 
 #include "hitableinstance.hpp"
 
-bool HitableInstance::Hit(const Ray& r, float t_min, float t_max, HitRecord& rec, Matrix* gm)
+bool HitableInstance::Hit(const Ray& r, float t_min, float t_max, HitRecord& rec, Matrix* gm, bool debugRay /*= false*/)
 {
 	Ray ray = Ray(_gim * r.GetOrigin(), (_gim.Get3x3() * r.GetDirection()).GetNormalized());
 	bool hit = _obj->Hit(ray, t_min, t_max, rec, &_gm);

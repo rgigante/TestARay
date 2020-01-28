@@ -17,7 +17,7 @@ public:
 	HitableInstance(Hitable* obj):_obj(obj){}
 	~HitableInstance(){}
 	
-	bool Hit (const Ray& r, float t_min, float t_max, HitRecord& rec, Matrix* gm = nullptr);
+	bool Hit (const Ray& r, float t_min, float t_max, HitRecord& rec, Matrix* gm = nullptr, bool debugRay = false);
 	
 	bool Init();
 	const Matrix& GetMatrixAt(int idx) { return _mtrs[idx]; }

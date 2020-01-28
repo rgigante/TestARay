@@ -20,8 +20,8 @@
 #include "hitableinstance.hpp"
 
 // global var to enable console debug
-const int g_xRes = 400;
-const int g_yRes = 400;
+const int g_xRes = 64;
+const int g_yRes = 64;
 
 int main()
 {
@@ -43,10 +43,10 @@ int main()
 //		// the blue triangle on the floor
 //		scene->AddItem(new Triangle("tri2", Vec3(2, -0.5, 5), Vec3(-2, -0.5, -2), Vec3(-2, -0.5, 5), white));
 		
-		Triangle2* tri = new Triangle2("tri", Vec3(0.5, 0.5, 0), Vec3(1.5, -0.5, 0), Vec3(1.5, 0.5, 0), red);
-		scene->AddItem(tri);
-//		Triangle2* tri2 = new Triangle2("tri", Vec3(0.5, 0.5, 0), Vec3(1.5, -0.5, 0), Vec3(1.5, 0.5, 0), green);
-//		scene->AddItem(tri2);
+		Triangle2* tri = new Triangle2("trired", Vec3(-0.5, 0.5, 0), Vec3(0.5, -0.5, 0), Vec3(0.5, 0.5, 0), red);
+//		scene->AddItem(tri);
+		Triangle2* tri2 = new Triangle2("trigreen", Vec3(-0.5, 0.5, 0), Vec3(0.5, -0.5, 0), Vec3(0.5, 0.5, 0), green);
+		scene->AddItem(tri2);
 		
 		
 //		// allocate a sphere primitive
@@ -61,16 +61,16 @@ int main()
 //		instance->Init();
 //		scene->AddItem(instance);
 		//
-		HitableInstance* instance2 = new HitableInstance(tri);
-		Matrix trf;
-		trf.Reset();
-		trf.AddOffset(0, 0, .5);
-		instance2->AddMatrix(trf);
-		instance2->Init();
-		scene->AddItem(instance2);
+//		HitableInstance* instance2 = new HitableInstance(tri);
+//		Matrix trf;
+//		trf.Reset();
+//		trf.AddOffset(0, 0, .5);
+//		instance2->AddMatrix(trf);
+//		instance2->Init();
+//		scene->AddItem(instance2);
 		
-		const Vec3 from (0,2,5);
-		const Vec3 to (0,0.5,0);
+		const Vec3 from (0,0,2);
+		const Vec3 to (0,0,0);
 		const Vec3 up (0,1,0);
 		const float fov = 40;
 		const float aperture = 0; //0.05;
@@ -79,13 +79,20 @@ int main()
 		// add camera to the scene
 		scene->AddCamera(new Camera(from, to, up, fov, aperture, focusDistance, g_xRes, g_yRes));
 		
-		std::ofstream rgbImage, nrmImage;
-		rgbImage.open("/Users/riccardogigante/Desktop/test_color.ppm", std::ofstream::out);
-		nrmImage.open("/Users/riccardogigante/Desktop/test_normal.ppm", std::ofstream::out);
+		Vec3 pixelCol;
+		scene->ColorPixel(0, 0); //ok
+		scene->ColorPixel(64, 0); //ok
+		scene->ColorPixel(64, 64); //ok
+		scene->ColorPixel(0, 63); //ko
 		
+#if 1
 		Framebuffer* fb = new Framebuffer(g_xRes, g_yRes, 3);
 		if (!fb)
 			return -1;
+		
+		std::ofstream rgbImage, nrmImage;
+		rgbImage.open("/Users/riccardogigante/Desktop/test_color.ppm", std::ofstream::out);
+		nrmImage.open("/Users/riccardogigante/Desktop/test_normal.ppm", std::ofstream::out);
 		
 		scene->Render(1, 0, fb, rgbImage, nrmImage);
 		
@@ -98,6 +105,7 @@ int main()
 			delete fb;
 			fb = nullptr;
 		}
+#endif
 		
 		// dispose the scene (camera, items and materials)
 		if (scene)
