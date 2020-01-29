@@ -7,13 +7,6 @@
 
 #include "triangle.hpp"
 
-
-Triangle::Triangle(char const* name, Vec3 a, Vec3 b, Vec3 c, Material* m, bool isTriMesh, Matrix* gm) : _name(name), _a(a), _b(b), _c(c), _mat(m), _isTriMesh(isTriMesh), _gm(gm){}
-
-Triangle::~Triangle()
-{
-}
-
 bool Triangle::Hit(const Ray& r, float t_min, float t_max, HitRecord& rec, Matrix* gm, bool debugRay /*= false*/)
 {
 	Vec3 a,b,c;
@@ -69,12 +62,6 @@ bool Triangle::Hit(const Ray& r, float t_min, float t_max, HitRecord& rec, Matri
 		}
 	}
 	return false;
-}
-
-Triangle2::Triangle2(Vec3 a, Vec3 b, Vec3 c, Material* m, bool isTriMesh, Matrix* gm) : _a(a), _b(b), _c(c), _mat(m), _isTriMesh(isTriMesh), _gm(gm){}
-
-Triangle2::~Triangle2()
-{
 }
 
 bool Triangle2::Hit(const Ray& r, float t_min, float t_max, HitRecord& rec, Matrix* gm, bool debugRay /*= false*/)

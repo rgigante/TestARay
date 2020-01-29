@@ -10,9 +10,17 @@
 bool HitableInstance::Hit(const Ray& r, float t_min, float t_max, HitRecord& rec, Matrix* gm, bool debugRay /*= false*/)
 {
 	Ray ray = Ray(_gim * r.GetOrigin(), (_gim.Get3x3() * r.GetDirection()).GetNormalized());
-	bool hit = _obj->Hit(ray, t_min, t_max, rec, &_gm);
+	if (debugRay) std::cout << "\t\t\t- instance test\n"<<
+		"\t\t\t- oldray:"<< r << "\n"<<
+		"\t\t\t- newray:"<< ray <<"\n";
+	bool hit = _obj->Hit(ray, t_min, t_max, rec, nullptr, debugRay);
+	rec.p = _gm * rec.p;
+	rec.n = (_gm.Get3x3() * rec.n).GetNormalized();
 	float tAtR = r.ParameterAtPoint(rec.p);
 	float tAtRay = ray.ParameterAtPoint(rec.p);
+	if (debugRay && hit) std::cout <<
+		"\t\t\t- tAtOldRay"<< tAtR <<"\n"<<
+		"\t\t\t- tAtNewRay"<< tAtRay <<"\n";
 //	std::cout << "tAtR [ "<<tAtR<<" ] - " << "tAtRay [ "<<tAtRay<<" ] \n";
 //	if (hit)
 //		assert (tAtR != tAtRay);

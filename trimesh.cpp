@@ -76,7 +76,7 @@ bool TriMesh::Init()
 	{
 		const int vIdx[3] = {_triIndexes[3 * i + 0], _triIndexes[3 * i + 1], _triIndexes[3 * i + 2]};
 		{
-		_tris[i] = new Triangle(nullptr, _vertexes[vIdx[0]], _vertexes[vIdx[1]], _vertexes[vIdx[2]], _mat, true, &_gm);
+		_tris[i] = new Triangle(_vertexes[vIdx[0]], _vertexes[vIdx[1]], _vertexes[vIdx[2]], _mat, true, &_gm);
 		}
 	}
 	

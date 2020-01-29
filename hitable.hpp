@@ -34,10 +34,10 @@ public:
 	virtual ~Hitable(){}
 	virtual bool Hit (const Ray& r, float t_min, float t_max, HitRecord& rec, Matrix* gm = nullptr, bool debugRay = false) = 0;
 	bool SetName(char const* name){ _name = name; return (!name) ? false : true; };
-	char const* GetName(){ if (_name) return _name; return "";}
+	char const* GetName(){ if (_name) return _name; return nullptr;}
 	
 public:
-	char const* _name;
+	char const* _name = "";
 };
 
 #endif /* hitable_hpp */

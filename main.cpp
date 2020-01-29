@@ -20,13 +20,75 @@
 #include "hitableinstance.hpp"
 
 // global var to enable console debug
-const int g_xRes = 64;
-const int g_yRes = 64;
+const int g_xRes = 400;
+const int g_yRes = 400;
 
 int main()
 {
-//	MatrixTests();
-//	return 0;
+#ifdef MATRIX_TESTS
+	{
+//		MatrixTests();
+//		return 0;
+	}
+#endif
+	
+#ifdef TRI_TESTS
+	{
+		// init the scene
+		Scene* scene = new Scene();
+		
+		// allocate metals
+		MetalReflector*  red = new MetalReflector("red", Vec3(0.9, 0, 0));
+		MetalReflector*  green = new MetalReflector("green", Vec3(0, 0.9, 0));
+		scene->AddMaterial(red);
+		scene->AddMaterial(green);
+		
+		Triangle2* tri = new Triangle2(Vec3(-0.5, 0.5, -0.5), Vec3(0.5, -0.5, -0.5), Vec3(0.5, 0.5, -0.5), red);
+		//		scene->AddItem(tri);
+		tri->SetName("triRed");
+		Triangle2* tri2 = new Triangle2(Vec3(-0.5, 0.5, 0), Vec3(0.5, -0.5, 0), Vec3(0.5, 0.5, 0), green);
+		tri2->SetName("triGreen");
+		scene->AddItem(tri2);
+		
+		HitableInstance* instance2 = new HitableInstance(tri);
+		Matrix trf;
+		trf.Reset();
+		trf.AddOffset(0.5, 0.5, -1);
+		instance2->AddMatrix(trf);
+		instance2->Init();
+		instance2->SetName("instanceRed");
+		scene->AddItem(instance2);
+		
+		const Vec3 from (0,0,5);
+		const Vec3 to (0,0,0);
+		const Vec3 up (0,1,0);
+		const float fov = 40;
+		const float aperture = 0; //0.05;
+		const float focusDistance = 5; //(from - to).Length();
+		
+		// add camera to the scene
+		scene->AddCamera(new Camera(from, to, up, fov, aperture, focusDistance, g_xRes, g_yRes));
+		
+		Vec3 pixelCol;
+		//		scene->ColorPixel(0/64 * g_xRes/64 * g_yRes, 0); // bottom-left
+		//		scene->ColorPixel(63/64 * g_xRes/64 * g_yRes, 0); // bottom-right
+		//		scene->ColorPixel(63/64 * g_xRes/64 * g_yRes, 63); // top-right
+		//		scene->ColorPixel(0/64 * g_xRes/64 * g_yRes, 63); //top-left
+		
+		scene->ColorPixel(60/64 * g_xRes, 60/64 * g_yRes, 0, true); //hit top-right
+		scene->ColorPixel(53/64 * g_xRes, 53/64 * g_yRes, 0, true); //hit top-right
+		scene->ColorPixel(10/64 * g_xRes, 10/64 * g_yRes, 0, true); //no hit bottom-left
+		
+		// dispose the scene (camera, items and materials)
+		if (scene)
+		{
+			delete(scene);
+			scene = nullptr;
+		}
+		
+		return 0;
+	}
+#endif
 	
 	{
 		// init the scene
@@ -44,8 +106,12 @@ int main()
 		scene->AddMaterial(green);
 		scene->AddMaterial(blue);
 		
-//		scene->AddItem(new Triangle("tr1", Vec3(-2, -0.5, -2), Vec3(2, -0.5, 5), Vec3(2, -0.5, -2), white));
-//		scene->AddItem(new Triangle("tri2", Vec3(2, -0.5, 5), Vec3(-2, -0.5, -2), Vec3(-2, -0.5, 5), white));
+		Triangle* trifloor1 = new Triangle(Vec3(-2, -0.5, -2), Vec3(2, -0.5, 5), Vec3(2, -0.5, -2), white);
+		trifloor1->SetName("triFloor1");
+		scene->AddItem(trifloor1);
+		Triangle* trifloor2 = new Triangle(Vec3(2, -0.5, 5), Vec3(-2, -0.5, -2), Vec3(-2, -0.5, 5), white);
+//		trifloor2->SetName("triFloor2");
+		scene->AddItem(trifloor2);
 		
 		Triangle2* tri = new Triangle2(Vec3(-0.5, 0.5, -0.5), Vec3(0.5, -0.5, -0.5), Vec3(0.5, 0.5, -0.5), red);
 //		scene->AddItem(tri);
@@ -54,16 +120,29 @@ int main()
 		tri2->SetName("triGreen");
 		scene->AddItem(tri2);
 		
-		HitableInstance* instance2 = new HitableInstance(tri);
+		HitableInstance* instance1 = new HitableInstance(tri);
 		Matrix trf;
+		trf.AddOffset(0.5, 0, -1);
+		instance1->AddMatrix(trf);
+		instance1->Init();
+		instance1->SetName("instanceRed");
+		scene->AddItem(instance1);
+		
+		Sphere2* sphere = new Sphere2("Sphere", Vec3(-1,0,0), 0.5, blue);
+		scene->AddItem(sphere);
+		
+		HitableInstance* instance2 = new HitableInstance(sphere);
 		trf.Reset();
-		trf.AddOffset(0, 0, 1);
+		trf.AddOffset(1.5, -0.25, 1);
+		instance2->AddMatrix(trf);
+		trf.Reset();
+		trf.AddUniformScale(0.5);
 		instance2->AddMatrix(trf);
 		instance2->Init();
-		instance2->SetName("instanceRed");
+		instance2->SetName("instanceBlu");
 		scene->AddItem(instance2);
 		
-		const Vec3 from (0,0,2);
+		const Vec3 from (0,0,5);
 		const Vec3 to (0,0,0);
 		const Vec3 up (0,1,0);
 		const float fov = 40;
@@ -79,9 +158,9 @@ int main()
 //		scene->ColorPixel(63, 63); // top-right
 //		scene->ColorPixel(0, 63); //top-left
 		
-		scene->ColorPixel(60, 60, 0, true); //hit top-right
-		scene->ColorPixel(53, 53, 0, true); //hit top-right
-		scene->ColorPixel(10, 10, 0, true); //no hit bottom-left
+		scene->ColorPixel(60/64 * g_xRes, 60/64 * g_yRes, 0, true); //hit top-right
+		scene->ColorPixel(53/64 * g_xRes, 53/64 * g_yRes, 0, true); //hit top-right
+		scene->ColorPixel(10/64 * g_xRes, 10/64 * g_yRes, 0, true); //no hit bottom-left
 #if 1
 		Framebuffer* fb = new Framebuffer(g_xRes, g_yRes, 3);
 		if (!fb)
@@ -157,15 +236,15 @@ int main()
 	// the small red sphere on the back
 	scene->AddItem(new Sphere("redSphere", Vec3(0.35, -0.4, -1), 0.1, red));
 	// the green triangle on the floor
-	scene->AddItem(new Triangle("greenTri", Vec3(-2, -0.5, -2), Vec3(2, -0.5, 5), Vec3(2, -0.5, -2), green));
+	scene->AddItem(new Triangle(Vec3(-2, -0.5, -2), Vec3(2, -0.5, 5), Vec3(2, -0.5, -2), green));
 	// the blue triangle on the floor
-	scene->AddItem(new Triangle("blueTri", Vec3(2, -0.5, 5), Vec3(-2, -0.5, -2), Vec3(-2, -0.5, 5), blue));
+	scene->AddItem(new Triangle(Vec3(2, -0.5, 5), Vec3(-2, -0.5, -2), Vec3(-2, -0.5, 5), blue));
 	// the purple triangle on the left
-	scene->AddItem(new Triangle("purpleTri", Vec3(-0.5, 0.5, -0.5), Vec3(-0.5, -0.5, -1.5), Vec3(-0.5, 0.5, -1.5), purpleM));
+	scene->AddItem(new Triangle(Vec3(-0.5, 0.5, -0.5), Vec3(-0.5, -0.5, -1.5), Vec3(-0.5, 0.5, -1.5), purpleM));
 	// the cyan triangle on the back
-	scene->AddItem(new Triangle("cyanTri", Vec3(-0.5, 0.5, -1.5), Vec3(0.5, -0.5, -1.5), Vec3(0.5, 0.5, -1.5), cyanM));
+	scene->AddItem(new Triangle(Vec3(-0.5, 0.5, -1.5), Vec3(0.5, -0.5, -1.5), Vec3(0.5, 0.5, -1.5), cyanM));
 	// the yellow triangle on the right
-	scene->AddItem(new Triangle("yellowTri", Vec3(0.5, 0.5, -0.5), Vec3(0.5, 0.5, -1.5), Vec3(0.5, -0.5, -0.5), yellowM));
+	scene->AddItem(new Triangle(Vec3(0.5, 0.5, -0.5), Vec3(0.5, 0.5, -1.5), Vec3(0.5, -0.5, -0.5), yellowM));
 
 
 	// the red cube on the top
@@ -293,7 +372,7 @@ int main()
 	inst->Init();
 	scene->AddItem(inst);
 	
-	HitableInstance* inst2 = new HitableInstance(new Triangle("cyanTri", Vec3(-0.5, 0.5, -1.5), Vec3(0.5, -0.5, -1.5), Vec3(0.5, 0.5, -1.5), cyanM));
+	HitableInstance* inst2 = new HitableInstance(new Triangle(Vec3(-0.5, 0.5, -1.5), Vec3(0.5, -0.5, -1.5), Vec3(0.5, 0.5, -1.5), cyanM));
 	trf2.Reset();
 	trf2.AddOffset(-1,1,0);
 //		trf2.AddNonUniformScale(.5, 1, 1);

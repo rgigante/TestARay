@@ -53,11 +53,11 @@ void Scene::Color(Vec3& col, Vec3& nrm, const Ray& r, int depth/* = 0*/)
 	}
 	
 	// compute the background color
-//	const float blend = 0.5 * (r.GetDirection().y() + 1.0);
-//	col = Lerp(Vec3(1.0, 1.0, 1.0), Vec3(0.5, 0.7, 1.0), blend);
-	const float blendY = 0.5 * (r.GetDirection().y() + 1.0);
-	const float blendX = 0.5 * (r.GetDirection().x() + 1.0);
-	col = Lerp(Vec3(1,0,0), Vec3(0,0,1), blendY) + Lerp(Vec3(0,0,0), Vec3(0,1,0), blendX);
+	const float blend = 0.5 * (r.GetDirection().y() + 1.0);
+	col = Lerp(Vec3(1.0, 1.0, 1.0), Vec3(0.5, 0.7, 1.0), blend);
+//	const float blendY = 0.5 * (r.GetDirection().y() + 1.0);
+//	const float blendX = 0.5 * (r.GetDirection().x() + 1.0);
+//	col = Lerp(Vec3(1,0,0), Vec3(0,0,1), blendY) + Lerp(Vec3(0,0,0), Vec3(0,1,0), blendX);
 	nrm = Vec3(0,0,0);
 //		std::cout << "\tdepth["<<depth<<"], col["<<col<<"], nrm["<<nrm<<"], ray["<<r.GetOrigin()<<" / "<<r.GetDirection()<<"]\n";
 	return;
