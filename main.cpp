@@ -34,39 +34,33 @@ int main()
 		
 		// allocate lambertians
 		LambertianReflector*  white = new LambertianReflector("white", Vec3(0.9, 0.9, 0.9));
+		scene->AddMaterial(white);
+		
+		// allocate metals
 		MetalReflector*  red = new MetalReflector("red", Vec3(0.9, 0, 0));
 		MetalReflector*  green = new MetalReflector("green", Vec3(0, 0.9, 0));
 		MetalReflector*  blue = new MetalReflector("blue", Vec3(0, 0, 0.9));
-		scene->AddMaterial(white);
+		scene->AddMaterial(red);
+		scene->AddMaterial(green);
+		scene->AddMaterial(blue);
 		
 //		scene->AddItem(new Triangle("tr1", Vec3(-2, -0.5, -2), Vec3(2, -0.5, 5), Vec3(2, -0.5, -2), white));
-//		// the blue triangle on the floor
 //		scene->AddItem(new Triangle("tri2", Vec3(2, -0.5, 5), Vec3(-2, -0.5, -2), Vec3(-2, -0.5, 5), white));
 		
-		Triangle2* tri = new Triangle2("trired", Vec3(-0.5, 0.5, 0), Vec3(0.5, -0.5, 0), Vec3(0.5, 0.5, 0), red);
+		Triangle2* tri = new Triangle2(Vec3(-0.5, 0.5, -0.5), Vec3(0.5, -0.5, -0.5), Vec3(0.5, 0.5, -0.5), red);
 //		scene->AddItem(tri);
-		Triangle2* tri2 = new Triangle2("trigreen", Vec3(-0.5, 0.5, 0), Vec3(0.5, -0.5, 0), Vec3(0.5, 0.5, 0), green);
+		tri->SetName("triRed");
+		Triangle2* tri2 = new Triangle2(Vec3(-0.5, 0.5, 0), Vec3(0.5, -0.5, 0), Vec3(0.5, 0.5, 0), green);
+		tri2->SetName("triGreen");
 		scene->AddItem(tri2);
 		
-		
-//		// allocate a sphere primitive
-//		Sphere2* testSphere = new Sphere2("testSphere", Vec3(-1, 0, -1), .5, green);
-//		scene->AddItem(testSphere);
-//
-//		HitableInstance* instance = new HitableInstance(testSphere);
-//		Matrix trf;
-//		trf.AddNonUniformScale(.5, 1, 1);
-//		trf.AddOffset(1, 0, 0);
-//		instance->AddMatrix(trf);
-//		instance->Init();
-//		scene->AddItem(instance);
-		//
 		HitableInstance* instance2 = new HitableInstance(tri);
 		Matrix trf;
 		trf.Reset();
-		trf.AddOffset(0, 0, .5);
+		trf.AddOffset(0, 0, 1);
 		instance2->AddMatrix(trf);
 		instance2->Init();
+		instance2->SetName("instanceRed");
 		scene->AddItem(instance2);
 		
 		const Vec3 from (0,0,2);
@@ -80,12 +74,14 @@ int main()
 		scene->AddCamera(new Camera(from, to, up, fov, aperture, focusDistance, g_xRes, g_yRes));
 		
 		Vec3 pixelCol;
-		scene->ColorPixel(0, 0); // bottom-left
-		scene->ColorPixel(63, 0); // bottom-right
-		scene->ColorPixel(63, 63); // top-right
-		scene->ColorPixel(0, 63); //top-left
-		scene->ColorPixel(53, 53); //hit top-right
-		scene->ColorPixel(10, 10); //no hit bottom-left
+//		scene->ColorPixel(0, 0); // bottom-left
+//		scene->ColorPixel(63, 0); // bottom-right
+//		scene->ColorPixel(63, 63); // top-right
+//		scene->ColorPixel(0, 63); //top-left
+		
+		scene->ColorPixel(60, 60, 0, true); //hit top-right
+		scene->ColorPixel(53, 53, 0, true); //hit top-right
+		scene->ColorPixel(10, 10, 0, true); //no hit bottom-left
 #if 1
 		Framebuffer* fb = new Framebuffer(g_xRes, g_yRes, 3);
 		if (!fb)

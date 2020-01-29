@@ -31,8 +31,8 @@ public:
 	bool Hit (const Ray& r, float t_min, float t_max, HitRecord& rec, bool debugRay = false) const;
 	void Color(Vec3& col, Vec3& nrm, const Ray& r, int depth = 0);
 	
-	void DebugColor(Vec3& col, const Ray& r, int depth = 0);
-	bool ColorPixel(const int x = 1, const int y = 1, const int activeCamIdx = 0);
+	void DebugColor(Vec3& col, const Ray& r, int depth = 0, const bool debugRay = false);
+	bool ColorPixel(const int x = 1, const int y = 1, const int activeCamIdx = 0, const bool debugRay = false);
 	
 	
 	

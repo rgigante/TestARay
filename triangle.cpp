@@ -71,7 +71,7 @@ bool Triangle::Hit(const Ray& r, float t_min, float t_max, HitRecord& rec, Matri
 	return false;
 }
 
-Triangle2::Triangle2(char const* name, Vec3 a, Vec3 b, Vec3 c, Material* m, bool isTriMesh, Matrix* gm) : _name(name), _a(a), _b(b), _c(c), _mat(m), _isTriMesh(isTriMesh), _gm(gm){}
+Triangle2::Triangle2(Vec3 a, Vec3 b, Vec3 c, Material* m, bool isTriMesh, Matrix* gm) : _a(a), _b(b), _c(c), _mat(m), _isTriMesh(isTriMesh), _gm(gm){}
 
 Triangle2::~Triangle2()
 {
