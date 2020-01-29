@@ -16,7 +16,7 @@ class Triangle: public Hitable
 {
 public:
 //	Triangle(char const* name, Vec3 a, Vec3 b, Vec3 c, Material* m, bool isTriMesh = false);
-	Triangle(Vec3 a, Vec3 b, Vec3 c, Material* m, bool isTriMesh = false, Matrix* gm = nullptr) : _a(a), _b(b), _c(c), _mat(m), _isTriMesh(isTriMesh), _gm(gm){}
+	Triangle(char const* name,Vec3 a, Vec3 b, Vec3 c, Material* m, bool isTriMesh = false, Matrix* gm = nullptr) : _a(a), _b(b), _c(c), _mat(m), _isTriMesh(isTriMesh), _gm(gm){ SetName(name); }
 	~Triangle(){}
 	bool Hit (const Ray& r, float t_min, float t_max, HitRecord& rec, Matrix* gm = nullptr, bool debugRay = false);
 	
@@ -31,7 +31,7 @@ class Triangle2: public Hitable
 {
 public:
 	//	Triangle(char const* name, Vec3 a, Vec3 b, Vec3 c, Material* m, bool isTriMesh = false);
-	Triangle2(Vec3 a, Vec3 b, Vec3 c, Material* m, bool isTriMesh = false, Matrix* gm = nullptr) : _a(a), _b(b), _c(c), _mat(m), _isTriMesh(isTriMesh), _gm(gm){}
+	Triangle2(char const* name, Vec3 a, Vec3 b, Vec3 c, Material* m, bool isTriMesh = false, Matrix* gm = nullptr) : _a(a), _b(b), _c(c), _mat(m), _isTriMesh(isTriMesh), _gm(gm){ SetName(name); }
 	~Triangle2(){}
 	bool Hit (const Ray& r, float t_min, float t_max, HitRecord& rec, Matrix* gm = nullptr, bool debugRay = false);
 	

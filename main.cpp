@@ -23,6 +23,9 @@
 const int g_xRes = 400;
 const int g_yRes = 400;
 
+#define ALL_TESTS
+#define EXECUTE_RENDER
+
 int main()
 {
 #ifdef MATRIX_TESTS
@@ -43,23 +46,22 @@ int main()
 		scene->AddMaterial(red);
 		scene->AddMaterial(green);
 		
-		Triangle2* tri = new Triangle2(Vec3(-0.5, 0.5, -0.5), Vec3(0.5, -0.5, -0.5), Vec3(0.5, 0.5, -0.5), red);
-		//		scene->AddItem(tri);
-		tri->SetName("triRed");
-		Triangle2* tri2 = new Triangle2(Vec3(-0.5, 0.5, 0), Vec3(0.5, -0.5, 0), Vec3(0.5, 0.5, 0), green);
-		tri2->SetName("triGreen");
+		Triangle2* tri = new Triangle2("triRed", Vec3(-0.5, 0.5, 0.5), Vec3(0.5, -0.5, 0.5), Vec3(0.5, 0.5, 0.5), red);
+//		scene->AddItem(tri);
+		Triangle2* tri2 = new Triangle2("triGreen", Vec3(-0.5, 0.5, 0), Vec3(0.5, -0.5, 0), Vec3(0.5, 0.5, 0), green);
 		scene->AddItem(tri2);
 		
 		HitableInstance* instance2 = new HitableInstance(tri);
 		Matrix trf;
 		trf.Reset();
-		trf.AddOffset(0.5, 0.5, -1);
+//		trf.AddOffset(0,0,1);
+		trf.AddUniformScale(.81); //.79 / .8 / .81
 		instance2->AddMatrix(trf);
 		instance2->Init();
 		instance2->SetName("instanceRed");
 		scene->AddItem(instance2);
 		
-		const Vec3 from (0,0,5);
+		const Vec3 from (0,0,2);
 		const Vec3 to (0,0,0);
 		const Vec3 up (0,1,0);
 		const float fov = 40;
@@ -75,9 +77,31 @@ int main()
 		//		scene->ColorPixel(63/64 * g_xRes/64 * g_yRes, 63); // top-right
 		//		scene->ColorPixel(0/64 * g_xRes/64 * g_yRes, 63); //top-left
 		
-		scene->ColorPixel(60/64 * g_xRes, 60/64 * g_yRes, 0, true); //hit top-right
-		scene->ColorPixel(53/64 * g_xRes, 53/64 * g_yRes, 0, true); //hit top-right
-		scene->ColorPixel(10/64 * g_xRes, 10/64 * g_yRes, 0, true); //no hit bottom-left
+		scene->ColorPixel(52 * g_xRes/64.0, 52 * g_yRes/64.0, 0, true); //hit top-right
+		scene->ColorPixel(46 * g_xRes/64.0, 46 * g_yRes/64.0, 0, true); //hit top-right
+//		scene->ColorPixel(10 * g_xRes/64.0, 10 * g_yRes/64.0, 0, true); //no hit bottom-left
+		
+#ifdef EXECUTE_RENDER
+		Framebuffer* fb = new Framebuffer(g_xRes, g_yRes, 3);
+		if (!fb)
+			return -1;
+		
+		std::ofstream rgbImage, nrmImage;
+		rgbImage.open("/Users/riccardogigante/Desktop/test_color.ppm", std::ofstream::out);
+		nrmImage.open("/Users/riccardogigante/Desktop/test_normal.ppm", std::ofstream::out);
+		
+		scene->Render(1, 0, fb, rgbImage, nrmImage);
+		
+		rgbImage.close();
+		nrmImage.close();
+		
+		// dispose the framebuffer
+		if (fb)
+		{
+			delete fb;
+			fb = nullptr;
+		}
+#endif
 		
 		// dispose the scene (camera, items and materials)
 		if (scene)
@@ -90,6 +114,7 @@ int main()
 	}
 #endif
 	
+#ifdef ALL_TESTS
 	{
 		// init the scene
 		Scene* scene = new Scene();
@@ -106,18 +131,14 @@ int main()
 		scene->AddMaterial(green);
 		scene->AddMaterial(blue);
 		
-		Triangle* trifloor1 = new Triangle(Vec3(-2, -0.5, -2), Vec3(2, -0.5, 5), Vec3(2, -0.5, -2), white);
-		trifloor1->SetName("triFloor1");
+		Triangle* trifloor1 = new Triangle("triFloor1", Vec3(-2, -0.5, -2), Vec3(2, -0.5, 5), Vec3(2, -0.5, -2), white);
 		scene->AddItem(trifloor1);
-		Triangle* trifloor2 = new Triangle(Vec3(2, -0.5, 5), Vec3(-2, -0.5, -2), Vec3(-2, -0.5, 5), white);
-//		trifloor2->SetName("triFloor2");
+		Triangle* trifloor2 = new Triangle("triFloor2", Vec3(2, -0.5, 5), Vec3(-2, -0.5, -2), Vec3(-2, -0.5, 5), white);
 		scene->AddItem(trifloor2);
 		
-		Triangle2* tri = new Triangle2(Vec3(-0.5, 0.5, -0.5), Vec3(0.5, -0.5, -0.5), Vec3(0.5, 0.5, -0.5), red);
+		Triangle2* tri = new Triangle2("triRed", Vec3(-0.5, 0.5, -0.5), Vec3(0.5, -0.5, -0.5), Vec3(0.5, 0.5, -0.5), red);
 //		scene->AddItem(tri);
-		tri->SetName("triRed");
-		Triangle2* tri2 = new Triangle2(Vec3(-0.5, 0.5, 0), Vec3(0.5, -0.5, 0), Vec3(0.5, 0.5, 0), green);
-		tri2->SetName("triGreen");
+		Triangle2* tri2 = new Triangle2("triGreen", Vec3(-0.5, 0.5, 0), Vec3(0.5, -0.5, 0), Vec3(0.5, 0.5, 0), green);
 		scene->AddItem(tri2);
 		
 		HitableInstance* instance1 = new HitableInstance(tri);
@@ -161,7 +182,7 @@ int main()
 		scene->ColorPixel(60/64 * g_xRes, 60/64 * g_yRes, 0, true); //hit top-right
 		scene->ColorPixel(53/64 * g_xRes, 53/64 * g_yRes, 0, true); //hit top-right
 		scene->ColorPixel(10/64 * g_xRes, 10/64 * g_yRes, 0, true); //no hit bottom-left
-#if 1
+#ifdef EXECUTE_RENDER
 		Framebuffer* fb = new Framebuffer(g_xRes, g_yRes, 3);
 		if (!fb)
 			return -1;
@@ -192,6 +213,9 @@ int main()
 		
 		return 0;
 	}
+#endif
+	
+#ifdef STANDARD_RUN
 	
 	// init the scene
 	Scene* scene = new Scene();
@@ -433,4 +457,5 @@ int main()
 		delete(scene);
 		scene = nullptr;
 	}
+#endif
 }
