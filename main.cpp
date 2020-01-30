@@ -23,6 +23,7 @@
 const int g_xRes = 400;
 const int g_yRes = 400;
 
+//#define MATRIX_TESTS
 #define SPHERE_TESTS
 #define TRI_TESTS
 #define ALL_TESTS

@@ -66,18 +66,18 @@ bool TriMesh::Init()
 		return false;
 	
 	// create global trf matrixes
-//	for (int i = 0; i < _mtrs.size(); ++i)
-//	{
-//		_gm = _gm * _mtrs[i];
-//		_invmtrs.push_back(_mtrs[i].GetInverse());
-//	}
-//	_gim = _gm.GetInverse();
+	for (int i = 0; i < _mtrs.size(); ++i)
+	{
+		_gm = _gm * _mtrs[i];
+		_invmtrs.push_back(_mtrs[i].GetInverse());
+	}
+	_gim = _gm.GetInverse();
 	
 	for (int i = 0; i < _trisCnt; ++i)
 	{
 		const int vIdx[3] = {_triIndexes[3 * i + 0], _triIndexes[3 * i + 1], _triIndexes[3 * i + 2]};
 		{
-		_tris[i] = new Triangle2("", _vertexes[vIdx[0]], _vertexes[vIdx[1]], _vertexes[vIdx[2]], _mat, true, &_gm);
+		_tris[i] = new Triangle2("trimesh", _vertexes[vIdx[0]], _vertexes[vIdx[1]], _vertexes[vIdx[2]], _mat, true, &_gm);
 		}
 	}
 	
