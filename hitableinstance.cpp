@@ -26,7 +26,8 @@ bool HitableInstance::Hit(const Ray& r, float t_min, float t_max, HitRecord& rec
 	float tAtR = r.ParameterAtPoint(rec.p);
 	float tAtRay = ray.ParameterAtPoint(rec.p);
 	rec.p = _gm * rec.p;
-	rec.n = (_gm.Get3x3() * rec.n).GetNormalized();
+//	rec.n = (_gm.Get3x3() * rec.n).GetNormalized();
+	rec.n = (_gim.Get3x3().Transpose() * rec.n).GetNormalized();
 	if (debugRay && hit) std::cout <<
 		"\t\t\t- tAtOldRay"<< tAtR <<"\n"<<
 		"\t\t\t- tAtNewRay"<< tAtRay <<"\n";

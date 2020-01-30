@@ -23,7 +23,9 @@
 const int g_xRes = 400;
 const int g_yRes = 400;
 
-#define ALL_TESTS
+#define SPHERE_TESTS
+//#define TRI_TESTS
+//#define ALL_TESTS
 #define EXECUTE_RENDER
 
 int main()
@@ -54,8 +56,8 @@ int main()
 		HitableInstance* instance2 = new HitableInstance(tri);
 		Matrix trf;
 		trf.Reset();
-//		trf.AddOffset(0,0,1);
-		trf.AddUniformScale(.81); //.79 / .8 / .81
+		trf.AddOffset(0,0,.5);
+		trf.AddUniformScale(.5); //.79 / .8 / .81
 		instance2->AddMatrix(trf);
 		instance2->Init();
 		instance2->SetName("instanceRed");
@@ -87,8 +89,8 @@ int main()
 			return -1;
 		
 		std::ofstream rgbImage, nrmImage;
-		rgbImage.open("/Users/riccardogigante/Desktop/test_color.ppm", std::ofstream::out);
-		nrmImage.open("/Users/riccardogigante/Desktop/test_normal.ppm", std::ofstream::out);
+		rgbImage.open("/Users/riccardogigante/Desktop/test_color_TRI_TESTS.ppm", std::ofstream::out);
+		nrmImage.open("/Users/riccardogigante/Desktop/test_normal_TRI_TESTS.ppm", std::ofstream::out);
 		
 		scene->Render(1, 0, fb, rgbImage, nrmImage);
 		
@@ -109,8 +111,77 @@ int main()
 			delete(scene);
 			scene = nullptr;
 		}
+	}
+#endif
+	
+#ifdef SPHERE_TESTS
+	{
+		// init the scene
+		Scene* scene = new Scene();
 		
-		return 0;
+		// allocate metals
+		MetalReflector*  red = new MetalReflector("red", Vec3(0.9, 0, 0));
+		MetalReflector*  green = new MetalReflector("green", Vec3(0, 0.9, 0));
+		scene->AddMaterial(red);
+		scene->AddMaterial(green);
+		
+		Sphere2* sphereRed = new Sphere2("sphere Red", Vec3(-0.5, 0.5, 0.5), 0.5, red);
+		scene->AddItem(sphereRed);
+		
+		HitableInstance* instance2 = new HitableInstance(sphereRed);
+		Matrix trf;
+		trf.Reset();
+		trf.AddOffset(1,0,0);
+		trf.AddNonUniformScale(1,1,2);
+		trf.AddOffset(1,0,-0.5);
+		instance2->AddMatrix(trf);
+		instance2->Init();
+		instance2->SetName("instanceRed");
+		scene->AddItem(instance2);
+		
+		const Vec3 from (0,4,4);
+		const Vec3 to (0,0,0);
+		const Vec3 up (0,1,0);
+		const float fov = 40;
+		const float aperture = 0; //0.05;
+		const float focusDistance = 5; //(from - to).Length();
+		
+		// add camera to the scene
+		scene->AddCamera(new Camera(from, to, up, fov, aperture, focusDistance, g_xRes, g_yRes));
+		
+		Vec3 pixelCol;
+		
+		scene->ColorPixel(40 * g_xRes/64.0, (64-31) * g_yRes/64.0, 0, true); //hit top-right
+		scene->ColorPixel(45 * g_xRes/64.0, (64-31) * g_yRes/64.0, 0, true); //hit top-right
+		
+#ifdef EXECUTE_RENDER
+		Framebuffer* fb = new Framebuffer(g_xRes, g_yRes, 3);
+		if (!fb)
+			return -1;
+		
+		std::ofstream rgbImage, nrmImage;
+		rgbImage.open("/Users/riccardogigante/Desktop/test_color_SPHERE_TESTS.ppm", std::ofstream::out);
+		nrmImage.open("/Users/riccardogigante/Desktop/test_normal_SPHERE_TESTS.ppm", std::ofstream::out);
+		
+		scene->Render(1, 0, fb, rgbImage, nrmImage);
+		
+		rgbImage.close();
+		nrmImage.close();
+		
+		// dispose the framebuffer
+		if (fb)
+		{
+			delete fb;
+			fb = nullptr;
+		}
+#endif
+		
+		// dispose the scene (camera, items and materials)
+		if (scene)
+		{
+			delete(scene);
+			scene = nullptr;
+		}
 	}
 #endif
 	
@@ -159,11 +230,14 @@ int main()
 		trf.Reset();
 		trf.AddUniformScale(0.5);
 		instance2->AddMatrix(trf);
+		trf.Reset();
+		trf.AddNonUniformScale(1,1,2);
+		instance2->AddMatrix(trf);
 		instance2->Init();
 		instance2->SetName("instanceBlu");
 		scene->AddItem(instance2);
 		
-		const Vec3 from (0,0,5);
+		const Vec3 from (5,5,5);
 		const Vec3 to (0,0,0);
 		const Vec3 up (0,1,0);
 		const float fov = 40;
@@ -188,8 +262,8 @@ int main()
 			return -1;
 		
 		std::ofstream rgbImage, nrmImage;
-		rgbImage.open("/Users/riccardogigante/Desktop/test_color.ppm", std::ofstream::out);
-		nrmImage.open("/Users/riccardogigante/Desktop/test_normal.ppm", std::ofstream::out);
+		rgbImage.open("/Users/riccardogigante/Desktop/test_color_ALL_TESTS.ppm", std::ofstream::out);
+		nrmImage.open("/Users/riccardogigante/Desktop/test_normal_ALL_TESTS.ppm", std::ofstream::out);
 		
 		scene->Render(1, 0, fb, rgbImage, nrmImage);
 		
@@ -458,4 +532,5 @@ int main()
 		scene = nullptr;
 	}
 #endif
+	return 0;
 }

@@ -270,6 +270,10 @@ inline Vec3 RandomPointOnDisk(float radius = 1)
 // Generate a reflected direction given an incident direction and the normal of the reflecting plane
 inline Vec3 ReflectRay(const Vec3& in, const Vec3& n)
 {
+	const float inLength = in.Length();
+	const float nLength = n.Length();
+	const float dotLength = Dot(in, n);
+	const float dotLengthByN = (2 * Dot(in, n) * n).Length();
 	return (in - 2 * Dot(in, n) * n);
 }
 

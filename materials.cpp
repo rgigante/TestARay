@@ -19,9 +19,11 @@ bool LambertianReflector::Scatter(const Ray& rHit, const HitRecord& rec, Vec3& a
 
 MetalReflector::MetalReflector(char const* name, const Vec3& a, float r /*= 0*/) : _albedo(a), _roughness(r), _name(name){}
 
-bool MetalReflector::Scatter(const Ray &rHit, const HitRecord &rec, Vec3 &attenuation, Ray &rScatter) const
+bool MetalReflector::Scatter(const Ray &rHit, const HitRecord &_rec, Vec3 &attenuation, Ray &rScatter) const
 {
-	const Vec3 rflDir = ReflectRay(rHit.GetDirection(), rec.n);
+	HitRecord rec = _rec;
+	Vec3 rflDir = ReflectRay(rHit.GetDirection(), rec.n);
+//	std::cout << "\t\t- rHit.dir["<<rHit.GetDirection()<<"]\n\t\t- rec.n["<<rec.n<<"]\n\t\t- rflDir["<<rflDir<<"]\n";
 	if (_roughness)
 		rScatter = Ray(rec.p, rflDir + RandomPointOnSphere(_roughness));
 	else
@@ -29,8 +31,14 @@ bool MetalReflector::Scatter(const Ray &rHit, const HitRecord &rec, Vec3 &attenu
 	attenuation = _albedo;
 	
 	const float rflDirCheck = 1e-6;
-	if (((Cross(rflDir, rec.n) - Cross(rec.n, -rHit.GetDirection())).Length()) > rflDirCheck)
-		std::cout << "WARNING - Reflected ray correctness check failed ["<< rflDirCheck <<"]\n"; // this should be almost zero
+	const float rflInOutDiffLength = (Cross(rflDir, rec.n) - Cross(rHit.GetDirection(), rec.n)).Length();
+	if (rflInOutDiffLength > rflDirCheck)
+		std::cout << "WARNING - Reflected ray correctness check failed [ diff:"<< rflInOutDiffLength <<"]\n"; // this should be almost zero
+	
+	const float resA = Dot(rflDir, rec.n);
+	const float resB = Dot(rflDir.GetNormalized(), rec.n);
+	const float resC = Dot(rflDir, rec.n.GetNormalized());
+	const float resD = Dot(rflDir.GetNormalized(), rec.n.GetNormalized());
 	if (Dot(rflDir, rec.n) > 0)
 		return true;
 	
