@@ -9,10 +9,22 @@
 #define hitable_instance_hpp
 
 #include "hitable.hpp"
-#include "matrix.hpp"
+//#include "matrix.hpp"
 
 class HitableInstance : public Hitable
 {
+#ifdef NEW_HITABLE
+public:
+	HitableInstance(Hitable* obj):_obj(obj){}
+	~HitableInstance(){}
+	
+	bool Hit2 (const Ray& r, float t_min, float t_max, HitRecord& rec, Matrix* gm = nullptr, bool debugRay = false);
+	
+private:
+	Hitable* _obj;
+	
+//	Material *_mat;
+#else
 public:
 	HitableInstance(Hitable* obj):_obj(obj){}
 	~HitableInstance(){}
@@ -34,6 +46,7 @@ private:
 	std::vector<Matrix> _invmtrs;
 	Matrix _gm, _gim;
 	Material *_mat;
+#endif
 };
 
 #endif /* hitable_instance_hpp */

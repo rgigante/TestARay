@@ -24,9 +24,10 @@ const int g_xRes = 400;
 const int g_yRes = 400;
 
 //#define MATRIX_TESTS
-#define SPHERE_TESTS
-#define TRI_TESTS
-#define ALL_TESTS
+//#define NEW_HITABLE_TESTS
+//#define SPHERE_TESTS
+//#define TRI_TESTS
+//#define ALL_TESTS
 #define STANDARD_RUN
 #define EXECUTE_RENDER
 
@@ -36,6 +37,87 @@ int main()
 	{
 //		MatrixTests();
 //		return 0;
+	}
+#endif
+	
+#ifdef NEW_HITABLE_TESTS
+	{
+		// init the scene
+		Scene* scene = new Scene();
+		
+		// allocate metals
+		MetalReflector*  red = new MetalReflector("red", Vec3(0.9, 0, 0));
+		MetalReflector*  green = new MetalReflector("green", Vec3(0, 0.9, 0));
+		scene->AddMaterial(red);
+		scene->AddMaterial(green);
+		
+		Matrix trf;
+		
+		Triangle2* tri = new Triangle2("triRed", Vec3(-0.5, 0.5, 0.5), Vec3(0.5, -0.5, 0.5), Vec3(0.5, 0.5, 0.5), red);
+		trf.AddOffset(.1, .1, 0);
+		tri->AddMatrix(trf);
+		tri->Init();
+		scene->AddItem(tri);
+		Triangle2* tri2 = new Triangle2("triGreen", Vec3(-0.5, 0.5, 0), Vec3(0.5, -0.5, 0), Vec3(0.5, 0.5, 0), green);
+		scene->AddItem(tri2);
+		
+		HitableInstance* instance2 = new HitableInstance(tri);
+		trf.Reset();
+		trf.AddOffset(0,0,.5);
+		trf.AddUniformScale(.5); //.79 / .8 / .81
+		instance2->AddMatrix(trf);
+		instance2->Init();
+		instance2->SetName("instanceRed");
+		scene->AddItem(instance2);
+		
+		const Vec3 from (0,0,2);
+		const Vec3 to (0,0,0);
+		const Vec3 up (0,1,0);
+		const float fov = 40;
+		const float aperture = 0; //0.05;
+		const float focusDistance = 5; //(from - to).Length();
+		
+		// add camera to the scene
+		scene->AddCamera(new Camera(from, to, up, fov, aperture, focusDistance, g_xRes, g_yRes));
+		
+		Vec3 pixelCol;
+		//		scene->ColorPixel(0/64 * g_xRes/64 * g_yRes, 0); // bottom-left
+		//		scene->ColorPixel(63/64 * g_xRes/64 * g_yRes, 0); // bottom-right
+		//		scene->ColorPixel(63/64 * g_xRes/64 * g_yRes, 63); // top-right
+		//		scene->ColorPixel(0/64 * g_xRes/64 * g_yRes, 63); //top-left
+		
+		scene->ColorPixel(52 * g_xRes/64.0, 52 * g_yRes/64.0, 0, true); //hit top-right
+		scene->ColorPixel(46 * g_xRes/64.0, 46 * g_yRes/64.0, 0, true); //hit top-right
+		//		scene->ColorPixel(10 * g_xRes/64.0, 10 * g_yRes/64.0, 0, true); //no hit bottom-left
+		
+#ifdef EXECUTE_RENDER
+		Framebuffer* fb = new Framebuffer(g_xRes, g_yRes, 3);
+		if (!fb)
+			return -1;
+		
+		std::ofstream rgbImage, nrmImage;
+		rgbImage.open("/Users/riccardogigante/Desktop/test_color_TRI_TESTS.ppm", std::ofstream::out);
+		nrmImage.open("/Users/riccardogigante/Desktop/test_normal_TRI_TESTS.ppm", std::ofstream::out);
+		
+		scene->Render(1, 0, fb, rgbImage, nrmImage);
+		
+		rgbImage.close();
+		nrmImage.close();
+		
+		// dispose the framebuffer
+		if (fb)
+		{
+			delete fb;
+			fb = nullptr;
+		}
+#endif
+		
+		// dispose the scene (camera, items and materials)
+		if (scene)
+		{
+			delete(scene);
+			scene = nullptr;
+		}
 	}
 #endif
 	
@@ -204,9 +286,9 @@ int main()
 		scene->AddMaterial(green);
 		scene->AddMaterial(blue);
 		
-		Triangle* trifloor1 = new Triangle("triFloor1", Vec3(-2, -0.5, -2), Vec3(2, -0.5, 5), Vec3(2, -0.5, -2), white);
+		Triangle2* trifloor1 = new Triangle2("triFloor1", Vec3(-2, -0.5, -2), Vec3(2, -0.5, 5), Vec3(2, -0.5, -2), white);
 		scene->AddItem(trifloor1);
-		Triangle* trifloor2 = new Triangle("triFloor2", Vec3(2, -0.5, 5), Vec3(-2, -0.5, -2), Vec3(-2, -0.5, 5), white);
+		Triangle2* trifloor2 = new Triangle2("triFloor2", Vec3(2, -0.5, 5), Vec3(-2, -0.5, -2), Vec3(-2, -0.5, 5), white);
 		scene->AddItem(trifloor2);
 		
 		Triangle2* tri = new Triangle2("triRed", Vec3(-0.5, 0.5, -0.5), Vec3(0.5, -0.5, -0.5), Vec3(0.5, 0.5, -0.5), red);
@@ -452,7 +534,8 @@ int main()
 
 				mesh->SetVertexes(points, pointsCnt);
 				mesh->SetTriIndexes(indexes);
-				if (mesh->Init())
+				
+				if (mesh->InitTris() && mesh->Init())
 				{
 					scene->AddItem(mesh);
 					// dispose the memory used to create the mesh

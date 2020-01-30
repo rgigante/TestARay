@@ -60,6 +60,41 @@ bool TriMesh::SetTriIndexes(int* triIndexes)
 	
 }
 
+#ifdef NEW_HITABLE
+bool TriMesh::InitTris()
+{
+	if (!_vertexes || _vertexesCnt < 1 || !_triIndexes)
+		return false;
+	
+	for (int i = 0; i < _trisCnt; ++i)
+	{
+		const int vIdx[3] = {_triIndexes[3 * i + 0], _triIndexes[3 * i + 1], _triIndexes[3 * i + 2]};
+		{
+		_tris[i] = new Triangle2("trimesh", _vertexes[vIdx[0]], _vertexes[vIdx[1]], _vertexes[vIdx[2]], _mat, true, &_gm);
+		}
+	}
+	
+	return true;
+}
+
+bool TriMesh::Hit2(const Ray& r, float t_min, float t_max, HitRecord& rec, Matrix* gm, bool debugRay /*= false*/)
+{
+	HitRecord tempRec;
+	bool hitAnything = false;
+	double closestSoFar = t_max;
+	
+	for (int i = 0; i < _trisCnt; ++i)
+	{
+		if (_tris[i]->Hit2(r, t_min, closestSoFar, tempRec, nullptr, debugRay))
+		{
+			hitAnything = true;
+			closestSoFar = tempRec.t;
+			rec = tempRec;
+		}
+	}
+	return hitAnything;
+}
+#else
 bool TriMesh::Init()
 {
 	if (!_vertexes || _vertexesCnt < 1 || !_triIndexes)
@@ -77,7 +112,7 @@ bool TriMesh::Init()
 	{
 		const int vIdx[3] = {_triIndexes[3 * i + 0], _triIndexes[3 * i + 1], _triIndexes[3 * i + 2]};
 		{
-		_tris[i] = new Triangle2("trimesh", _vertexes[vIdx[0]], _vertexes[vIdx[1]], _vertexes[vIdx[2]], _mat, true, &_gm);
+			_tris[i] = new Triangle2("trimesh", _vertexes[vIdx[0]], _vertexes[vIdx[1]], _vertexes[vIdx[2]], _mat, true, &_gm);
 		}
 	}
 	
@@ -107,3 +142,4 @@ bool TriMesh::Hit(const Ray& r, float t_min, float t_max, HitRecord& rec, Matrix
 	}
 	return hitAnything;
 }
+#endif

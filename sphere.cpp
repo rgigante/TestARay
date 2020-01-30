@@ -109,10 +109,10 @@ bool Sphere2::SolveQuadratic(const float &a, const float &b, const float &c, flo
 	
 	return true;
 }
-
-bool Sphere2::Hit(const Ray& r, float t_min, float t_max, HitRecord& rec, Matrix* gm, bool debugRay  /*= false*/)
+#ifdef NEW_HITABLE
+bool Sphere2::Hit2(const Ray& r, float t_min, float t_max, HitRecord& rec, Matrix* gm, bool debugRay  /*= false*/)
 {
-	Ray ray = r;
+	Ray ray(r);
 	
 	const Vec3 rpos = ray.GetOrigin();
 	const Vec3 rdir = ray.GetDirection();
@@ -139,6 +139,38 @@ bool Sphere2::Hit(const Ray& r, float t_min, float t_max, HitRecord& rec, Matrix
 
 	return false;
 }
+#else
+bool Sphere2::Hit(const Ray& r, float t_min, float t_max, HitRecord& rec, Matrix* gm, bool debugRay  /*= false*/)
+{
+	Ray ray = r;
+	
+	const Vec3 rpos = ray.GetOrigin();
+	const Vec3 rdir = ray.GetDirection();
+	const Vec3 oc = rpos - _center;
+	
+	rec.mat = _mat;
+	
+	const float a = Dot(rdir, rdir);
+	const float b = 2.0 * Dot(oc, rdir);
+	const float c = Dot(oc, oc) - _radius * _radius;
+	float t0, t1;
+	if (SolveQuadratic(a, b, c, t0, t1))
+	{
+		if (t1 < t0)
+			std::swap(t0, t1);
+		
+		rec.t = t0;
+		rec.p = ray.PointAtParameter(t0);
+		rec.n = (rec.p - _center) / _radius;
+		
+		if (rec.t > t_min && rec.t < t_max)
+			return true;
+	}
+	
+	return false;
+}
+
+#endif
 
 
 
