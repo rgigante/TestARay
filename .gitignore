@@ -3,3 +3,12 @@
 ################################################################################
 
 /.vs/TraceARay/v15
+
+
+# Added at a later stage in time
+/Debug
+/Release
+/XCBuildData
+/TraceARay.build
+/TraceARay.xcodeproj/project.xcworkspace
+/TraceARay.xcodeproj/xcuserdata
