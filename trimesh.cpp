@@ -10,9 +10,10 @@
 #include <fstream>
 #include "trimesh.hpp"
 
-TriMesh::TriMesh(char const* name, int trisCnt, Material* mat) : _name(name), _trisCnt(trisCnt), _mat(mat)
+TriMesh::TriMesh(char const* name, int trisCnt, Material* mat) : _trisCnt(trisCnt), _mat(mat)
 {
-	_tris = new Triangle*[_trisCnt];
+	SetName(name);
+	_tris = new Triangle2*[_trisCnt];
 	assert(_tris);
 }
 
@@ -31,7 +32,7 @@ TriMesh::~TriMesh()
 	
 }
 
-Triangle* TriMesh::GetTriangleAtIndex(int triIdx)
+Triangle2* TriMesh::GetTriangleAtIndex(int triIdx)
 {
 	// search the vertex indexes associated to triangle index
 	return _tris[triIdx];
@@ -65,18 +66,18 @@ bool TriMesh::Init()
 		return false;
 	
 	// create global trf matrixes
-	for (int i = 0; i < _mtrs.size(); ++i)
-	{
-		_gm = _gm * _mtrs[i];
-		_invmtrs.push_back(_mtrs[i].GetInverse());
-	}
-	_gim = _gm.GetInverse();
+//	for (int i = 0; i < _mtrs.size(); ++i)
+//	{
+//		_gm = _gm * _mtrs[i];
+//		_invmtrs.push_back(_mtrs[i].GetInverse());
+//	}
+//	_gim = _gm.GetInverse();
 	
 	for (int i = 0; i < _trisCnt; ++i)
 	{
 		const int vIdx[3] = {_triIndexes[3 * i + 0], _triIndexes[3 * i + 1], _triIndexes[3 * i + 2]};
 		{
-		_tris[i] = new Triangle("", _vertexes[vIdx[0]], _vertexes[vIdx[1]], _vertexes[vIdx[2]], _mat, true, &_gm);
+		_tris[i] = new Triangle2("", _vertexes[vIdx[0]], _vertexes[vIdx[1]], _vertexes[vIdx[2]], _mat, true, &_gm);
 		}
 	}
 	

@@ -24,7 +24,7 @@ public:
 	bool Init();
 	int GetVertexesCnt(){ return _vertexesCnt; }
 	int GetTrisCnt(){ return _trisCnt; }
-	Triangle* GetTriangleAtIndex(int triIdx);
+	Triangle2* GetTriangleAtIndex(int triIdx);
 	
 	const Matrix& GetMatrixAt(int idx) { return _mtrs[idx]; }
 	void DropMatrixAt(int idx){	_mtrs.erase(_mtrs.begin() + idx);	}
@@ -35,8 +35,7 @@ private:
 	int _vertexesCnt;
 	int* _triIndexes;
 	int _trisCnt;
-	char const *_name;
-	Triangle** _tris;
+	Triangle2** _tris;
 	Material* _mat;
 	
 	std::vector<Matrix> _mtrs;
