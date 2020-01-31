@@ -11,8 +11,6 @@
 #include "ray.hpp"
 #include "matrix.hpp"
 
-#define NEW_HITABLE
-
 class Material;
 class Matrix;
 
@@ -33,7 +31,6 @@ struct HitRecord
 
 class Hitable
 {
-#ifdef NEW_HITABLE
 public:
 	virtual ~Hitable(){}
 	bool Hit (const Ray& r, float t_min, float t_max, HitRecord& rec, Matrix * gm = nullptr, bool debugRay = false);
@@ -70,17 +67,6 @@ private:
 	
 	Material const * _mat = nullptr;
 	char const * _name = "";
-	
-#else
-public:
-	virtual ~Hitable(){}
-	virtual bool Hit (const Ray& r, float t_min, float t_max, HitRecord& rec, Matrix * gm = nullptr, bool debugRay = false) = 0;
-	bool SetName(char const * name){ _name = name; return (!name) ? false : true; };
-	char const * GetName(){ if (_name) return _name; return nullptr;}
-	
-public:
-	char const * _name = "";
-#endif
 };
 
 #endif /* hitable_hpp */

@@ -7,7 +7,6 @@
 
 #include "hitable.hpp"
 
-#ifdef NEW_HITABLE
 bool Hitable::InitTransformation()
 {
 	// create global trf matrixes
@@ -50,4 +49,3 @@ bool Hitable::Hit(const Ray& r, float t_min, float t_max, HitRecord& rec, Matrix
 	// return the hit case
 	return (hitDetected);
 }
-#endif
