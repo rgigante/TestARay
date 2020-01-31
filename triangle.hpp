@@ -31,18 +31,16 @@ class Triangle2: public Hitable
 {
 public:
 	//	Triangle(char const* name, Vec3 a, Vec3 b, Vec3 c, Material* m, bool isTriMesh = false);
-	Triangle2(char const* name, Vec3 a, Vec3 b, Vec3 c, Material* m, bool isTriMesh = false, Matrix* gm = nullptr) : _a(a), _b(b), _c(c), _mat(m), _isTriMesh(isTriMesh), _gm(gm){ SetName(name); }
+	Triangle2(char const * name, Vec3 a, Vec3 b, Vec3 c, Material const * m, bool isTriMesh = false) : _a(a), _b(b), _c(c), _isTriMesh(isTriMesh) { SetName(name); SetMaterial(m); }
 	~Triangle2(){}
 #ifdef NEW_HITABLE
-	bool Hit2 (const Ray& r, float t_min, float t_max, HitRecord& rec, Matrix* gm = nullptr, bool debugRay = false);
+	bool Hit2 (const Ray& r, float t_min, float t_max, HitRecord& rec, bool debugRay = false);
 #else
-	bool Hit (const Ray& r, float t_min, float t_max, HitRecord& rec, Matrix* gm = nullptr, bool debugRay = false);
+	bool Hit (const Ray& r, float t_min, float t_max, HitRecord& rec, bool debugRay = false);
 #endif
 	
 private:
 	Vec3 _a, _b, _c, _ab, _bc, _ca, _n;
-	Material* _mat;
-	Matrix* _gm;
 	bool _isTriMesh;
 };
 

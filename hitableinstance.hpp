@@ -18,12 +18,10 @@ public:
 	HitableInstance(Hitable* obj):_obj(obj){}
 	~HitableInstance(){}
 	
-	bool Hit2 (const Ray& r, float t_min, float t_max, HitRecord& rec, Matrix* gm = nullptr, bool debugRay = false);
+	bool Hit2 (const Ray& r, float t_min, float t_max, HitRecord& rec, bool debugRay = false);
 	
 private:
 	Hitable* _obj;
-	
-//	Material *_mat;
 #else
 public:
 	HitableInstance(Hitable* obj):_obj(obj){}

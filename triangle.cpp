@@ -25,7 +25,7 @@ bool Triangle::Hit(const Ray& r, float t_min, float t_max, HitRecord& rec, Matri
 	
 	// compute the Dot product (cosine of the angle) between the normal and the ray direction
 	const float dotDirNrm = Dot(r.GetDirection(), n);
-	rec.mat = _mat;
+	rec.mat = GetMaterial();
 	
 	// check triangle not being perpendicular to ray
 	if (dotDirNrm != 0)
@@ -65,7 +65,7 @@ bool Triangle::Hit(const Ray& r, float t_min, float t_max, HitRecord& rec, Matri
 }
 
 #ifdef NEW_HITABLE
-bool Triangle2::Hit2(const Ray& r, float t_min, float t_max, HitRecord& rec, Matrix* gm, bool debugRay /*= false*/)
+bool Triangle2::Hit2(const Ray& r, float t_min, float t_max, HitRecord& rec, bool debugRay /*= false*/)
 {
 	Ray ray(r);
 	
@@ -82,7 +82,7 @@ bool Triangle2::Hit2(const Ray& r, float t_min, float t_max, HitRecord& rec, Mat
 	const float dotDirNrm = Dot(ray.GetDirection(), n);
 	
 	if (debugRay) std::cout << "\t\t\t\t- dotDirNrm:" << dotDirNrm << "\n";
-	rec.mat = _mat;
+	rec.mat = GetMaterial();
 	
 	// check triangle not being perpendicular to ray
 	if (dotDirNrm != 0)
@@ -93,9 +93,6 @@ bool Triangle2::Hit2(const Ray& r, float t_min, float t_max, HitRecord& rec, Mat
 		// evalute the intersection point
 		const Vec3 p = ray.GetOrigin() + ray.GetDirection() * t;
 		if (debugRay) std::cout << "\t\t\t\t- p:" << p << "\n";
-		
-		const float ot = ray.ParameterAtPoint_Orig(p);
-		//		if (debugRay) std::cout << "\t\t\t\t- ot:" << ot << "\n";
 		
 		// vectors to intersection points
 		const Vec3 vecAP = _a - p;
@@ -147,7 +144,7 @@ bool Triangle2::Hit(const Ray& r, float t_min, float t_max, HitRecord& rec, Matr
 	const float dotDirNrm = Dot(ray.GetDirection(), n);
 	
 	if (debugRay) std::cout << "\t\t\t\t- dotDirNrm:" << dotDirNrm << "\n";
-	rec.mat = _mat;
+	rec.mat = GetMaterial();
 	
 	// check triangle not being perpendicular to ray
 	if (dotDirNrm != 0)

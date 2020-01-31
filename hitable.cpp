@@ -8,7 +8,7 @@
 #include "hitable.hpp"
 
 #ifdef NEW_HITABLE
-bool Hitable::Init()
+bool Hitable::InitTransformation()
 {
 	// create global trf matrixes
 	for (int i = 0; i < _mtrs.size(); ++i)
@@ -21,6 +21,7 @@ bool Hitable::Init()
 	return true;
 }
 
+
 bool Hitable::Hit(const Ray& r, float t_min, float t_max, HitRecord& rec, Matrix* gm, bool debugRay /*= false*/)
 {
 	Ray ray(r);
@@ -30,7 +31,7 @@ bool Hitable::Hit(const Ray& r, float t_min, float t_max, HitRecord& rec, Matrix
 	if (debugRay) std::cout << "\t\t\t(instance intersection)\n"<<
 		"\t\t\t- oldray:"<< r << "\n"<<
 		"\t\t\t- newray:"<< ray <<"\n";
-	bool hit = Hit2(ray, t_min, t_max, rec, nullptr, debugRay);
+	bool hit = Hit2(ray, t_min, t_max, rec, debugRay);
 	float tAtR = r.ParameterAtPoint(rec.p);
 	float tAtRay = ray.ParameterAtPoint(rec.p);
 	rec.p = _gm * rec.p;

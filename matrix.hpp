@@ -22,38 +22,38 @@ public:
 		_row = row;
 		_col = col;
 		_sclNU  = Vec3(1,1,1);
-		_mat.resize(_row);
+		_mtx.resize(_row);
 		for (int i = 0; i < _row; ++i)
 		{
-			_mat[i].resize(_col);
+			_mtx[i].resize(_col);
 			for (int j = 0; j < _col; j++)
 			{
 				if ( i == j)
-					_mat[i][j] = 1;
+					_mtx[i][j] = 1;
 				else
-					_mat[i][j] = 0;
+					_mtx[i][j] = 0;
 			}
 		}
 	}
 	
 	~Matrix()
 	{
-		_mat.clear();
+		_mtx.clear();
 		_row = 0;
 		_col = 0;
 	}
 	
-	inline std::vector<double>& operator[](int i) { return _mat[i]; }
+	inline std::vector<double>& operator[](int i) { return _mtx[i]; }
 	
-	inline std::vector<double> operator[](int i) const { return _mat[i]; }
+	inline std::vector<double> operator[](int i) const { return _mtx[i]; }
 	
 	inline int GetCol() const { return _col; }
 	
 	inline int GetRow() const { return _row; }
 	
-	inline void SetCol(int col) { _mat.clear(); _col = col; }
+	inline void SetCol(int col) { _mtx.clear(); _col = col; }
 	
-	inline void SetRow(int row) { _mat.clear(); _row = row; }
+	inline void SetRow(int row) { _mtx.clear(); _row = row; }
 	
 	friend std::ostream& operator<<(std::ostream &os, const Matrix& m)
 	{
@@ -81,7 +81,7 @@ public:
 		{
 			for(int j = 0; j < _col; j++)
 			{
-				if(abs(_mat[i][j] - m[i][j]) > eps)
+				if(abs(_mtx[i][j] - m[i][j]) > eps)
 					return false;
 			}
 		}
@@ -97,7 +97,7 @@ public:
 		{
 			for(int j = 0; j < _col; j++)
 			{
-				if(this->_mat[i][j] != m[i][j])
+				if(this->_mtx[i][j] != m[i][j])
 					return false;
 			}
 		}
@@ -116,7 +116,7 @@ public:
 		{
 			for(int j = 0; j < _col; j++)
 			{
-				result[i][j] = this->_mat[i][j] + (double)x;
+				result[i][j] = this->_mtx[i][j] + (double)x;
 			}
 		}
 		return result;
@@ -129,7 +129,7 @@ public:
 		{
 			for(int j = 0; j < _col; j++)
 			{
-				result[i][j] = this->_mat[i][j] * x;
+				result[i][j] = this->_mtx[i][j] * x;
 			}
 		}
 		return result;
@@ -142,7 +142,7 @@ public:
 		{
 			for(int j = 0; j < _col; j++)
 			{
-				result[i][j] = this->_mat[i][j] + m[i][j];
+				result[i][j] = this->_mtx[i][j] + m[i][j];
 			}
 		}
 		return result;
@@ -160,7 +160,7 @@ public:
 			{
 				for(int k = 0; k < this->_col; k++)
 				{
-					result[i][j] += this->_mat[i][k] * m[k][j];
+					result[i][j] += this->_mtx[i][k] * m[k][j];
 				}
 			}
 		}
@@ -173,15 +173,15 @@ public:
 	Matrix Get3x3() const
 	{
 		Matrix res(3,3);
-		res[0][0] = _mat[0][0];
-		res[0][1] = _mat[0][1];
-		res[0][2] = _mat[0][2];
-		res[1][0] = _mat[1][0];
-		res[1][1] = _mat[1][1];
-		res[1][2] = _mat[1][2];
-		res[2][0] = _mat[2][0];
-		res[2][1] = _mat[2][1];
-		res[2][2] = _mat[2][2];
+		res[0][0] = _mtx[0][0];
+		res[0][1] = _mtx[0][1];
+		res[0][2] = _mtx[0][2];
+		res[1][0] = _mtx[1][0];
+		res[1][1] = _mtx[1][1];
+		res[1][2] = _mtx[1][2];
+		res[2][0] = _mtx[2][0];
+		res[2][1] = _mtx[2][1];
+		res[2][2] = _mtx[2][2];
 		return res;
 	}
 	
@@ -195,9 +195,9 @@ public:
 	Vec3 GetOff() const
 	{
 		Vec3 res;
-		res[0] = _mat[3][0];
-		res[1] = _mat[3][1];
-		res[2] = _mat[3][2];
+		res[0] = _mtx[3][0];
+		res[1] = _mtx[3][1];
+		res[2] = _mtx[3][2];
 		return res;
 	}
 	
@@ -206,18 +206,18 @@ public:
 		if (this->_col == 3)
 		{
 			Vec3 result;
-			result[0] = (this->_mat[0][0] * v[0] + this->_mat[0][1] * v[1] + this->_mat[0][2] * v[2]);
-			result[1] = (this->_mat[1][0] * v[0] + this->_mat[1][1] * v[1] + this->_mat[1][2] * v[2]);
-			result[2] = (this->_mat[2][0] * v[0] + this->_mat[2][1] * v[1] + this->_mat[2][2] * v[2]);
+			result[0] = (this->_mtx[0][0] * v[0] + this->_mtx[0][1] * v[1] + this->_mtx[0][2] * v[2]);
+			result[1] = (this->_mtx[1][0] * v[0] + this->_mtx[1][1] * v[1] + this->_mtx[1][2] * v[2]);
+			result[2] = (this->_mtx[2][0] * v[0] + this->_mtx[2][1] * v[1] + this->_mtx[2][2] * v[2]);
 			return result;
 		}
 		
 		if (this->_col == 4)
 		{
 			Vec3 result;
-			result[0] = (this->_mat[0][0] * v[0] + this->_mat[0][1] * v[1] + this->_mat[0][2] * v[2]) + this->_mat[0][3];
-			result[1] = (this->_mat[1][0] * v[0] + this->_mat[1][1] * v[1] + this->_mat[1][2] * v[2]) + this->_mat[1][3];
-			result[2] = (this->_mat[2][0] * v[0] + this->_mat[2][1] * v[1] + this->_mat[2][2] * v[2]) + this->_mat[2][3];
+			result[0] = (this->_mtx[0][0] * v[0] + this->_mtx[0][1] * v[1] + this->_mtx[0][2] * v[2]) + this->_mtx[0][3];
+			result[1] = (this->_mtx[1][0] * v[0] + this->_mtx[1][1] * v[1] + this->_mtx[1][2] * v[2]) + this->_mtx[1][3];
+			result[2] = (this->_mtx[2][0] * v[0] + this->_mtx[2][1] * v[1] + this->_mtx[2][2] * v[2]) + this->_mtx[2][3];
 			return result;
 		}
 		
@@ -231,9 +231,9 @@ public:
 			for(int j = 0; j < _col; j++)
 			{
 				if ( i == j)
-					this->_mat[i][j] = 1.0;
+					this->_mtx[i][j] = 1.0;
 				else
-					this->_mat[i][j] = 0.0;
+					this->_mtx[i][j] = 0.0;
 			}
 		}
 		return (*this);
@@ -245,7 +245,7 @@ public:
 		{
 			for(int j = 0; j < _col; j++)
 			{
-				this->_mat[i][j] = (double)x;
+				this->_mtx[i][j] = (double)x;
 			}
 		}
 		return (*this);
@@ -268,7 +268,7 @@ public:
 			val = va_arg(vl, double);
 			int a = int (c / this->_row);
 			int b = int (c % this->_row);
-			this->_mat[a][b] = val;
+			this->_mtx[a][b] = val;
 		}
 		
 		va_end(vl);
@@ -279,7 +279,7 @@ public:
 	{
 		if (i < this->_row && j < this->_col)
 		{
-			this->_mat[i][j] = val;
+			this->_mtx[i][j] = val;
 		}
 		return (*this);
 	}
@@ -336,18 +336,18 @@ public:
 	Matrix& AddOffset (const float off_x, const float off_y, const float off_z)
 	{
 		assert(this->_col > 3 && this->_row > 3);
-		this->_mat[0][3] = off_x;
-		this->_mat[1][3] = off_y;
-		this->_mat[2][3] = off_z;
+		this->_mtx[0][3] = off_x;
+		this->_mtx[1][3] = off_y;
+		this->_mtx[2][3] = off_z;
 		return (*this);
 	}
 	
 	Matrix& AddUniformScale (const float scale)
 	{
 		assert(this->_col > 3 && this->_row > 3);
-		this->_mat[0][0] *= scale;
-		this->_mat[1][1] *= scale;
-		this->_mat[2][2] *= scale;
+		this->_mtx[0][0] *= scale;
+		this->_mtx[1][1] *= scale;
+		this->_mtx[2][2] *= scale;
 		_sclNU[0] *= scale;
 		_sclNU[1] *= scale;
 		_sclNU[2] *= scale;
@@ -357,9 +357,9 @@ public:
 	Matrix& AddNonUniformScale (const float scl_x, const float scl_y, const float scl_z)
 	{
 		assert(this->_col > 3 && this->_row > 3);
-		this->_mat[0][0] *= scl_x;
-		this->_mat[1][1] *= scl_y;
-		this->_mat[2][2] *= scl_z;
+		this->_mtx[0][0] *= scl_x;
+		this->_mtx[1][1] *= scl_y;
+		this->_mtx[2][2] *= scl_z;
 		_sclNU[0] *= scl_x;
 		_sclNU[1] *= scl_y;
 		_sclNU[2] *= scl_z;
@@ -380,7 +380,7 @@ public:
 		{
 			for(int j = 0; j < this->_col; j++)
 			{
-				tmp[j][i] = this->_mat[i][j];
+				tmp[j][i] = this->_mtx[i][j];
 			}
 		}
 		return tmp;
@@ -388,7 +388,7 @@ public:
 	
 	double Determinant()
 	{
-		double value = _mat[0][3]*_mat[1][2]*_mat[2][1]*_mat[3][0] - _mat[0][2]*_mat[1][3]*_mat[2][1]*_mat[3][0] - _mat[0][3]*_mat[1][1]*_mat[2][2]*_mat[3][0] + _mat[0][1]*_mat[1][3]*_mat[2][2]*_mat[3][0] + _mat[0][2]*_mat[1][1]*_mat[2][3]*_mat[3][0] - _mat[0][1]*_mat[1][2]*_mat[2][3]*_mat[3][0] - _mat[0][3]*_mat[1][2]*_mat[2][0]*_mat[3][1] + _mat[0][2]*_mat[1][3]*_mat[2][0]*_mat[3][1]+_mat[0][3]*_mat[1][0]*_mat[2][2]*_mat[3][1] - _mat[0][0]*_mat[1][3]*_mat[2][2]*_mat[3][1] - _mat[0][2]*_mat[1][0]*_mat[2][3]*_mat[3][1] + _mat[0][0]*_mat[1][2]*_mat[2][3]*_mat[3][1]+_mat[0][3]*_mat[1][1]*_mat[2][0]*_mat[3][2] - _mat[0][1]*_mat[1][3]*_mat[2][0]*_mat[3][2] - _mat[0][3]*_mat[1][0]*_mat[2][1]*_mat[3][2] + _mat[0][0]*_mat[1][3]*_mat[2][1]*_mat[3][2]+_mat[0][1]*_mat[1][0]*_mat[2][3]*_mat[3][2] - _mat[0][0]*_mat[1][1]*_mat[2][3]*_mat[3][2] - _mat[0][2]*_mat[1][1]*_mat[2][0]*_mat[3][3] + _mat[0][1]*_mat[1][2]*_mat[2][0]*_mat[3][3]+_mat[0][2]*_mat[1][0]*_mat[2][1]*_mat[3][3] - _mat[0][0]*_mat[1][2]*_mat[2][1]*_mat[3][3] - _mat[0][1]*_mat[1][0]*_mat[2][2]*_mat[3][3] + _mat[0][0]*_mat[1][1]*_mat[2][2]*_mat[3][3];
+		double value = _mtx[0][3]*_mtx[1][2]*_mtx[2][1]*_mtx[3][0] - _mtx[0][2]*_mtx[1][3]*_mtx[2][1]*_mtx[3][0] - _mtx[0][3]*_mtx[1][1]*_mtx[2][2]*_mtx[3][0] + _mtx[0][1]*_mtx[1][3]*_mtx[2][2]*_mtx[3][0] + _mtx[0][2]*_mtx[1][1]*_mtx[2][3]*_mtx[3][0] - _mtx[0][1]*_mtx[1][2]*_mtx[2][3]*_mtx[3][0] - _mtx[0][3]*_mtx[1][2]*_mtx[2][0]*_mtx[3][1] + _mtx[0][2]*_mtx[1][3]*_mtx[2][0]*_mtx[3][1]+_mtx[0][3]*_mtx[1][0]*_mtx[2][2]*_mtx[3][1] - _mtx[0][0]*_mtx[1][3]*_mtx[2][2]*_mtx[3][1] - _mtx[0][2]*_mtx[1][0]*_mtx[2][3]*_mtx[3][1] + _mtx[0][0]*_mtx[1][2]*_mtx[2][3]*_mtx[3][1]+_mtx[0][3]*_mtx[1][1]*_mtx[2][0]*_mtx[3][2] - _mtx[0][1]*_mtx[1][3]*_mtx[2][0]*_mtx[3][2] - _mtx[0][3]*_mtx[1][0]*_mtx[2][1]*_mtx[3][2] + _mtx[0][0]*_mtx[1][3]*_mtx[2][1]*_mtx[3][2]+_mtx[0][1]*_mtx[1][0]*_mtx[2][3]*_mtx[3][2] - _mtx[0][0]*_mtx[1][1]*_mtx[2][3]*_mtx[3][2] - _mtx[0][2]*_mtx[1][1]*_mtx[2][0]*_mtx[3][3] + _mtx[0][1]*_mtx[1][2]*_mtx[2][0]*_mtx[3][3]+_mtx[0][2]*_mtx[1][0]*_mtx[2][1]*_mtx[3][3] - _mtx[0][0]*_mtx[1][2]*_mtx[2][1]*_mtx[3][3] - _mtx[0][1]*_mtx[1][0]*_mtx[2][2]*_mtx[3][3] + _mtx[0][0]*_mtx[1][1]*_mtx[2][2]*_mtx[3][3];
 		return value;
 	}
 	
@@ -398,22 +398,22 @@ public:
 		double det = Determinant();
 		assert (det != 0.0f);
 		double invdet = 1/det;
-		res[0][0] = (_mat[1][2]*_mat[2][3]*_mat[3][1] - _mat[1][3]*_mat[2][2]*_mat[3][1] + _mat[1][3]*_mat[2][1]*_mat[3][2] - _mat[1][1]*_mat[2][3]*_mat[3][2] - _mat[1][2]*_mat[2][1]*_mat[3][3] + _mat[1][1]*_mat[2][2]*_mat[3][3])*invdet;
-		res[0][1] = (_mat[0][3]*_mat[2][2]*_mat[3][1] - _mat[0][2]*_mat[2][3]*_mat[3][1] - _mat[0][3]*_mat[2][1]*_mat[3][2] + _mat[0][1]*_mat[2][3]*_mat[3][2] + _mat[0][2]*_mat[2][1]*_mat[3][3] - _mat[0][1]*_mat[2][2]*_mat[3][3])*invdet;
-		res[0][2] = (_mat[0][2]*_mat[1][3]*_mat[3][1] - _mat[0][3]*_mat[1][2]*_mat[3][1] + _mat[0][3]*_mat[1][1]*_mat[3][2] - _mat[0][1]*_mat[1][3]*_mat[3][2] - _mat[0][2]*_mat[1][1]*_mat[3][3] + _mat[0][1]*_mat[1][2]*_mat[3][3])*invdet;
-		res[0][3] = (_mat[0][3]*_mat[1][2]*_mat[2][1] - _mat[0][2]*_mat[1][3]*_mat[2][1] - _mat[0][3]*_mat[1][1]*_mat[2][2] + _mat[0][1]*_mat[1][3]*_mat[2][2] + _mat[0][2]*_mat[1][1]*_mat[2][3] - _mat[0][1]*_mat[1][2]*_mat[2][3])*invdet;
-		res[1][0] = (_mat[1][3]*_mat[2][2]*_mat[3][0] - _mat[1][2]*_mat[2][3]*_mat[3][0] - _mat[1][3]*_mat[2][0]*_mat[3][2] + _mat[1][0]*_mat[2][3]*_mat[3][2] + _mat[1][2]*_mat[2][0]*_mat[3][3] - _mat[1][0]*_mat[2][2]*_mat[3][3])*invdet;
-		res[1][1] = (_mat[0][2]*_mat[2][3]*_mat[3][0] - _mat[0][3]*_mat[2][2]*_mat[3][0] + _mat[0][3]*_mat[2][0]*_mat[3][2] - _mat[0][0]*_mat[2][3]*_mat[3][2] - _mat[0][2]*_mat[2][0]*_mat[3][3] + _mat[0][0]*_mat[2][2]*_mat[3][3])*invdet;
-		res[1][2] = (_mat[0][3]*_mat[1][2]*_mat[3][0] - _mat[0][2]*_mat[1][3]*_mat[3][0] - _mat[0][3]*_mat[1][0]*_mat[3][2] + _mat[0][0]*_mat[1][3]*_mat[3][2] + _mat[0][2]*_mat[1][0]*_mat[3][3] - _mat[0][0]*_mat[1][2]*_mat[3][3])*invdet;
-		res[1][3] = (_mat[0][2]*_mat[1][3]*_mat[2][0] - _mat[0][3]*_mat[1][2]*_mat[2][0] + _mat[0][3]*_mat[1][0]*_mat[2][2] - _mat[0][0]*_mat[1][3]*_mat[2][2] - _mat[0][2]*_mat[1][0]*_mat[2][3] + _mat[0][0]*_mat[1][2]*_mat[2][3])*invdet;
-		res[2][0] = (_mat[1][1]*_mat[2][3]*_mat[3][0] - _mat[1][3]*_mat[2][1]*_mat[3][0] + _mat[1][3]*_mat[2][0]*_mat[3][1] - _mat[1][0]*_mat[2][3]*_mat[3][1] - _mat[1][1]*_mat[2][0]*_mat[3][3] + _mat[1][0]*_mat[2][1]*_mat[3][3])*invdet;
-		res[2][1] = (_mat[0][3]*_mat[2][1]*_mat[3][0] - _mat[0][1]*_mat[2][3]*_mat[3][0] - _mat[0][3]*_mat[2][0]*_mat[3][1] + _mat[0][0]*_mat[2][3]*_mat[3][1] + _mat[0][1]*_mat[2][0]*_mat[3][3] - _mat[0][0]*_mat[2][1]*_mat[3][3])*invdet;
-		res[2][2] = (_mat[0][1]*_mat[1][3]*_mat[3][0] - _mat[0][3]*_mat[1][1]*_mat[3][0] + _mat[0][3]*_mat[1][0]*_mat[3][1] - _mat[0][0]*_mat[1][3]*_mat[3][1] - _mat[0][1]*_mat[1][0]*_mat[3][3] + _mat[0][0]*_mat[1][1]*_mat[3][3])*invdet;
-		res[2][3] = (_mat[0][3]*_mat[1][1]*_mat[2][0] - _mat[0][1]*_mat[1][3]*_mat[2][0] - _mat[0][3]*_mat[1][0]*_mat[2][1] + _mat[0][0]*_mat[1][3]*_mat[2][1] + _mat[0][1]*_mat[1][0]*_mat[2][3] - _mat[0][0]*_mat[1][1]*_mat[2][3])*invdet;
-		res[3][0] = (_mat[1][2]*_mat[2][1]*_mat[3][0] - _mat[1][1]*_mat[2][2]*_mat[3][0] - _mat[1][2]*_mat[2][0]*_mat[3][1] + _mat[1][0]*_mat[2][2]*_mat[3][1] + _mat[1][1]*_mat[2][0]*_mat[3][2] - _mat[1][0]*_mat[2][1]*_mat[3][2])*invdet;
-		res[3][1] = (_mat[0][1]*_mat[2][2]*_mat[3][0] - _mat[0][2]*_mat[2][1]*_mat[3][0] + _mat[0][2]*_mat[2][0]*_mat[3][1] - _mat[0][0]*_mat[2][2]*_mat[3][1] - _mat[0][1]*_mat[2][0]*_mat[3][2] + _mat[0][0]*_mat[2][1]*_mat[3][2])*invdet;
-		res[3][2] = (_mat[0][2]*_mat[1][1]*_mat[3][0] - _mat[0][1]*_mat[1][2]*_mat[3][0] - _mat[0][2]*_mat[1][0]*_mat[3][1] + _mat[0][0]*_mat[1][2]*_mat[3][1] + _mat[0][1]*_mat[1][0]*_mat[3][2] - _mat[0][0]*_mat[1][1]*_mat[3][2])*invdet;
-		res[3][3] = (_mat[0][1]*_mat[1][2]*_mat[2][0] - _mat[0][2]*_mat[1][1]*_mat[2][0] + _mat[0][2]*_mat[1][0]*_mat[2][1] - _mat[0][0]*_mat[1][2]*_mat[2][1] - _mat[0][1]*_mat[1][0]*_mat[2][2] + _mat[0][0]*_mat[1][1]*_mat[2][2])*invdet;
+		res[0][0] = (_mtx[1][2]*_mtx[2][3]*_mtx[3][1] - _mtx[1][3]*_mtx[2][2]*_mtx[3][1] + _mtx[1][3]*_mtx[2][1]*_mtx[3][2] - _mtx[1][1]*_mtx[2][3]*_mtx[3][2] - _mtx[1][2]*_mtx[2][1]*_mtx[3][3] + _mtx[1][1]*_mtx[2][2]*_mtx[3][3])*invdet;
+		res[0][1] = (_mtx[0][3]*_mtx[2][2]*_mtx[3][1] - _mtx[0][2]*_mtx[2][3]*_mtx[3][1] - _mtx[0][3]*_mtx[2][1]*_mtx[3][2] + _mtx[0][1]*_mtx[2][3]*_mtx[3][2] + _mtx[0][2]*_mtx[2][1]*_mtx[3][3] - _mtx[0][1]*_mtx[2][2]*_mtx[3][3])*invdet;
+		res[0][2] = (_mtx[0][2]*_mtx[1][3]*_mtx[3][1] - _mtx[0][3]*_mtx[1][2]*_mtx[3][1] + _mtx[0][3]*_mtx[1][1]*_mtx[3][2] - _mtx[0][1]*_mtx[1][3]*_mtx[3][2] - _mtx[0][2]*_mtx[1][1]*_mtx[3][3] + _mtx[0][1]*_mtx[1][2]*_mtx[3][3])*invdet;
+		res[0][3] = (_mtx[0][3]*_mtx[1][2]*_mtx[2][1] - _mtx[0][2]*_mtx[1][3]*_mtx[2][1] - _mtx[0][3]*_mtx[1][1]*_mtx[2][2] + _mtx[0][1]*_mtx[1][3]*_mtx[2][2] + _mtx[0][2]*_mtx[1][1]*_mtx[2][3] - _mtx[0][1]*_mtx[1][2]*_mtx[2][3])*invdet;
+		res[1][0] = (_mtx[1][3]*_mtx[2][2]*_mtx[3][0] - _mtx[1][2]*_mtx[2][3]*_mtx[3][0] - _mtx[1][3]*_mtx[2][0]*_mtx[3][2] + _mtx[1][0]*_mtx[2][3]*_mtx[3][2] + _mtx[1][2]*_mtx[2][0]*_mtx[3][3] - _mtx[1][0]*_mtx[2][2]*_mtx[3][3])*invdet;
+		res[1][1] = (_mtx[0][2]*_mtx[2][3]*_mtx[3][0] - _mtx[0][3]*_mtx[2][2]*_mtx[3][0] + _mtx[0][3]*_mtx[2][0]*_mtx[3][2] - _mtx[0][0]*_mtx[2][3]*_mtx[3][2] - _mtx[0][2]*_mtx[2][0]*_mtx[3][3] + _mtx[0][0]*_mtx[2][2]*_mtx[3][3])*invdet;
+		res[1][2] = (_mtx[0][3]*_mtx[1][2]*_mtx[3][0] - _mtx[0][2]*_mtx[1][3]*_mtx[3][0] - _mtx[0][3]*_mtx[1][0]*_mtx[3][2] + _mtx[0][0]*_mtx[1][3]*_mtx[3][2] + _mtx[0][2]*_mtx[1][0]*_mtx[3][3] - _mtx[0][0]*_mtx[1][2]*_mtx[3][3])*invdet;
+		res[1][3] = (_mtx[0][2]*_mtx[1][3]*_mtx[2][0] - _mtx[0][3]*_mtx[1][2]*_mtx[2][0] + _mtx[0][3]*_mtx[1][0]*_mtx[2][2] - _mtx[0][0]*_mtx[1][3]*_mtx[2][2] - _mtx[0][2]*_mtx[1][0]*_mtx[2][3] + _mtx[0][0]*_mtx[1][2]*_mtx[2][3])*invdet;
+		res[2][0] = (_mtx[1][1]*_mtx[2][3]*_mtx[3][0] - _mtx[1][3]*_mtx[2][1]*_mtx[3][0] + _mtx[1][3]*_mtx[2][0]*_mtx[3][1] - _mtx[1][0]*_mtx[2][3]*_mtx[3][1] - _mtx[1][1]*_mtx[2][0]*_mtx[3][3] + _mtx[1][0]*_mtx[2][1]*_mtx[3][3])*invdet;
+		res[2][1] = (_mtx[0][3]*_mtx[2][1]*_mtx[3][0] - _mtx[0][1]*_mtx[2][3]*_mtx[3][0] - _mtx[0][3]*_mtx[2][0]*_mtx[3][1] + _mtx[0][0]*_mtx[2][3]*_mtx[3][1] + _mtx[0][1]*_mtx[2][0]*_mtx[3][3] - _mtx[0][0]*_mtx[2][1]*_mtx[3][3])*invdet;
+		res[2][2] = (_mtx[0][1]*_mtx[1][3]*_mtx[3][0] - _mtx[0][3]*_mtx[1][1]*_mtx[3][0] + _mtx[0][3]*_mtx[1][0]*_mtx[3][1] - _mtx[0][0]*_mtx[1][3]*_mtx[3][1] - _mtx[0][1]*_mtx[1][0]*_mtx[3][3] + _mtx[0][0]*_mtx[1][1]*_mtx[3][3])*invdet;
+		res[2][3] = (_mtx[0][3]*_mtx[1][1]*_mtx[2][0] - _mtx[0][1]*_mtx[1][3]*_mtx[2][0] - _mtx[0][3]*_mtx[1][0]*_mtx[2][1] + _mtx[0][0]*_mtx[1][3]*_mtx[2][1] + _mtx[0][1]*_mtx[1][0]*_mtx[2][3] - _mtx[0][0]*_mtx[1][1]*_mtx[2][3])*invdet;
+		res[3][0] = (_mtx[1][2]*_mtx[2][1]*_mtx[3][0] - _mtx[1][1]*_mtx[2][2]*_mtx[3][0] - _mtx[1][2]*_mtx[2][0]*_mtx[3][1] + _mtx[1][0]*_mtx[2][2]*_mtx[3][1] + _mtx[1][1]*_mtx[2][0]*_mtx[3][2] - _mtx[1][0]*_mtx[2][1]*_mtx[3][2])*invdet;
+		res[3][1] = (_mtx[0][1]*_mtx[2][2]*_mtx[3][0] - _mtx[0][2]*_mtx[2][1]*_mtx[3][0] + _mtx[0][2]*_mtx[2][0]*_mtx[3][1] - _mtx[0][0]*_mtx[2][2]*_mtx[3][1] - _mtx[0][1]*_mtx[2][0]*_mtx[3][2] + _mtx[0][0]*_mtx[2][1]*_mtx[3][2])*invdet;
+		res[3][2] = (_mtx[0][2]*_mtx[1][1]*_mtx[3][0] - _mtx[0][1]*_mtx[1][2]*_mtx[3][0] - _mtx[0][2]*_mtx[1][0]*_mtx[3][1] + _mtx[0][0]*_mtx[1][2]*_mtx[3][1] + _mtx[0][1]*_mtx[1][0]*_mtx[3][2] - _mtx[0][0]*_mtx[1][1]*_mtx[3][2])*invdet;
+		res[3][3] = (_mtx[0][1]*_mtx[1][2]*_mtx[2][0] - _mtx[0][2]*_mtx[1][1]*_mtx[2][0] + _mtx[0][2]*_mtx[1][0]*_mtx[2][1] - _mtx[0][0]*_mtx[1][2]*_mtx[2][1] - _mtx[0][1]*_mtx[1][0]*_mtx[2][2] + _mtx[0][0]*_mtx[1][1]*_mtx[2][2])*invdet;
 		
 		res._sclNU = Vec3(1/_sclNU[0], 1/_sclNU[1], 1/_sclNU[2]);
 		
@@ -422,7 +422,7 @@ public:
 	
 private:
 	int _col, _row;
-	std::vector<std::vector<double>> _mat;
+	std::vector<std::vector<double>> _mtx;
 	Vec3 _sclNU;
 };
 

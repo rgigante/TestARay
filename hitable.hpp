@@ -21,7 +21,7 @@ struct HitRecord
 	float t = 0; // the ray parameter at hit point
 	Vec3 p = Vec3(0,0,0); // the position in space at hit point
 	Vec3 n = Vec3(0,0,0); // the normal at hit point
-	Material* mat = nullptr; // the material found at the hit point
+	Material const *mat = nullptr; // the material found at the hit point
 	
 	friend std::ostream& operator<<(std::ostream &os, const HitRecord& h)
 	{
@@ -36,15 +36,22 @@ class Hitable
 #ifdef NEW_HITABLE
 public:
 	virtual ~Hitable(){}
-	bool Hit (const Ray& r, float t_min, float t_max, HitRecord& rec, Matrix* gm = nullptr, bool debugRay = false);
+	bool Hit (const Ray& r, float t_min, float t_max, HitRecord& rec, Matrix * gm = nullptr, bool debugRay = false);
 	
-	virtual bool Hit2 (const Ray& r, float t_min, float t_max, HitRecord& rec, Matrix* gm = nullptr, bool debugRay = false) = 0;
+	// name-related methods
+	bool SetName(char const * name){ _name = name; return (!name) ? false : true; };
+	char const * GetName(){ if (_name) return _name; return nullptr;}
 	
-	bool SetName(char const* name){ _name = name; return (!name) ? false : true; };
-	char const* GetName(){ if (_name) return _name; return nullptr;}
+	// visibility-related methods
+	void SetVisible(const bool visible){ _visible = visible; return; };
+	bool IsVisible(){ return _visible;}
 	
-	bool Init();
+	// material related methods
+	bool SetMaterial(Material const * mat){ _mat = mat; return (!mat) ? false : true; };
+	Material const * GetMaterial()  { if (_mat) return _mat; return nullptr;}
 	
+	// transformation-related methods
+	bool InitTransformation();
 	const Matrix& GetMatrixAt(int idx) { return _mtrs[idx]; }
 	const Matrix& GetInverseMatrixAt(int idx) { return _invmtrs[idx]; }
 	void DropMatrixAt(int idx){	_mtrs.erase(_mtrs.begin() + idx);	}
@@ -52,22 +59,27 @@ public:
 	const Matrix& GetGlobalMatrix() { return _gm; }
 	const Matrix& GetGlobalInverseMatrix() { return _gim; }
 	
-public:
-	char const* _name = "";
+	// Virtual methods (override in derived classes)
+	virtual bool Hit2 (const Ray& r, float t_min, float t_max, HitRecord& rec, bool debugRay = false) = 0;
 	
+private:
 	std::vector<Matrix> _mtrs;
 	std::vector<Matrix> _invmtrs;
-	Matrix _gm, _gim;
-	Material *_mat;
+	Matrix _gm = Matrix(), _gim = Matrix();
+	bool _visible = true;
+	
+	Material const * _mat = nullptr;
+	char const * _name = "";
+	
 #else
 public:
 	virtual ~Hitable(){}
-	virtual bool Hit (const Ray& r, float t_min, float t_max, HitRecord& rec, Matrix* gm = nullptr, bool debugRay = false) = 0;
-	bool SetName(char const* name){ _name = name; return (!name) ? false : true; };
-	char const* GetName(){ if (_name) return _name; return nullptr;}
+	virtual bool Hit (const Ray& r, float t_min, float t_max, HitRecord& rec, Matrix * gm = nullptr, bool debugRay = false) = 0;
+	bool SetName(char const * name){ _name = name; return (!name) ? false : true; };
+	char const * GetName(){ if (_name) return _name; return nullptr;}
 	
 public:
-	char const* _name = "";
+	char const * _name = "";
 #endif
 };
 

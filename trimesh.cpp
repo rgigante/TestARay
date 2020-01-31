@@ -10,8 +10,9 @@
 #include <fstream>
 #include "trimesh.hpp"
 
-TriMesh::TriMesh(char const* name, int trisCnt, Material* mat) : _trisCnt(trisCnt), _mat(mat)
+TriMesh::TriMesh(char const * name, int trisCnt, Material const * mat) : _trisCnt(trisCnt)/*, _mat(mat)*/
 {
+	SetMaterial(mat);
 	SetName(name);
 	_tris = new Triangle2*[_trisCnt];
 	assert(_tris);
@@ -70,14 +71,14 @@ bool TriMesh::InitTris()
 	{
 		const int vIdx[3] = {_triIndexes[3 * i + 0], _triIndexes[3 * i + 1], _triIndexes[3 * i + 2]};
 		{
-		_tris[i] = new Triangle2("trimesh", _vertexes[vIdx[0]], _vertexes[vIdx[1]], _vertexes[vIdx[2]], _mat, true, &_gm);
+		_tris[i] = new Triangle2("trimesh", _vertexes[vIdx[0]], _vertexes[vIdx[1]], _vertexes[vIdx[2]], GetMaterial(), true);
 		}
 	}
 	
 	return true;
 }
 
-bool TriMesh::Hit2(const Ray& r, float t_min, float t_max, HitRecord& rec, Matrix* gm, bool debugRay /*= false*/)
+bool TriMesh::Hit2(const Ray& r, float t_min, float t_max, HitRecord& rec, bool debugRay /*= false*/)
 {
 	HitRecord tempRec;
 	bool hitAnything = false;
@@ -85,7 +86,7 @@ bool TriMesh::Hit2(const Ray& r, float t_min, float t_max, HitRecord& rec, Matri
 	
 	for (int i = 0; i < _trisCnt; ++i)
 	{
-		if (_tris[i]->Hit2(r, t_min, closestSoFar, tempRec, nullptr, debugRay))
+		if (_tris[i]->Hit2(r, t_min, closestSoFar, tempRec, debugRay))
 		{
 			hitAnything = true;
 			closestSoFar = tempRec.t;

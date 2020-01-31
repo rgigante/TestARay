@@ -24,19 +24,18 @@ const int g_xRes = 400;
 const int g_yRes = 400;
 
 //#define MATRIX_TESTS
-//#define NEW_HITABLE_TESTS
+#define NEW_HITABLE_TESTS
 //#define SPHERE_TESTS
 //#define TRI_TESTS
 //#define ALL_TESTS
-#define STANDARD_RUN
+//#define STANDARD_RUN
 #define EXECUTE_RENDER
 
 int main()
 {
 #ifdef MATRIX_TESTS
 	{
-//		MatrixTests();
-//		return 0;
+		MatrixTests();
 	}
 #endif
 	
@@ -48,27 +47,31 @@ int main()
 		// allocate metals
 		MetalReflector*  red = new MetalReflector("red", Vec3(0.9, 0, 0));
 		MetalReflector*  green = new MetalReflector("green", Vec3(0, 0.9, 0));
+		MetalReflector*  cyan = new MetalReflector("cyan", Vec3(0, 0.9, 0.9));
 		scene->AddMaterial(red);
 		scene->AddMaterial(green);
+		scene->AddMaterial(cyan);
 		
 		Matrix trf;
 		
-		Triangle2* tri = new Triangle2("triRed", Vec3(-0.5, 0.5, 0.5), Vec3(0.5, -0.5, 0.5), Vec3(0.5, 0.5, 0.5), red);
+		Triangle2* triRed = new Triangle2("triRed", Vec3(-0.5, 0.5, 0.7), Vec3(0.5, -0.5, 0.7), Vec3(0.5, 0.5, 0.7), red);
 		trf.AddOffset(.1, .1, 0);
-		tri->AddMatrix(trf);
-		tri->Init();
-		scene->AddItem(tri);
-		Triangle2* tri2 = new Triangle2("triGreen", Vec3(-0.5, 0.5, 0), Vec3(0.5, -0.5, 0), Vec3(0.5, 0.5, 0), green);
-		scene->AddItem(tri2);
+		triRed->AddMatrix(trf);
+		triRed->InitTransformation();
+		scene->AddItem(triRed);
 		
-		HitableInstance* instance2 = new HitableInstance(tri);
+		Triangle2* triGreen = new Triangle2("triGreen", Vec3(-0.5, 0.5, 0), Vec3(0.5, -0.5, 0), Vec3(0.5, 0.5, 0), green);
+		scene->AddItem(triGreen);
+		
+		HitableInstance* instanceTriRed = new HitableInstance(triRed);
 		trf.Reset();
-		trf.AddOffset(0,0,.5);
+		trf.AddOffset(0,0,-.25);
 		trf.AddUniformScale(.5); //.79 / .8 / .81
-		instance2->AddMatrix(trf);
-		instance2->Init();
-		instance2->SetName("instanceRed");
-		scene->AddItem(instance2);
+		instanceTriRed->AddMatrix(trf);
+		instanceTriRed->InitTransformation();
+		instanceTriRed->SetName("instanceCyan");
+		instanceTriRed->SetMaterial(cyan);
+		scene->AddItem(instanceTriRed);
 		
 		const Vec3 from (0,0,2);
 		const Vec3 to (0,0,0);
@@ -96,8 +99,8 @@ int main()
 			return -1;
 		
 		std::ofstream rgbImage, nrmImage;
-		rgbImage.open("/Users/riccardogigante/Desktop/test_color_TRI_TESTS.ppm", std::ofstream::out);
-		nrmImage.open("/Users/riccardogigante/Desktop/test_normal_TRI_TESTS.ppm", std::ofstream::out);
+		rgbImage.open("/Users/riccardogigante/Desktop/test_color_NEW_HITABLE_TESTS.ppm", std::ofstream::out);
+		nrmImage.open("/Users/riccardogigante/Desktop/test_normal_NEW_HITABLE_TESTS.ppm", std::ofstream::out);
 		
 		scene->Render(1, 0, fb, rgbImage, nrmImage);
 		
@@ -143,7 +146,7 @@ int main()
 		trf.AddOffset(0,0,.5);
 		trf.AddUniformScale(.5); //.79 / .8 / .81
 		instance2->AddMatrix(trf);
-		instance2->Init();
+		instance2->InitTransformation();
 		instance2->SetName("instanceRed");
 		scene->AddItem(instance2);
 		
@@ -219,7 +222,7 @@ int main()
 		trf.AddNonUniformScale(1,1,2);
 		trf.AddOffset(1,0,-0.5);
 		instance2->AddMatrix(trf);
-		instance2->Init();
+		instance2->InitTransformation();
 		instance2->SetName("instanceRed");
 		scene->AddItem(instance2);
 		
@@ -300,7 +303,7 @@ int main()
 		Matrix trf;
 		trf.AddOffset(0.5, 0, -1);
 		instance1->AddMatrix(trf);
-		instance1->Init();
+		instance1->InitTransformation();
 		instance1->SetName("instanceRed");
 		scene->AddItem(instance1);
 		
@@ -317,7 +320,7 @@ int main()
 		trf.Reset();
 		trf.AddNonUniformScale(1,1,2);
 		instance2->AddMatrix(trf);
-		instance2->Init();
+		instance2->InitTransformation();
 		instance2->SetName("instanceBlu");
 		scene->AddItem(instance2);
 		
@@ -535,7 +538,7 @@ int main()
 				mesh->SetVertexes(points, pointsCnt);
 				mesh->SetTriIndexes(indexes);
 				
-				if (mesh->InitTris() && mesh->Init())
+				if (mesh->InitTris() && mesh->InitTransformation())
 				{
 					scene->AddItem(mesh);
 					// dispose the memory used to create the mesh
@@ -550,7 +553,7 @@ int main()
 		trf2.AddOffset(1.05,0,0);
 		trf2.AddNonUniformScale(1, .5, 1);
 		inst->AddMatrix(trf2);
-		inst->Init();
+		inst->InitTransformation();
 		scene->AddItem(inst);
 		
 		HitableInstance* inst2 = new HitableInstance(new Triangle2("cyanMTriangle2", Vec3(-0.5, 0.5, -1.5), Vec3(0.5, -0.5, -1.5), Vec3(0.5, 0.5, -1.5), cyanM));
@@ -558,7 +561,7 @@ int main()
 		trf2.AddOffset(-1,1,0);
 	//		trf2.AddNonUniformScale(.5, 1, 1);
 		inst2->AddMatrix(trf2);
-		inst2->Init();
+		inst2->InitTransformation();
 		scene->AddItem(inst2);
 		
 		HitableInstance* inst3 = new HitableInstance(new Sphere2("bigSphere2", Vec3(0, 0, 0), 0.2, glass));
@@ -566,7 +569,7 @@ int main()
 		trf2.AddOffset(-.5, .5, 0);
 		trf2.AddNonUniformScale(1, 1, .33);
 		inst3->AddMatrix(trf2);
-		inst3->Init();
+		inst3->InitTransformation();
 		scene->AddItem(inst3);
 
 		// the rainbow spheres
