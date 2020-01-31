@@ -30,7 +30,7 @@ class Sphere2: public Hitable
 #ifdef NEW_HITABLE
 public:
 	~Sphere2(){}
-	Sphere2(char const* name, Vec3 cen, float r, Material* const, bool visible = true) : _center(cen), _radius(r) { SetName(name); SetVisible(visible); }
+	Sphere2(char const* name, Vec3 cen, float r, Material const * mat, bool visible = true) : _center(cen), _radius(r) { SetName(name); SetVisible(visible); SetMaterial(mat); }
 	bool Hit2 (const Ray& r, float t_min, float t_max, HitRecord& rec, bool debugRay = false);
 	bool SolveQuadratic(const float &a, const float &b, const float &c, float &x0, float &x1);
 	

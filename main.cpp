@@ -23,12 +23,12 @@
 const int g_xRes = 400;
 const int g_yRes = 400;
 
-//#define MATRIX_TESTS
+#define MATRIX_TESTS
 #define NEW_HITABLE_TESTS
-//#define SPHERE_TESTS
-//#define TRI_TESTS
-//#define ALL_TESTS
-//#define STANDARD_RUN
+#define SPHERE_TESTS
+#define TRI_TESTS
+#define ALL_TESTS
+#define STANDARD_RUN
 #define EXECUTE_RENDER
 
 int main()
@@ -47,7 +47,7 @@ int main()
 		// allocate metals
 		MetalReflector*  red = new MetalReflector("red", Vec3(0.9, 0, 0));
 		MetalReflector*  green = new MetalReflector("green", Vec3(0, 0.9, 0));
-		MetalReflector*  cyan = new MetalReflector("cyan", Vec3(0, 0.9, 0.9));
+		MetalReflector*  cyan = new MetalReflector("cyan", Vec3(0.9, 0.9, 0.9));
 		scene->AddMaterial(red);
 		scene->AddMaterial(green);
 		scene->AddMaterial(cyan);
@@ -58,6 +58,7 @@ int main()
 		trf.AddOffset(.1, .1, 0);
 		triRed->AddMatrix(trf);
 		triRed->InitTransformation();
+//		triRed->SetVisible(false);
 		scene->AddItem(triRed);
 		
 		Triangle2* triGreen = new Triangle2("triGreen", Vec3(-0.5, 0.5, 0), Vec3(0.5, -0.5, 0), Vec3(0.5, 0.5, 0), green);
@@ -84,14 +85,9 @@ int main()
 		scene->AddCamera(new Camera(from, to, up, fov, aperture, focusDistance, g_xRes, g_yRes));
 		
 		Vec3 pixelCol;
-		//		scene->ColorPixel(0/64 * g_xRes/64 * g_yRes, 0); // bottom-left
-		//		scene->ColorPixel(63/64 * g_xRes/64 * g_yRes, 0); // bottom-right
-		//		scene->ColorPixel(63/64 * g_xRes/64 * g_yRes, 63); // top-right
-		//		scene->ColorPixel(0/64 * g_xRes/64 * g_yRes, 63); //top-left
 		
 		scene->ColorPixel(52 * g_xRes/64.0, 52 * g_yRes/64.0, 0, true); //hit top-right
 		scene->ColorPixel(46 * g_xRes/64.0, 46 * g_yRes/64.0, 0, true); //hit top-right
-		//		scene->ColorPixel(10 * g_xRes/64.0, 10 * g_yRes/64.0, 0, true); //no hit bottom-left
 		
 #ifdef EXECUTE_RENDER
 		Framebuffer* fb = new Framebuffer(g_xRes, g_yRes, 3);

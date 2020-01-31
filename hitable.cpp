@@ -24,26 +24,30 @@ bool Hitable::InitTransformation()
 
 bool Hitable::Hit(const Ray& r, float t_min, float t_max, HitRecord& rec, Matrix* gm, bool debugRay /*= false*/)
 {
+	// allocate a temp ray  to be transformed based on hitable global transformation
 	Ray ray(r);
+	
+	// update origin and direction of the ray
 	ray.SetDirection((_gim.Get3x3() * r.GetDirection()));
 	ray.SetOrigin(_gim * r.GetOrigin());
 	
 	if (debugRay) std::cout << "\t\t\t(instance intersection)\n"<<
 		"\t\t\t- oldray:"<< r << "\n"<<
 		"\t\t\t- newray:"<< ray <<"\n";
-	bool hit = Hit2(ray, t_min, t_max, rec, debugRay);
-	float tAtR = r.ParameterAtPoint(rec.p);
-	float tAtRay = ray.ParameterAtPoint(rec.p);
-	rec.p = _gm * rec.p;
-	//	rec.n = (_gm.Get3x3() * rec.n).GetNormalized();
-	rec.n = (_gim.Get3x3().Transpose() * rec.n).GetNormalized();
-	if (debugRay && hit) std::cout <<
-		"\t\t\t- tAtOldRay"<< tAtR <<"\n"<<
-		"\t\t\t- tAtNewRay"<< tAtRay <<"\n";
-	//	std::cout << "tAtR [ "<<tAtR<<" ] - " << "tAtRay [ "<<tAtRay<<" ] \n";
-	//	if (hit)
-	//		assert (tAtR != tAtRay);
 	
-	return (hit);
+	
+	// allocate a temp bool to store the hit case
+	bool hitDetected = false;
+	
+	// If the hitable is "visible" in the scene, try to pierce it
+	if (IsVisible())
+		hitDetected = Hit2(ray, t_min, t_max, rec, debugRay);
+	
+	// tranform back points and normals based on hitable global transformation
+	rec.p = _gm * rec.p;
+	rec.n = (_gim.Get3x3().Transpose() * rec.n).GetNormalized();
+	
+	// return the hit case
+	return (hitDetected);
 }
 #endif

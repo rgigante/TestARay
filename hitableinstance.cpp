@@ -13,16 +13,24 @@ bool HitableInstance::Hit2(const Ray& r, float t_min, float t_max, HitRecord& re
 	// store the material for the current hitable
 	Material const * objMat = _obj->GetMaterial();
 	
-	// override material to use the one assigned to the hitableinstance
-	_obj->SetMaterial(GetMaterial());
+	bool hitDetected = false;
 	
-	// hit using the overriden material
-	bool hit = _obj->Hit2(r, t_min, t_max, rec, debugRay);
+	// use instance's material only if it has been assigned
+	if (GetMaterial())
+	{	// override material to use the one assigned to the hitableinstance
+		_obj->SetMaterial(GetMaterial());
+		
+		// hit using the overriden material
+		hitDetected = _obj->Hit2(r, t_min, t_max, rec, debugRay);
+		
+		// restore the material originally assigned to the current hitable
+		_obj->SetMaterial(objMat);
+	}
+	else
+		hitDetected = _obj->Hit2(r, t_min, t_max, rec, debugRay);
+		
 	
-	// restore the material originally assigned to the current hitable
-	_obj->SetMaterial(objMat);
-	
-	return (hit);
+	return (hitDetected);
 }
 #else
 bool HitableInstance::Hit(const Ray& r, float t_min, float t_max, HitRecord& rec, Matrix* gm, bool debugRay /*= false*/)
