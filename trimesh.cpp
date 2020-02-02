@@ -14,7 +14,7 @@ TriMesh::TriMesh(char const * name, int trisCnt, Material const * mat) : _trisCn
 {
 	SetMaterial(mat);
 	SetName(name);
-	_tris = new Triangle2*[_trisCnt];
+	_tris = new Triangle*[_trisCnt];
 	assert(_tris);
 }
 
@@ -33,7 +33,7 @@ TriMesh::~TriMesh()
 	
 }
 
-Triangle2* TriMesh::GetTriangleAtIndex(int triIdx)
+Triangle* TriMesh::GetTriangleAtIndex(int triIdx)
 {
 	// search the vertex indexes associated to triangle index
 	return _tris[triIdx];
@@ -70,7 +70,7 @@ bool TriMesh::InitTris()
 	{
 		const int vIdx[3] = {_triIndexes[3 * i + 0], _triIndexes[3 * i + 1], _triIndexes[3 * i + 2]};
 		{
-		_tris[i] = new Triangle2("trimesh", _vertexes[vIdx[0]], _vertexes[vIdx[1]], _vertexes[vIdx[2]], GetMaterial(), true);
+		_tris[i] = new Triangle("trimesh", _vertexes[vIdx[0]], _vertexes[vIdx[1]], _vertexes[vIdx[2]], GetMaterial(), true);
 		}
 	}
 	

@@ -23,19 +23,14 @@ public:
 	bool InitTris();
 	int GetVertexesCnt(){ return _vertexesCnt; }
 	int GetTrisCnt(){ return _trisCnt; }
-	Triangle2* GetTriangleAtIndex(int triIdx);
+	Triangle* GetTriangleAtIndex(int triIdx);
 		
 private:
 	Vec3* _vertexes;
 	int _vertexesCnt;
 	int* _triIndexes;
 	int _trisCnt;
-	Triangle2** _tris;
-//	Material* _mat;
-	
-	std::vector<Matrix> _mtrs;
-	std::vector<Matrix> _invmtrs;
-	Matrix _gm, _gim;
+	Triangle** _tris;
 };
 
 #endif /* trimesh_hpp */

@@ -9,11 +9,11 @@
 
 bool Hitable::InitTransformation()
 {
-	// create global trf matrixes
+	// compose the transformations
 	for (int i = 0; i < _mtrs.size(); ++i)
 	{
+		// multiply the matrixes found in the transformation stack
 		_gm = _gm * _mtrs[i];
-		_invmtrs.push_back(_mtrs[i].GetInverse());
 	}
 	_gim = _gm.GetInverse();
 	

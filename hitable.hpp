@@ -43,14 +43,13 @@ public:
 	void SetVisible(const bool visible){ _visible = visible; return; };
 	bool IsVisible(){ return _visible;}
 	
-	// material related methods
+	// material-related methods
 	bool SetMaterial(Material const * mat){ _mat = mat; return (!mat) ? false : true; };
 	Material const * GetMaterial()  { if (_mat) return _mat; return nullptr;}
 	
 	// transformation-related methods
 	bool InitTransformation();
 	const Matrix& GetMatrixAt(int idx) { return _mtrs[idx]; }
-	const Matrix& GetInverseMatrixAt(int idx) { return _invmtrs[idx]; }
 	void DropMatrixAt(int idx){	_mtrs.erase(_mtrs.begin() + idx);	}
 	void AddMatrix(Matrix trf){	_mtrs.push_back(trf);	}
 	const Matrix& GetGlobalMatrix() { return _gm; }
@@ -60,12 +59,17 @@ public:
 	virtual bool Hit2 (const Ray& r, float t_min, float t_max, HitRecord& rec, bool debugRay = false) = 0;
 	
 private:
+	// the transformation stack
 	std::vector<Matrix> _mtrs;
-	std::vector<Matrix> _invmtrs;
-	Matrix _gm = Matrix(), _gim = Matrix();
+	// the global transformation matrix
+	Matrix _gm = Matrix();
+	// the global inverse transformation matrix
+	Matrix _gim = Matrix();
+	// the visiblity flag
 	bool _visible = true;
-	
+	// the pointer to the material assigned to the hitable
 	Material const * _mat = nullptr;
+	// the pointer to the string assigned to the hitable
 	char const * _name = "";
 };
 

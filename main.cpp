@@ -54,14 +54,14 @@ int main()
 		
 		Matrix trf;
 		
-		Triangle2* triRed = new Triangle2("triRed", Vec3(-0.5, 0.5, 0.7), Vec3(0.5, -0.5, 0.7), Vec3(0.5, 0.5, 0.7), red);
+		Triangle* triRed = new Triangle("triRed", Vec3(-0.5, 0.5, 0.7), Vec3(0.5, -0.5, 0.7), Vec3(0.5, 0.5, 0.7), red);
 		trf.AddOffset(.1, .1, 0);
 		triRed->AddMatrix(trf);
 		triRed->InitTransformation();
 //		triRed->SetVisible(false);
 		scene->AddItem(triRed);
 		
-		Triangle2* triGreen = new Triangle2("triGreen", Vec3(-0.5, 0.5, 0), Vec3(0.5, -0.5, 0), Vec3(0.5, 0.5, 0), green);
+		Triangle* triGreen = new Triangle("triGreen", Vec3(-0.5, 0.5, 0), Vec3(0.5, -0.5, 0), Vec3(0.5, 0.5, 0), green);
 		scene->AddItem(triGreen);
 		
 		HitableInstance* instanceTriRed = new HitableInstance(triRed);
@@ -131,9 +131,9 @@ int main()
 		scene->AddMaterial(red);
 		scene->AddMaterial(green);
 		
-		Triangle2* tri = new Triangle2("triRed", Vec3(-0.5, 0.5, 0.5), Vec3(0.5, -0.5, 0.5), Vec3(0.5, 0.5, 0.5), red);
+		Triangle* tri = new Triangle("triRed", Vec3(-0.5, 0.5, 0.5), Vec3(0.5, -0.5, 0.5), Vec3(0.5, 0.5, 0.5), red);
 //		scene->AddItem(tri);
-		Triangle2* tri2 = new Triangle2("triGreen", Vec3(-0.5, 0.5, 0), Vec3(0.5, -0.5, 0), Vec3(0.5, 0.5, 0), green);
+		Triangle* tri2 = new Triangle("triGreen", Vec3(-0.5, 0.5, 0), Vec3(0.5, -0.5, 0), Vec3(0.5, 0.5, 0), green);
 		scene->AddItem(tri2);
 		
 		HitableInstance* instance2 = new HitableInstance(tri);
@@ -285,14 +285,14 @@ int main()
 		scene->AddMaterial(green);
 		scene->AddMaterial(blue);
 		
-		Triangle2* trifloor1 = new Triangle2("triFloor1", Vec3(-2, -0.5, -2), Vec3(2, -0.5, 5), Vec3(2, -0.5, -2), white);
+		Triangle* trifloor1 = new Triangle("triFloor1", Vec3(-2, -0.5, -2), Vec3(2, -0.5, 5), Vec3(2, -0.5, -2), white);
 		scene->AddItem(trifloor1);
-		Triangle2* trifloor2 = new Triangle2("triFloor2", Vec3(2, -0.5, 5), Vec3(-2, -0.5, -2), Vec3(-2, -0.5, 5), white);
+		Triangle* trifloor2 = new Triangle("triFloor2", Vec3(2, -0.5, 5), Vec3(-2, -0.5, -2), Vec3(-2, -0.5, 5), white);
 		scene->AddItem(trifloor2);
 		
-		Triangle2* tri = new Triangle2("triRed", Vec3(-0.5, 0.5, -0.5), Vec3(0.5, -0.5, -0.5), Vec3(0.5, 0.5, -0.5), red);
+		Triangle* tri = new Triangle("triRed", Vec3(-0.5, 0.5, -0.5), Vec3(0.5, -0.5, -0.5), Vec3(0.5, 0.5, -0.5), red);
 //		scene->AddItem(tri);
-		Triangle2* tri2 = new Triangle2("triGreen", Vec3(-0.5, 0.5, 0), Vec3(0.5, -0.5, 0), Vec3(0.5, 0.5, 0), green);
+		Triangle* tri2 = new Triangle("triGreen", Vec3(-0.5, 0.5, 0), Vec3(0.5, -0.5, 0), Vec3(0.5, 0.5, 0), green);
 		scene->AddItem(tri2);
 		
 		HitableInstance* instance1 = new HitableInstance(tri);
@@ -415,15 +415,15 @@ int main()
 		// the small red sphere on the back
 		scene->AddItem(new Sphere2("redSphere", Vec3(0.35, -0.4, -1), 0.1, red));
 		// the green triangle on the floor
-		scene->AddItem(new Triangle2("greenTriangle", Vec3(-2, -0.5, -2), Vec3(2, -0.5, 5), Vec3(2, -0.5, -2), green));
+		scene->AddItem(new Triangle("greenTriangle", Vec3(-2, -0.5, -2), Vec3(2, -0.5, 5), Vec3(2, -0.5, -2), green));
 		// the blue triangle on the floor
-		scene->AddItem(new Triangle2("blueTriangle", Vec3(2, -0.5, 5), Vec3(-2, -0.5, -2), Vec3(-2, -0.5, 5), blue));
+		scene->AddItem(new Triangle("blueTriangle", Vec3(2, -0.5, 5), Vec3(-2, -0.5, -2), Vec3(-2, -0.5, 5), blue));
 		// the purple triangle on the left
-		scene->AddItem(new Triangle2("purpleMTriangle", Vec3(-0.5, 0.5, -0.5), Vec3(-0.5, -0.5, -1.5), Vec3(-0.5, 0.5, -1.5), purpleM));
+		scene->AddItem(new Triangle("purpleMTriangle", Vec3(-0.5, 0.5, -0.5), Vec3(-0.5, -0.5, -1.5), Vec3(-0.5, 0.5, -1.5), purpleM));
 		// the cyan triangle on the back
-		scene->AddItem(new Triangle2("cyanMTriangle", Vec3(-0.5, 0.5, -1.5), Vec3(0.5, -0.5, -1.5), Vec3(0.5, 0.5, -1.5), cyanM));
+		scene->AddItem(new Triangle("cyanMTriangle", Vec3(-0.5, 0.5, -1.5), Vec3(0.5, -0.5, -1.5), Vec3(0.5, 0.5, -1.5), cyanM));
 		// the yellow triangle on the right
-		scene->AddItem(new Triangle2("yellowMTriangle", Vec3(0.5, 0.5, -0.5), Vec3(0.5, 0.5, -1.5), Vec3(0.5, -0.5, -0.5), yellowM));
+		scene->AddItem(new Triangle("yellowMTriangle", Vec3(0.5, 0.5, -0.5), Vec3(0.5, 0.5, -1.5), Vec3(0.5, -0.5, -0.5), yellowM));
 
 
 		// the red cube on the top
@@ -552,7 +552,7 @@ int main()
 		inst->InitTransformation();
 		scene->AddItem(inst);
 		
-		HitableInstance* inst2 = new HitableInstance(new Triangle2("cyanMTriangle2", Vec3(-0.5, 0.5, -1.5), Vec3(0.5, -0.5, -1.5), Vec3(0.5, 0.5, -1.5), cyanM));
+		HitableInstance* inst2 = new HitableInstance(new Triangle("cyanMTriangle", Vec3(-0.5, 0.5, -1.5), Vec3(0.5, -0.5, -1.5), Vec3(0.5, 0.5, -1.5), cyanM));
 		trf2.Reset();
 		trf2.AddOffset(-1,1,0);
 	//		trf2.AddNonUniformScale(.5, 1, 1);
