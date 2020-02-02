@@ -9,24 +9,26 @@
 
 void Scene::AddItem(Hitable* item)
 {
-
-	unsigned long itmsCnt = _items.size();
 	if (item)
 	{
-		item->SetObjID(itmsCnt);
+		// on adding an item just set its objID based on the number of items already added
+		item->SetObjID(_items.size());
+		
+		// add the item
 		_items.push_back(item);
 	}
-	
 }
 
-bool Scene::InitObjIDColors()
+void Scene::InitObjIDColors()
 {
+	// resize the objectID colors based on the number of items in the scene
 	_objIDcolors.resize(_items.size());
+	
+	// define for each entry a random color
 	for (unsigned long i  = 0; i < _items.size(); i++)
-	{
 		_objIDcolors[i] = Vec3 (drand48(), drand48(), drand48());
-	}
-	return true;
+
+	return;
 }
 
 bool Scene::Hit(const Ray &r, float t_min, float t_max, HitRecord &rec, bool debugRay /*= false*/) const
@@ -69,6 +71,7 @@ void Scene::Color(Vec3& col, Vec3& nrm, Vec3& objID, const Ray& r, int depth/* =
 			col *= attenuation;
 			return;
 		}
+		// color value (YELLOW) assigned for debugging scope
 		col = Vec3(1, 1, 0);
 		return;
 	}
@@ -76,7 +79,6 @@ void Scene::Color(Vec3& col, Vec3& nrm, Vec3& objID, const Ray& r, int depth/* =
 	// compute the background color
 	const float blend = 0.5 * (r.GetDirection().y() + 1.0);
 	col = Lerp(Vec3(1.0, 1.0, 1.0), Vec3(0.5, 0.7, 1.0), blend);
-	
 	nrm = Vec3(0,0,0);
 	objID = Vec3(0,0,0);
 	
@@ -102,6 +104,7 @@ void Scene::DebugColor(Vec3& col, const Ray& r, int depth/* = 0*/, const bool de
 			col *= attenuation;
 			return;
 		}
+		// color value (YELLOW) assigned for debugging scope
 		col = Vec3(1, 1, 0);
 		return;
 	}
@@ -111,7 +114,7 @@ void Scene::DebugColor(Vec3& col, const Ray& r, int depth/* = 0*/, const bool de
 	return;
 }
 
-bool Scene::ColorPixel(const int xPix/* = 1*/, const int yPix/* = 1*/, const int activeCamIdx /* = 0*/, const bool debugRay /*= false*/)
+bool Scene::RenderPixel(const int xPix/* = 1*/, const int yPix/* = 1*/, const int activeCamIdx /* = 0*/, const bool debugRay /*= false*/)
 {
 	Camera* const activeCam = _cams.at(activeCamIdx);
 	if (!activeCam)
@@ -142,11 +145,6 @@ bool Scene::ColorPixel(const int xPix/* = 1*/, const int yPix/* = 1*/, const int
 	DebugColor(rgb, r, 0, debugRay);
 	Color(rgb, nrm, objID, r);
 	std::cout << "--- end pixel ["<< rgb <<"],  ["<< nrm <<"],  ["<< objID <<"]\n\n";
-
-
-	//				std::cout << "uv [" << u << ", " << v << "] / dir [" << r.GetDirection().x() << ", " << r.GetDirection().y() << ", " << r.GetDirection().z() << "] / col ["<< rgb[0] <<", " << ", "<< rgb[1] << ", " << rgb[2] << "]\n";
-	
-
 	
 	return true;
 }

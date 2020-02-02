@@ -28,13 +28,14 @@ public:
 	Camera* GetCamera(const int i){ return _cams.at(i); }
 	
 	bool Render(const int samples, const int activeCamIdx, Framebuffer* const fb, std::ofstream * color = nullptr, std::ofstream * normal = nullptr, std::ofstream * objectID = nullptr);
+	bool RenderPixel(const int x = 1, const int y = 1, const int activeCamIdx = 0, const bool debugRay = false);
+	
 	bool Hit (const Ray& r, float t_min, float t_max, HitRecord& rec, bool debugRay = false) const;
+	
 	void Color(Vec3& col, Vec3& nrm, Vec3& objID, const Ray& r, int depth = 0);
-	
 	void DebugColor(Vec3& col, const Ray& r, int depth = 0, const bool debugRay = false);
-	bool ColorPixel(const int x = 1, const int y = 1, const int activeCamIdx = 0, const bool debugRay = false);
 	
-	bool InitObjIDColors();	
+	void InitObjIDColors();
 	
 	
 private:

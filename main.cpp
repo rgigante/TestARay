@@ -87,10 +87,9 @@ int main()
 		// init the array storing the color used to identify different object IDs
 		scene->InitObjIDColors();
 		
-		Vec3 pixelCol;
-		scene->ColorPixel(40 * g_xRes/64.0, (g_yRes - 37) * g_yRes/64.0, 0, true); //hit top-right
-		scene->ColorPixel(50 * g_xRes/64.0, (g_yRes - 37) * g_yRes/64.0, 0, true); //hit top-right
-		scene->ColorPixel(60 * g_xRes/64.0, (g_yRes - 37) * g_yRes/64.0, 0, true); //hit top-right
+		scene->RenderPixel(40 * g_xRes/64.0, 27 * g_yRes/64.0, 0, true); //hit top-right
+		scene->RenderPixel(50 * g_xRes/64.0, 27 * g_yRes/64.0, 0, true); //hit top-right
+		scene->RenderPixel(60 * g_xRes/64.0, 27 * g_yRes/64.0, 0, true); //hit top-right
 		
 #ifdef EXECUTE_RENDER
 		Framebuffer* fb = new Framebuffer(g_xRes, g_yRes, 3);
@@ -168,15 +167,8 @@ int main()
 		// init the array storing the color used to identify different object IDs
 		scene->InitObjIDColors();
 		
-		Vec3 pixelCol;
-		//		scene->ColorPixel(0/64 * g_xRes/64 * g_yRes, 0); // bottom-left
-		//		scene->ColorPixel(63/64 * g_xRes/64 * g_yRes, 0); // bottom-right
-		//		scene->ColorPixel(63/64 * g_xRes/64 * g_yRes, 63); // top-right
-		//		scene->ColorPixel(0/64 * g_xRes/64 * g_yRes, 63); //top-left
-		
-		scene->ColorPixel(52 * g_xRes/64.0, 52 * g_yRes/64.0, 0, true); //hit top-right
-		scene->ColorPixel(46 * g_xRes/64.0, 46 * g_yRes/64.0, 0, true); //hit top-right
-//		scene->ColorPixel(10 * g_xRes/64.0, 10 * g_yRes/64.0, 0, true); //no hit bottom-left
+		scene->RenderPixel(52 * g_xRes/64.0, 52 * g_yRes/64.0, 0, true);
+		scene->RenderPixel(46 * g_xRes/64.0, 46 * g_yRes/64.0, 0, true);
 		
 #ifdef EXECUTE_RENDER
 		Framebuffer* fb = new Framebuffer(g_xRes, g_yRes, 3);
@@ -247,10 +239,8 @@ int main()
 		// init the array storing the color used to identify different object IDs
 		scene->InitObjIDColors();
 		
-		Vec3 pixelCol;
-		
-		scene->ColorPixel(40 * g_xRes/64.0, (64-31) * g_yRes/64.0, 0, true); //hit top-right
-		scene->ColorPixel(45 * g_xRes/64.0, (64-31) * g_yRes/64.0, 0, true); //hit top-right
+		scene->RenderPixel(40 * g_xRes/64.0, 33 * g_yRes/64.0, 0, true);
+		scene->RenderPixel(45 * g_xRes/64.0, 33 * g_yRes/64.0, 0, true);
 		
 #ifdef EXECUTE_RENDER
 		Framebuffer* fb = new Framebuffer(g_xRes, g_yRes, 3);
@@ -348,15 +338,9 @@ int main()
 		// init the array storing the color used to identify different object IDs
 		scene->InitObjIDColors();
 		
-		Vec3 pixelCol;
-//		scene->ColorPixel(0, 0); // bottom-left
-//		scene->ColorPixel(63, 0); // bottom-right
-//		scene->ColorPixel(63, 63); // top-right
-//		scene->ColorPixel(0, 63); //top-left
-		
-		scene->ColorPixel(60/64 * g_xRes, 60/64 * g_yRes, 0, true); //hit top-right
-		scene->ColorPixel(53/64 * g_xRes, 53/64 * g_yRes, 0, true); //hit top-right
-		scene->ColorPixel(10/64 * g_xRes, 10/64 * g_yRes, 0, true); //no hit bottom-left
+		scene->RenderPixel(60 * g_xRes/64, 60 * g_yRes/64, 0, true); //hit top-right
+		scene->RenderPixel(53 * g_xRes/64, 53 * g_yRes/64, 0, true); //hit top-right
+		scene->RenderPixel(10 * g_xRes/64, 10 * g_yRes/64, 0, true); //no hit bottom-left
 #ifdef EXECUTE_RENDER
 		Framebuffer* fb = new Framebuffer(g_xRes, g_yRes, 3);
 		if (!fb)
