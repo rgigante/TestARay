@@ -21,40 +21,54 @@ Framebuffer::Framebuffer(int xRes, int yRes, int chans):_xRes(xRes), _yRes(yRes)
 	_normal = new float* [_yRes];
 	_objectID = new float* [_yRes];
 	
-	if (_color || !_normal || !_objectID)
+	for (int i = 0; i < _yRes; ++i)
 	{
-		for (int i = 0; i < _yRes; ++i)
-		{
+		if (_color)
 			_color[i] = new float[_xRes * _nChans];
+		if (_normal)
 			_normal[i] = new float[_xRes * _nChans];
+		if (_objectID)
 			_objectID[i] = new float[_xRes * _nChans];
-		}
 	}
 }
 
 Framebuffer::~Framebuffer()
 {
-	if (!_color ||
-		!_normal ||
-		!_objectID)
-		return;
-	
 	for (int i = 0; i < _yRes; ++i)
 	{
-		delete[] _color[i];
-		delete[] _normal[i];
-		delete[] _objectID[i];
-		_color[i] = nullptr;
-		_normal[i] = nullptr;
-		_objectID[i] = nullptr;
+		if (_color)
+		{
+			delete[] _color[i];
+			_color[i] = nullptr;
+		}
+		if (_normal)
+		{
+			delete[] _normal[i];
+			_normal[i] = nullptr;
+		}
+		if (_objectID)
+		{
+			delete[] _objectID[i];
+			_objectID[i] = nullptr;
+		}
+	}
+	if (_color)
+	{
+		delete[] _color;
+		_color = nullptr;
 	}
 	
-	delete[] _color;
-	delete[] _normal;
-	delete[] _objectID;
-	_color = nullptr;
-	_normal = nullptr;
-	_objectID = nullptr;
+	if (_normal)
+	{
+		delete[] _normal;
+		_normal = nullptr;
+	}
+	
+	if (_objectID)
+	{
+		delete[] _objectID;
+		_objectID = nullptr;
+	}
 }
 
 bool Framebuffer::SpoolToPPM(std::ofstream * of, const char* type)

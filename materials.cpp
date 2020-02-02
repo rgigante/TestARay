@@ -7,7 +7,21 @@
 
 #include "materials.hpp"
 
-LambertianReflector::LambertianReflector (char const* name, const Vec3& a) : _albedo(a), _name(name){}
+
+bool Material::SetName(char const * name)
+{
+	_name = name;
+	return (!name) ? false : true;
+}
+
+char const * Material::GetName()
+{
+	if (_name)
+		return _name;
+	return nullptr;
+}
+
+LambertianReflector::LambertianReflector (char const* name, const Vec3& a) : _albedo(a){ SetName(name); }
 
 bool LambertianReflector::Scatter(const Ray& rHit, const HitRecord& rec, Vec3& attenuation, Ray& rScatter) const
 {
@@ -17,7 +31,7 @@ bool LambertianReflector::Scatter(const Ray& rHit, const HitRecord& rec, Vec3& a
 	return true;
 }
 
-MetalReflector::MetalReflector(char const* name, const Vec3& a, float r /*= 0*/) : _albedo(a), _roughness(r), _name(name){}
+MetalReflector::MetalReflector(char const* name, const Vec3& a, float r /*= 0*/) : _albedo(a), _roughness(r){ SetName(name); }
 
 bool MetalReflector::Scatter(const Ray &rHit, const HitRecord &_rec, Vec3 &attenuation, Ray &rScatter) const
 {
@@ -45,7 +59,7 @@ bool MetalReflector::Scatter(const Ray &rHit, const HitRecord &_rec, Vec3 &atten
 	return false;
 }
 
-Dielectric::Dielectric(char const* name, float ri) : _refrIndex(ri), _name(name){}
+Dielectric::Dielectric(char const* name, float ri) : _refrIndex(ri){ SetName(name); }
 
 bool Dielectric::Scatter(const Ray &rHit, const HitRecord &rec, Vec3 &attenuation, Ray &rScatter) const
 {

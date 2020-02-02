@@ -15,7 +15,23 @@ class Material
 {
 public:
 	virtual ~Material(){}
+	
+	// Virtual methods (override in derived classes)
 	virtual bool Scatter(const Ray& rHit, const HitRecord& rec, Vec3& attenuation, Ray& rScatter) const = 0;
+	
+	// name-related methods
+	bool SetName(char const * name);
+	char const * GetName();
+	
+	// materialID-related methods
+	void SetMatID(unsigned long matID){ _matID = matID; return; };
+	unsigned long GetMatID(){ return _matID;}
+	
+private:
+	// the pointer to the string assigned to the hitable
+	char const* _name;
+	// the index to the material;
+	unsigned long _matID = 0;
 };
 
 class LambertianReflector : public Material
@@ -27,7 +43,6 @@ public:
 	
 private:
 	Vec3 _albedo; // the color of the reflector
-	char const* _name;
 };
 
 class MetalReflector : public Material
@@ -39,7 +54,6 @@ public:
 private:
 	Vec3 _albedo;
 	float _roughness;
-	char const* _name;
 };
 
 class Dielectric : public Material
@@ -50,7 +64,6 @@ public:
 	bool Scatter(const Ray& rHit, const HitRecord& rec, Vec3& attenuation, Ray& rScatter) const;
 private:
 	float _refrIndex;
-	char const* _name;
 };
 
 #endif /* materials_hpp */

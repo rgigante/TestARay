@@ -21,7 +21,7 @@ bool Hitable::InitTransformation()
 }
 
 
-bool Hitable::Hit(const Ray& r, float t_min, float t_max, HitRecord& rec, Matrix* gm, bool debugRay /*= false*/)
+bool Hitable::Hit(const Ray& r, float t_min, float t_max, HitRecord& rec, bool debugRay /*= false*/)
 {
 	// allocate a temp ray  to be transformed based on hitable global transformation
 	Ray ray(r);

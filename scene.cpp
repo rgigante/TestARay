@@ -41,7 +41,7 @@ bool Scene::Hit(const Ray &r, float t_min, float t_max, HitRecord &rec, bool deb
 		Hitable* currentItem = _items[i];
 		if (currentItem)
 		{
-			bool hitCheck = currentItem->Hit(r, t_min, closestSoFar, tempRec, nullptr, debugRay);
+			bool hitCheck = currentItem->Hit(r, t_min, closestSoFar, tempRec, debugRay);
 			if (hitCheck)
 			{
 				if (debugRay) std::cout << "\t\t- intersecting: " << currentItem->GetName() << " - " << tempRec << "\n";

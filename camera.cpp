@@ -28,15 +28,15 @@ Ray Camera::CreateRay(float u, float v)
 {
 	if (_aperture > 0)
 	{
-		Vec3 rd = _aperture * RandomPointOnDisk();
-		Vec3 offset = _u * rd[0] + _v * rd[1];
-		Vec3 eyeDir = _lowerLeftCorner + _hVec * u + _vVec * v - _eyePos - offset;
-		Vec3 eyePos = _eyePos + offset;
-		return Ray(eyePos, eyeDir.GetNormalized(), u, v);
+		const Vec3 rd = _aperture * RandomPointOnDisk();
+		const Vec3 offset = _u * rd[0] + _v * rd[1];
+		const Vec3 eyeDir = (_lowerLeftCorner + _hVec * u + _vVec * v - _eyePos - offset).GetNormalized();
+		const Vec3 eyePos = _eyePos + offset;
+		return Ray(eyePos, eyeDir, u, v);
 	}
 	else
 	{
-		Vec3 eyeDir = _lowerLeftCorner + _hVec * u + _vVec * v - _eyePos;
-		return Ray(_eyePos, eyeDir.GetNormalized());
+		const Vec3 eyeDir = (_lowerLeftCorner + _hVec * u + _vVec * v - _eyePos).GetNormalized();
+		return Ray(_eyePos, eyeDir);
 	}
 }
