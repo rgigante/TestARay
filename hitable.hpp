@@ -20,11 +20,12 @@ struct HitRecord
 	Vec3 p = Vec3(0,0,0); // the position in space at hit point
 	Vec3 n = Vec3(0,0,0); // the normal at hit point
 	Material const *mat = nullptr; // the material found at the hit point
+	unsigned long objID = 0; // the object ID hit point
 	
 	friend std::ostream& operator<<(std::ostream &os, const HitRecord& h)
 	{
 		std::cout << std::fixed;
-		os << "t[" << h.t << "] / p[" << h.p << "] / n[" << h.n << "]";
+		os << "t[" << h.t << "] / p[" << h.p << "] / n[" << h.n << "] / objID[" << h.objID << "]";
 		return os;
 	}
 };
@@ -42,6 +43,10 @@ public:
 	// visibility-related methods
 	void SetVisible(const bool visible){ _visible = visible; return; };
 	bool IsVisible(){ return _visible;}
+	
+	// objectID-related methods
+	void SetObjID(unsigned long objid){ _objID = objid; return; };
+	unsigned long GetObjID(){ return _objID;}
 	
 	// material-related methods
 	bool SetMaterial(Material const * mat){ _mat = mat; return (!mat) ? false : true; };
@@ -67,10 +72,13 @@ private:
 	Matrix _gim = Matrix();
 	// the visiblity flag
 	bool _visible = true;
+	// the index to the object;
+	unsigned long _objID = 0;
 	// the pointer to the material assigned to the hitable
 	Material const * _mat = nullptr;
 	// the pointer to the string assigned to the hitable
 	char const * _name = "";
+	
 };
 
 #endif /* hitable_hpp */

@@ -34,7 +34,6 @@ bool Hitable::Hit(const Ray& r, float t_min, float t_max, HitRecord& rec, Matrix
 		"\t\t\t- oldray:"<< r << "\n"<<
 		"\t\t\t- newray:"<< ray <<"\n";
 	
-	
 	// allocate a temp bool to store the hit case
 	bool hitDetected = false;
 	
@@ -45,6 +44,7 @@ bool Hitable::Hit(const Ray& r, float t_min, float t_max, HitRecord& rec, Matrix
 	// tranform back points and normals based on hitable global transformation
 	rec.p = _gm * rec.p;
 	rec.n = (_gim.Get3x3().Transpose() * rec.n).GetNormalized();
+	rec.objID = _objID;
 	
 	// return the hit case
 	return (hitDetected);

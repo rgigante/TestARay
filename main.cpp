@@ -52,13 +52,13 @@ int main()
 		scene->AddMaterial(green);
 		scene->AddMaterial(cyan);
 		
+		// allocate transformation
 		Matrix trf;
 		
 		Triangle* triRed = new Triangle("triRed", Vec3(-0.5, 0.5, 0.7), Vec3(0.5, -0.5, 0.7), Vec3(0.5, 0.5, 0.7), red);
 		trf.AddOffset(.1, .1, 0);
 		triRed->AddMatrix(trf);
 		triRed->InitTransformation();
-//		triRed->SetVisible(false);
 		scene->AddItem(triRed);
 		
 		Triangle* triGreen = new Triangle("triGreen", Vec3(-0.5, 0.5, 0), Vec3(0.5, -0.5, 0), Vec3(0.5, 0.5, 0), green);
@@ -84,24 +84,33 @@ int main()
 		// add camera to the scene
 		scene->AddCamera(new Camera(from, to, up, fov, aperture, focusDistance, g_xRes, g_yRes));
 		
-		Vec3 pixelCol;
+		// init the array storing the color used to identify different object IDs
+		scene->InitObjIDColors();
 		
-		scene->ColorPixel(52 * g_xRes/64.0, 52 * g_yRes/64.0, 0, true); //hit top-right
-		scene->ColorPixel(46 * g_xRes/64.0, 46 * g_yRes/64.0, 0, true); //hit top-right
+		Vec3 pixelCol;
+		scene->ColorPixel(40 * g_xRes/64.0, (g_yRes - 37) * g_yRes/64.0, 0, true); //hit top-right
+		scene->ColorPixel(50 * g_xRes/64.0, (g_yRes - 37) * g_yRes/64.0, 0, true); //hit top-right
+		scene->ColorPixel(60 * g_xRes/64.0, (g_yRes - 37) * g_yRes/64.0, 0, true); //hit top-right
 		
 #ifdef EXECUTE_RENDER
 		Framebuffer* fb = new Framebuffer(g_xRes, g_yRes, 3);
 		if (!fb)
 			return -1;
 		
-		std::ofstream rgbImage, nrmImage;
+		std::ofstream rgbImage;
 		rgbImage.open("/Users/riccardogigante/Desktop/test_color_NEW_HITABLE_TESTS.ppm", std::ofstream::out);
+		
+		std::ofstream nrmImage;
 		nrmImage.open("/Users/riccardogigante/Desktop/test_normal_NEW_HITABLE_TESTS.ppm", std::ofstream::out);
 		
-		scene->Render(1, 0, fb, rgbImage, nrmImage);
+		std::ofstream objIDImage;
+		objIDImage.open("/Users/riccardogigante/Desktop/test_objID_NEW_HITABLE_TESTS.ppm", std::ofstream::out);
+		
+		scene->Render(1, 0, fb, &rgbImage, &nrmImage, &objIDImage);
 		
 		rgbImage.close();
 		nrmImage.close();
+		objIDImage.close();
 		
 		// dispose the framebuffer
 		if (fb)
@@ -156,6 +165,9 @@ int main()
 		// add camera to the scene
 		scene->AddCamera(new Camera(from, to, up, fov, aperture, focusDistance, g_xRes, g_yRes));
 		
+		// init the array storing the color used to identify different object IDs
+		scene->InitObjIDColors();
+		
 		Vec3 pixelCol;
 		//		scene->ColorPixel(0/64 * g_xRes/64 * g_yRes, 0); // bottom-left
 		//		scene->ColorPixel(63/64 * g_xRes/64 * g_yRes, 0); // bottom-right
@@ -175,7 +187,7 @@ int main()
 		rgbImage.open("/Users/riccardogigante/Desktop/test_color_TRI_TESTS.ppm", std::ofstream::out);
 		nrmImage.open("/Users/riccardogigante/Desktop/test_normal_TRI_TESTS.ppm", std::ofstream::out);
 		
-		scene->Render(1, 0, fb, rgbImage, nrmImage);
+		scene->Render(1, 0, fb, &rgbImage, &nrmImage);
 		
 		rgbImage.close();
 		nrmImage.close();
@@ -232,6 +244,9 @@ int main()
 		// add camera to the scene
 		scene->AddCamera(new Camera(from, to, up, fov, aperture, focusDistance, g_xRes, g_yRes));
 		
+		// init the array storing the color used to identify different object IDs
+		scene->InitObjIDColors();
+		
 		Vec3 pixelCol;
 		
 		scene->ColorPixel(40 * g_xRes/64.0, (64-31) * g_yRes/64.0, 0, true); //hit top-right
@@ -246,7 +261,7 @@ int main()
 		rgbImage.open("/Users/riccardogigante/Desktop/test_color_SPHERE_TESTS.ppm", std::ofstream::out);
 		nrmImage.open("/Users/riccardogigante/Desktop/test_normal_SPHERE_TESTS.ppm", std::ofstream::out);
 		
-		scene->Render(1, 0, fb, rgbImage, nrmImage);
+		scene->Render(1, 0, fb, &rgbImage, &nrmImage);
 		
 		rgbImage.close();
 		nrmImage.close();
@@ -330,6 +345,9 @@ int main()
 		// add camera to the scene
 		scene->AddCamera(new Camera(from, to, up, fov, aperture, focusDistance, g_xRes, g_yRes));
 		
+		// init the array storing the color used to identify different object IDs
+		scene->InitObjIDColors();
+		
 		Vec3 pixelCol;
 //		scene->ColorPixel(0, 0); // bottom-left
 //		scene->ColorPixel(63, 0); // bottom-right
@@ -344,14 +362,16 @@ int main()
 		if (!fb)
 			return -1;
 		
-		std::ofstream rgbImage, nrmImage;
+		std::ofstream rgbImage, nrmImage, objIDImage;
 		rgbImage.open("/Users/riccardogigante/Desktop/test_color_ALL_TESTS.ppm", std::ofstream::out);
 		nrmImage.open("/Users/riccardogigante/Desktop/test_normal_ALL_TESTS.ppm", std::ofstream::out);
+		objIDImage.open("/Users/riccardogigante/Desktop/test_objID_ALL_TESTS.ppm", std::ofstream::out);
 		
-		scene->Render(1, 0, fb, rgbImage, nrmImage);
+		scene->Render(1, 0, fb, &rgbImage, &nrmImage, &objIDImage);
 		
 		rgbImage.close();
 		nrmImage.close();
+		objIDImage.close();
 		
 		// dispose the framebuffer
 		if (fb)
@@ -587,18 +607,23 @@ int main()
 		// add camera to the scene
 		scene->AddCamera(new Camera(from, to, up, fov, aperture, focusDistance, g_xRes, g_yRes));
 		
-		std::ofstream rgbImage, nrmImage;
+		// init the array storing the color used to identify different object IDs
+		scene->InitObjIDColors();
+		
+		std::ofstream rgbImage, nrmImage, objIDImage;
 		rgbImage.open("/Users/riccardogigante/Desktop/test_color.ppm", std::ofstream::out);
 		nrmImage.open("/Users/riccardogigante/Desktop/test_normal.ppm", std::ofstream::out);
+		objIDImage.open("/Users/riccardogigante/Desktop/test_objID.ppm", std::ofstream::out);
 
 		Framebuffer* fb = new Framebuffer(g_xRes, g_yRes, 3);
 		if (!fb)
 			return -1;
 		
-		scene->Render(1, 0, fb, rgbImage, nrmImage);
+		scene->Render(1, 0, fb, &rgbImage, &nrmImage, &objIDImage);
 		
 		rgbImage.close();
 		nrmImage.close();
+		objIDImage.close();
 
 		// dispose the framebuffer
 		if (fb)

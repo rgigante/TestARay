@@ -7,6 +7,28 @@
 
 #include "scene.hpp"
 
+void Scene::AddItem(Hitable* item)
+{
+
+	unsigned long itmsCnt = _items.size();
+	if (item)
+	{
+		item->SetObjID(itmsCnt);
+		_items.push_back(item);
+	}
+	
+}
+
+bool Scene::InitObjIDColors()
+{
+	_objIDcolors.resize(_items.size());
+	for (unsigned long i  = 0; i < _items.size(); i++)
+	{
+		_objIDcolors[i] = Vec3 (drand48(), drand48(), drand48());
+	}
+	return true;
+}
+
 bool Scene::Hit(const Ray &r, float t_min, float t_max, HitRecord &rec, bool debugRay /*= false*/) const
 {
 	HitRecord tempRec;
@@ -32,7 +54,7 @@ bool Scene::Hit(const Ray &r, float t_min, float t_max, HitRecord &rec, bool deb
 	return hitAnything;
 }
 
-void Scene::Color(Vec3& col, Vec3& nrm, const Ray& r, int depth/* = 0*/)
+void Scene::Color(Vec3& col, Vec3& nrm, Vec3& objID, const Ray& r, int depth/* = 0*/)
 {
 	HitRecord rec;
 	if (Hit(r, _epsHit, MAXFLOAT, rec))
@@ -41,25 +63,23 @@ void Scene::Color(Vec3& col, Vec3& nrm, const Ray& r, int depth/* = 0*/)
 		Vec3 attenuation(0, 0, 0);
 		if (depth < _maxDepth && rec.mat && rec.mat->Scatter(r, rec, attenuation, scattered))
 		{
-			Color(col, nrm, scattered, depth + 1);
+			Color(col, nrm, objID, scattered, depth + 1);
 			nrm = Vec3(rec.n.x() + 1, rec.n.y() + 1, rec.n.z() + 1) * 0.5;
+			objID = _objIDcolors[rec.objID];
 			col *= attenuation;
-//			std::cout << "\tdepth["<<depth<<"], col["<<col<<"], nrm["<<nrm<<"], ray["<<r.GetOrigin()<<" / "<<r.GetDirection()<<"]\n";
 			return;
 		}
 		col = Vec3(1, 1, 0);
-//		std::cout << "\tdepth["<<depth<<"], col["<<col<<"], nrm["<<nrm<<"], ray["<<r.GetOrigin()<<" / "<<r.GetDirection()<<"]\n";
 		return;
 	}
 	
 	// compute the background color
 	const float blend = 0.5 * (r.GetDirection().y() + 1.0);
 	col = Lerp(Vec3(1.0, 1.0, 1.0), Vec3(0.5, 0.7, 1.0), blend);
-//	const float blendY = 0.5 * (r.GetDirection().y() + 1.0);
-//	const float blendX = 0.5 * (r.GetDirection().x() + 1.0);
-//	col = Lerp(Vec3(1,0,0), Vec3(0,0,1), blendY) + Lerp(Vec3(0,0,0), Vec3(0,1,0), blendX);
+	
 	nrm = Vec3(0,0,0);
-//		std::cout << "\tdepth["<<depth<<"], col["<<col<<"], nrm["<<nrm<<"], ray["<<r.GetOrigin()<<" / "<<r.GetDirection()<<"]\n";
+	objID = Vec3(0,0,0);
+	
 	return;
 }
 
@@ -103,6 +123,7 @@ bool Scene::ColorPixel(const int xPix/* = 1*/, const int yPix/* = 1*/, const int
 	// allocate temporary data
 	Vec3 rgb(0,0,0);
 	Vec3 nrm(0,0,0);
+	Vec3 objID(0,0,0);
 	Ray r(Vec3 (0,0,0), Vec3(0,0,0));
 	
 	const int x = xPix;
@@ -119,8 +140,8 @@ bool Scene::ColorPixel(const int xPix/* = 1*/, const int yPix/* = 1*/, const int
 
 	// add the values returned by the ray recursively exploring the scene by hitting its items
 	DebugColor(rgb, r, 0, debugRay);
-	Color(rgb, nrm, r);
-	std::cout << "--- end pixel ["<< rgb <<"]\n\n";
+	Color(rgb, nrm, objID, r);
+	std::cout << "--- end pixel ["<< rgb <<"],  ["<< nrm <<"],  ["<< objID <<"]\n\n";
 
 
 	//				std::cout << "uv [" << u << ", " << v << "] / dir [" << r.GetDirection().x() << ", " << r.GetDirection().y() << ", " << r.GetDirection().z() << "] / col ["<< rgb[0] <<", " << ", "<< rgb[1] << ", " << rgb[2] << "]\n";
@@ -130,7 +151,7 @@ bool Scene::ColorPixel(const int xPix/* = 1*/, const int yPix/* = 1*/, const int
 	return true;
 }
 
-bool Scene::Render(const int samples/* = 1*/, const int activeCamIdx /* = 0*/, Framebuffer* const fb, std::ofstream& color, std::ofstream& normal)
+bool Scene::Render(const int samples/* = 1*/, const int activeCamIdx /* = 0*/, Framebuffer* const fb, std::ofstream * color, std::ofstream * normal, std::ofstream * objectID)
 {
 	Camera* const activeCam = _cams.at(activeCamIdx);
 	if (!activeCam)
@@ -141,9 +162,10 @@ bool Scene::Render(const int samples/* = 1*/, const int activeCamIdx /* = 0*/, F
 	
 	// allocate temporary data
 	int lrs = 0; //  last refreshed sample
-	float u = 0, v = 0; //
+	float u = 0, v = 0;
 	Vec3 rgb(0,0,0);
 	Vec3 nrm(0,0,0);
+	Vec3 objID(0,0,0);
 	Ray r(Vec3 (0,0,0), Vec3(0,0,0));
 	
 	// loop over samples
@@ -169,7 +191,7 @@ bool Scene::Render(const int samples/* = 1*/, const int activeCamIdx /* = 0*/, F
 				r = activeCam->CreateRay(u, v);
 				
 				// add the values returned by the ray recursively exploring the scene by hitting its items
-				Color(rgb, nrm, r);
+				Color(rgb, nrm, objID, r);
 //				std::cout << "--- end pixel ["<< rgb <<"]\n";
 				
 				// update with color
@@ -182,6 +204,11 @@ bool Scene::Render(const int samples/* = 1*/, const int activeCamIdx /* = 0*/, F
 				fb->GetNormal()[j][3 * i + 1] = (fb->GetNormal()[j][3 * i + 1] * ( s - 1 ) + nrm[1]) * inv_s;
 				fb->GetNormal()[j][3 * i + 2] = (fb->GetNormal()[j][3 * i + 2] * ( s - 1 ) + nrm[2]) * inv_s;
 				
+				// update with objectID
+				fb->GetObjectID()[j][3 * i + 0] = (fb->GetObjectID()[j][3 * i + 0] * ( s - 1 ) + objID[0]) * inv_s;
+				fb->GetObjectID()[j][3 * i + 1] = (fb->GetObjectID()[j][3 * i + 1] * ( s - 1 ) + objID[1]) * inv_s;
+				fb->GetObjectID()[j][3 * i + 2] = (fb->GetObjectID()[j][3 * i + 2] * ( s - 1 ) + objID[2]) * inv_s;
+				
 //				std::cout << "uv [" << u << ", " << v << "] / dir [" << r.GetDirection().x() << ", " << r.GetDirection().y() << ", " << r.GetDirection().z() << "] / col ["<< rgb[0] <<", " << ", "<< rgb[1] << ", " << rgb[2] << "]\n";
 
 			}
@@ -191,8 +218,12 @@ bool Scene::Render(const int samples/* = 1*/, const int activeCamIdx /* = 0*/, F
 		if (s >= lrs * 2)
 		{
 			std::cout << "Spooling [" << s << "]\n";
-			fb->SpoolToPPM(color, "color");
-			fb->SpoolToPPM(normal, "normal");
+			if (color)
+				fb->SpoolToPPM(color, "color");
+			if (normal)
+				fb->SpoolToPPM(normal, "normal");
+			if (objectID)
+				fb->SpoolToPPM(objectID, "objectID");
 			lrs = s;
 		}
 	}

@@ -18,15 +18,15 @@ public:
 	~Framebuffer();
 	float** GetColor(){ return _color; }
 	float** GetNormal(){ return _normal; }
-//	uint8_t** GetUInt8RGB(){};
-//	bool ConvertFloatToUInt8(){};
+	float** GetObjectID(){ return _objectID; }
 	bool GetXRes(){ return _xRes; }
 	bool GetYRes(){ return _yRes; }
-	bool SpoolToPPM(std::ofstream& of, const char* type);
+	bool SpoolToPPM(std::ofstream * of, const char* type);
 	
 private:
 	float** _color;
 	float** _normal;
+	float** _objectID;
 	int _xRes, _yRes, _nChans;
 };
 

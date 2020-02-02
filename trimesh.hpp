@@ -26,10 +26,15 @@ public:
 	Triangle* GetTriangleAtIndex(int triIdx);
 		
 private:
+	// vertexes array
 	Vec3* _vertexes;
+	// vertexes count
 	int _vertexesCnt;
+	// vertex-tri array
 	int* _triIndexes;
+	// tris count
 	int _trisCnt;
+	// triangles array
 	Triangle** _tris;
 };
 

@@ -20,26 +20,28 @@ public:
 	Scene(){}
 	~Scene();
 	
-	void AddItem(Hitable* item) { if (item) _items.push_back(item); }
+	void AddItem(Hitable* item);
 	
 	void AddMaterial(Material* material) { if(material) _materials.push_back(material); }
 	
 	void AddCamera(Camera* cam){ if (cam) _cams.push_back(cam); }
 	Camera* GetCamera(const int i){ return _cams.at(i); }
 	
-	bool Render(const int samples, const int activeCamIdx, Framebuffer* const fb, std::ofstream& color, std::ofstream& normal);
+	bool Render(const int samples, const int activeCamIdx, Framebuffer* const fb, std::ofstream * color = nullptr, std::ofstream * normal = nullptr, std::ofstream * objectID = nullptr);
 	bool Hit (const Ray& r, float t_min, float t_max, HitRecord& rec, bool debugRay = false) const;
-	void Color(Vec3& col, Vec3& nrm, const Ray& r, int depth = 0);
+	void Color(Vec3& col, Vec3& nrm, Vec3& objID, const Ray& r, int depth = 0);
 	
 	void DebugColor(Vec3& col, const Ray& r, int depth = 0, const bool debugRay = false);
 	bool ColorPixel(const int x = 1, const int y = 1, const int activeCamIdx = 0, const bool debugRay = false);
 	
+	bool InitObjIDColors();	
 	
 	
 private:
 	std::vector<Hitable*> _items;
 	std::vector<Material*> _materials;
 	std::vector<Camera*> _cams;
+	std::vector<Vec3> _objIDcolors;
 	
 	float _epsHit = 1e-5;
 	int _maxDepth = 20;
