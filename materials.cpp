@@ -21,7 +21,7 @@ char const * Material::GetName()
 	return nullptr;
 }
 
-LambertianReflector::LambertianReflector (char const* name, const Vec3& a) : _albedo(a){ SetName(name); }
+LambertianReflector::LambertianReflector (char const * name, const Vec3& a) : _albedo(a){ SetName(name); }
 
 bool LambertianReflector::Scatter(const Ray& rHit, const HitRecord& rec, Vec3& attenuation, Ray& rScatter) const
 {
@@ -31,13 +31,11 @@ bool LambertianReflector::Scatter(const Ray& rHit, const HitRecord& rec, Vec3& a
 	return true;
 }
 
-MetalReflector::MetalReflector(char const* name, const Vec3& a, float r /*= 0*/) : _albedo(a), _roughness(r){ SetName(name); }
+MetalReflector::MetalReflector(char const * name, const Vec3& a, float r /*= 0*/) : _albedo(a), _roughness(r){ SetName(name); }
 
-bool MetalReflector::Scatter(const Ray &rHit, const HitRecord &_rec, Vec3 &attenuation, Ray &rScatter) const
+bool MetalReflector::Scatter(const Ray &rHit, const HitRecord &rec, Vec3 &attenuation, Ray &rScatter) const
 {
-	HitRecord rec = _rec;
-	Vec3 rflDir = ReflectRay(rHit.GetDirection(), rec.n);
-//	std::cout << "\t\t- rHit.dir["<<rHit.GetDirection()<<"]\n\t\t- rec.n["<<rec.n<<"]\n\t\t- rflDir["<<rflDir<<"]\n";
+	const Vec3 rflDir = ReflectRay(rHit.GetDirection(), rec.n);
 	if (_roughness)
 		rScatter = Ray(rec.p, rflDir + RandomPointOnSphere(_roughness));
 	else
@@ -46,20 +44,17 @@ bool MetalReflector::Scatter(const Ray &rHit, const HitRecord &_rec, Vec3 &atten
 	
 	const float rflDirCheck = 1e-6;
 	const float rflInOutDiffLength = (Cross(rflDir, rec.n) - Cross(rHit.GetDirection(), rec.n)).Length();
+	
 	if (rflInOutDiffLength > rflDirCheck)
 		std::cout << "WARNING - Reflected ray correctness check failed [ diff:"<< rflInOutDiffLength <<"]\n"; // this should be almost zero
 	
-	const float resA = Dot(rflDir, rec.n);
-	const float resB = Dot(rflDir.GetNormalized(), rec.n);
-	const float resC = Dot(rflDir, rec.n.GetNormalized());
-	const float resD = Dot(rflDir.GetNormalized(), rec.n.GetNormalized());
 	if (Dot(rflDir, rec.n) > 0)
 		return true;
 	
 	return false;
 }
 
-Dielectric::Dielectric(char const* name, float ri) : _refrIndex(ri){ SetName(name); }
+Dielectric::Dielectric(char const * name, float ri) : _refrIndex(ri){ SetName(name); }
 
 bool Dielectric::Scatter(const Ray &rHit, const HitRecord &rec, Vec3 &attenuation, Ray &rScatter) const
 {
