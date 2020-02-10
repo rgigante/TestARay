@@ -14,21 +14,23 @@
 #include "scene.hpp"
 #include "sphere.hpp"
 #include "triangle.hpp"
+#include "box.hpp"
 #include "trimesh.hpp"
 #include "materials.hpp"
 #include "hitable.hpp"
 #include "hitableinstance.hpp"
 
 // global var to enable console debug
-const int g_xRes = 400;
-const int g_yRes = 400;
+const int g_xRes = 64;
+const int g_yRes = 64;
 
-#define MATRIX_TESTS
-#define NEW_HITABLE_TESTS
-#define SPHERE_TESTS
-#define TRI_TESTS
-#define ALL_TESTS
-#define STANDARD_RUN
+//#define MATRIX_TESTS
+//#define NEW_HITABLE_TESTS
+//#define SPHERE_TESTS
+#define BOX_TESTS
+//#define TRI_TESTS
+//#define ALL_TESTS
+//#define STANDARD_RUN
 #define EXECUTE_RENDER
 
 int main()
@@ -201,6 +203,80 @@ int main()
 	}
 #endif
 	
+#ifdef BOX_TESTS
+	{
+		// init the scene
+		Scene* scene = new Scene();
+		
+		// allocate metals
+		MetalReflector*  red = new MetalReflector("red", Vec3(0.9, 0, 0));
+		MetalReflector*  green = new MetalReflector("green", Vec3(0, 0.9, 0));
+		scene->AddMaterial(red);
+		scene->AddMaterial(green);
+		
+		Box* boxRed = new Box("box Red", Vec3(0.5, 0.5, 0.5), Vec3(-0.5,-0.5,-0.5), red);
+		scene->AddItem(boxRed);
+		
+//		Sphere* sphereRed = new Sphere("sphere Red", Vec3(0.5, 0.5, 0.5), 0.5, red);
+//		scene->AddItem(sphereRed);
+		
+//		HitableInstance* instance2 = new HitableInstance(sphereRed);
+//		Matrix trf;
+//		trf.Reset();
+//		trf.AddOffset(1,0,0);
+//		trf.AddNonUniformScale(1,1,2);
+//		trf.AddOffset(1,0,-0.5);
+//		instance2->AddMatrix(trf);
+//		instance2->InitTransformation();
+//		instance2->SetName("instanceRed");
+//		scene->AddItem(instance2);
+		
+		const Vec3 from (4,4,4);
+		const Vec3 to (0,0,0);
+		const Vec3 up (0,1,0);
+		const float fov = 40;
+		const float aperture = 0; //0.05;
+		const float focusDistance = 5; //(from - to).Length();
+		
+		// add camera to the scene
+		scene->AddCamera(new Camera(from, to, up, fov, aperture, focusDistance, g_xRes, g_yRes));
+		
+		// init the array storing the color used to identify different object IDs
+		scene->InitObjIDColors();
+		
+		scene->RenderPixel(31 * g_xRes/64.0, 31 * g_yRes/64.0, 0, true);
+		
+#ifdef EXECUTE_RENDER
+		Framebuffer* fb = new Framebuffer(g_xRes, g_yRes, 3);
+		if (!fb)
+			return -1;
+		
+		std::ofstream rgbImage, nrmImage;
+		rgbImage.open("/Users/riccardogigante/Desktop/test_color_BOX_TESTS.ppm", std::ofstream::out);
+		nrmImage.open("/Users/riccardogigante/Desktop/test_normal_BOX_TESTS.ppm", std::ofstream::out);
+		
+		scene->Render(1, 0, fb, &rgbImage, &nrmImage);
+		
+		rgbImage.close();
+		nrmImage.close();
+		
+		// dispose the framebuffer
+		if (fb)
+		{
+			delete fb;
+			fb = nullptr;
+		}
+#endif
+		
+		// dispose the scene (camera, items and materials)
+		if (scene)
+		{
+			delete(scene);
+			scene = nullptr;
+		}
+	}
+#endif
+	
 #ifdef SPHERE_TESTS
 	{
 		// init the scene
@@ -212,7 +288,7 @@ int main()
 		scene->AddMaterial(red);
 		scene->AddMaterial(green);
 		
-		Sphere2* sphereRed = new Sphere2("sphere Red", Vec3(-0.5, 0.5, 0.5), 0.5, red);
+		Sphere* sphereRed = new Sphere("sphere Red", Vec3(-0.5, 0.5, 0.5), 0.5, red);
 		scene->AddItem(sphereRed);
 		
 		HitableInstance* instance2 = new HitableInstance(sphereRed);
@@ -308,7 +384,7 @@ int main()
 		instance1->SetName("instanceRed");
 		scene->AddItem(instance1);
 		
-		Sphere2* sphere = new Sphere2("Sphere", Vec3(-1,0,0), 0.5, blue);
+		Sphere* sphere = new Sphere("Sphere", Vec3(-1,0,0), 0.5, blue);
 		scene->AddItem(sphere);
 		
 		HitableInstance* instance2 = new HitableInstance(sphere);
@@ -409,15 +485,15 @@ int main()
 		
 		
 		// allocate a sphere primitive
-		Sphere2* bigSphere = new Sphere2("bigSphere", Vec3(0, 0, -1), 0.5, glass);
+		Sphere* bigSphere = new Sphere("bigSphere", Vec3(0, 0, -1), 0.5, glass);
 		// add the sphere to the scene - disposing the scene also dispose the sphere and the material
 		scene->AddItem(bigSphere);
 		// the air bubble
-		scene->AddItem(new Sphere2("airSphere", Vec3(0.25, -0.2, -0.8), -0.05, glass));
+		scene->AddItem(new Sphere("airSphere", Vec3(0.25, -0.2, -0.8), -0.05, glass));
 		// the small green sphere on the back
-		scene->AddItem(new Sphere2("greenSphere", Vec3(-0.35, -0.4, -1), 0.1, green));
+		scene->AddItem(new Sphere("greenSphere", Vec3(-0.35, -0.4, -1), 0.1, green));
 		// the small red sphere on the back
-		scene->AddItem(new Sphere2("redSphere", Vec3(0.35, -0.4, -1), 0.1, red));
+		scene->AddItem(new Sphere("redSphere", Vec3(0.35, -0.4, -1), 0.1, red));
 		// the green triangle on the floor
 		scene->AddItem(new Triangle("greenTriangle", Vec3(-2, -0.5, -2), Vec3(2, -0.5, 5), Vec3(2, -0.5, -2), green));
 		// the blue triangle on the floor
@@ -564,7 +640,7 @@ int main()
 		inst2->InitTransformation();
 		scene->AddItem(inst2);
 		
-		HitableInstance* inst3 = new HitableInstance(new Sphere2("bigSphere2", Vec3(0, 0, 0), 0.2, glass));
+		HitableInstance* inst3 = new HitableInstance(new Sphere("bigSphere2", Vec3(0, 0, 0), 0.2, glass));
 		trf2.Reset();
 		trf2.AddOffset(-.5, .5, 0);
 		trf2.AddNonUniformScale(1, 1, .33);
@@ -573,13 +649,13 @@ int main()
 		scene->AddItem(inst3);
 
 		// the rainbow spheres
-		scene->AddItem(new Sphere2("redSphere", Vec3(0, -0.45, 4), 0.05, red));
-		scene->AddItem(new Sphere2("orangeSphere", Vec3(0, -0.45, 3.33), 0.05, orange));
-		scene->AddItem(new Sphere2("yellowSphere", Vec3(0, -0.45, 2.66), 0.05, yellow));
-		scene->AddItem(new Sphere2("greenSphere", Vec3(0, -0.45, 2), 0.05, green));
-		scene->AddItem(new Sphere2("blueSphere", Vec3(0, -0.45, 1.33), 0.05, blue));
-		scene->AddItem(new Sphere2("indigoSphere", Vec3(0, -0.45, 0.66), 0.05, indigo));
-		scene->AddItem(new Sphere2("purpleSphere", Vec3(0, -0.45, 0), 0.05, purple));
+		scene->AddItem(new Sphere("redSphere", Vec3(0, -0.45, 4), 0.05, red));
+		scene->AddItem(new Sphere("orangeSphere", Vec3(0, -0.45, 3.33), 0.05, orange));
+		scene->AddItem(new Sphere("yellowSphere", Vec3(0, -0.45, 2.66), 0.05, yellow));
+		scene->AddItem(new Sphere("greenSphere", Vec3(0, -0.45, 2), 0.05, green));
+		scene->AddItem(new Sphere("blueSphere", Vec3(0, -0.45, 1.33), 0.05, blue));
+		scene->AddItem(new Sphere("indigoSphere", Vec3(0, -0.45, 0.66), 0.05, indigo));
+		scene->AddItem(new Sphere("purpleSphere", Vec3(0, -0.45, 0), 0.05, purple));
 		
 		const Vec3 from (0,0,5);
 		const Vec3 to (0,0.5,0);

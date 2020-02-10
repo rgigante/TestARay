@@ -96,7 +96,9 @@ void Scene::DebugColor(Vec3& col, const Ray& r, int depth/* = 0*/, const bool de
 	if (isHit)
 	{
 		bool isBelowMaxDepth = depth < _maxDepth;
-		bool isScattered = rec.mat->Scatter(r, rec, attenuation, scattered);
+		bool isScattered = false;
+		if (rec.mat)
+			isScattered = rec.mat->Scatter(r, rec, attenuation, scattered);
 		std::cout << "\t\t- scatter["<<scattered<<"]\n\t\t- atten["<<attenuation<<"]\n";
 		if (isBelowMaxDepth && isScattered)
 		{
