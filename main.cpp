@@ -225,31 +225,37 @@ int main()
 		Triangle* trifloor2 = new Triangle("triFloor2", Vec3(2, 0, 5), Vec3(-2, 0, -2), Vec3(-2, 0, 5), white);
 		scene->AddItem(trifloor2);
 		
-		Box* boxRed = new Box("box Red", Vec3(1.2, 3, .5), Vec3(0.2,0,0), red);
-		scene->AddItem(boxRed);
+		Matrix trf;
 		
-		Box* boxGreen = new Box("box Green", Vec3(-0.2, .5, .5), Vec3(-.7, 0, 0), green);
+		Box* boxRed = new Box("box Red", Vec3(0.2, 1, .5), Vec3(1.2,3,0), red);
+		scene->AddItem(boxRed);
+		trf.AddRotationY(-45);
+		trf.AddOffset(0.5, 0, -0.5);
+		boxRed->AddMatrix(trf);
+		trf.Reset();
+		boxRed->InitTransformation();
+		
+		Box* boxGreen = new Box("box Green", Vec3(-0.7, 0.0, .5), Vec3(-.2, 0.5, 0), green);
 		scene->AddItem(boxGreen);
 		
-		HitableInstance* instance2 = new HitableInstance(boxGreen);
-		Matrix trf;
-		trf.Reset();
+		HitableInstance* instanceGreenBox = new HitableInstance(boxGreen);
 		trf.AddRotationY(30);
 		trf.AddOffset(0, 1, 0);
-		instance2->AddMatrix(trf);
-		instance2->InitTransformation();
-		instance2->SetName("instanceGreen");
-		scene->AddItem(instance2);
-		
-		HitableInstance* instance3 = new HitableInstance(boxGreen);
+		instanceGreenBox->AddMatrix(trf);
 		trf.Reset();
+		instanceGreenBox->InitTransformation();
+		instanceGreenBox->SetName("instanceGreen");
+		scene->AddItem(instanceGreenBox);
+		
+		HitableInstance* instanceGreenBoxBeingBlue = new HitableInstance(boxGreen);
 		trf.AddRotationY(-30);
 		trf.AddOffset(0, 2, 0);
-		instance3->SetMaterial(blue);
-		instance3->AddMatrix(trf);
-		instance3->InitTransformation();
-		instance3->SetName("instanceBlue");
-		scene->AddItem(instance3);
+		instanceGreenBoxBeingBlue->SetMaterial(blue);
+		instanceGreenBoxBeingBlue->AddMatrix(trf);
+		trf.Reset();
+		instanceGreenBoxBeingBlue->InitTransformation();
+		instanceGreenBoxBeingBlue->SetName("instanceBlue");
+		scene->AddItem(instanceGreenBoxBeingBlue);
 		
 		const Vec3 from (0,2,10);
 		const Vec3 to (0,0,0);
