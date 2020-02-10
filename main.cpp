@@ -27,10 +27,10 @@ const int g_yRes = 400;
 //#define MATRIX_TESTS
 //#define NEW_HITABLE_TESTS
 //#define SPHERE_TESTS
-#define BOX_TESTS
+//#define BOX_TESTS
 //#define TRI_TESTS
 //#define ALL_TESTS
-//#define STANDARD_RUN
+#define STANDARD_RUN
 #define EXECUTE_RENDER
 
 int main()
@@ -651,37 +651,95 @@ int main()
 		}
 		
 		HitableInstance* inst = new HitableInstance(mesh);
-		Matrix trf2;
-		trf2.AddOffset(1.05,0,0);
-		trf2.AddNonUniformScale(1, .5, 1);
-		inst->AddMatrix(trf2);
+		Matrix trf;
+		trf.AddOffset(1.05,0,0);
+		trf.AddNonUniformScale(1, .5, 1);
+		inst->AddMatrix(trf);
+		trf.Reset();
 		inst->InitTransformation();
 		scene->AddItem(inst);
 		
 		HitableInstance* inst2 = new HitableInstance(new Triangle("cyanMTriangle", Vec3(-0.5, 0.5, -1.5), Vec3(0.5, -0.5, -1.5), Vec3(0.5, 0.5, -1.5), cyanM));
-		trf2.Reset();
-		trf2.AddOffset(-1,1,0);
+		trf.AddOffset(-1,1,0);
 	//		trf2.AddNonUniformScale(.5, 1, 1);
-		inst2->AddMatrix(trf2);
+		inst2->AddMatrix(trf);
+		trf.Reset();
 		inst2->InitTransformation();
 		scene->AddItem(inst2);
 		
 		HitableInstance* inst3 = new HitableInstance(new Sphere("bigSphere2", Vec3(0, 0, 0), 0.2, glass));
-		trf2.Reset();
-		trf2.AddOffset(-.5, .5, 0);
-		trf2.AddNonUniformScale(1, 1, .33);
-		inst3->AddMatrix(trf2);
+		trf.AddOffset(-.5, .5, 0);
+		trf.AddNonUniformScale(1, 1, .33);
+		inst3->AddMatrix(trf);
+		trf.Reset();
 		inst3->InitTransformation();
 		scene->AddItem(inst3);
 
 		// the rainbow spheres
-		scene->AddItem(new Sphere("redSphere", Vec3(0, -0.45, 4), 0.05, red));
-		scene->AddItem(new Sphere("orangeSphere", Vec3(0, -0.45, 3.33), 0.05, orange));
-		scene->AddItem(new Sphere("yellowSphere", Vec3(0, -0.45, 2.66), 0.05, yellow));
-		scene->AddItem(new Sphere("greenSphere", Vec3(0, -0.45, 2), 0.05, green));
-		scene->AddItem(new Sphere("blueSphere", Vec3(0, -0.45, 1.33), 0.05, blue));
-		scene->AddItem(new Sphere("indigoSphere", Vec3(0, -0.45, 0.66), 0.05, indigo));
-		scene->AddItem(new Sphere("purpleSphere", Vec3(0, -0.45, 0), 0.05, purple));
+		scene->AddItem(new Sphere("redSphere", Vec3(-0.3, -0.45, 4), 0.05, red));
+		scene->AddItem(new Sphere("orangeSphere", Vec3(-0.3, -0.45, 3.33), 0.05, orange));
+		scene->AddItem(new Sphere("yellowSphere", Vec3(-0.3, -0.45, 2.66), 0.05, yellow));
+		scene->AddItem(new Sphere("greenSphere", Vec3(-0.3, -0.45, 2), 0.05, green));
+		scene->AddItem(new Sphere("blueSphere", Vec3(-0.3, -0.45, 1.33), 0.05, blue));
+		scene->AddItem(new Sphere("indigoSphere", Vec3(-0.3, -0.45, 0.66), 0.05, indigo));
+		scene->AddItem(new Sphere("purpleSphere", Vec3(-0.3, -0.45, 0), 0.05, purple));
+		
+		Box* box = new Box("box", Vec3(-.05,-0.5,-.05), Vec3(.05,-0.4,.05), red);
+		trf.AddOffset(0.3, 0, 0);
+		box->AddMatrix(trf);
+		trf.Reset();
+		box->InitTransformation();
+		scene->AddItem(box);
+		HitableInstance* boxInst1 = new HitableInstance(box);
+		boxInst1->SetMaterial(orange);
+		trf.AddOffset(0.3, 0, 0.66);
+		boxInst1->AddMatrix(trf);
+		trf.Reset();
+		boxInst1->InitTransformation();
+		scene->AddItem(boxInst1);
+		HitableInstance* boxInst2 = new HitableInstance(box);
+		boxInst2->SetMaterial(orange);
+		trf.AddOffset(0.3, 0, 0.66);
+		boxInst2->AddMatrix(trf);
+		trf.Reset();
+		boxInst2->InitTransformation();
+		scene->AddItem(boxInst2);
+		HitableInstance* boxInst3 = new HitableInstance(box);
+		boxInst3->SetMaterial(yellow);
+		trf.AddOffset(0.3, 0, 1.33);
+		boxInst3->AddMatrix(trf);
+		trf.Reset();
+		boxInst3->InitTransformation();
+		scene->AddItem(boxInst3);
+		HitableInstance* boxInst4 = new HitableInstance(box);
+		boxInst4->SetMaterial(green);
+		trf.AddOffset(0.3, 0, 2);
+		boxInst4->AddMatrix(trf);
+		trf.Reset();
+		boxInst4->InitTransformation();
+		scene->AddItem(boxInst4);
+		HitableInstance* boxInst5 = new HitableInstance(box);
+		boxInst5->SetMaterial(blue);
+		trf.AddOffset(0.3, 0, 2.66);
+		boxInst5->AddMatrix(trf);
+		trf.Reset();
+		boxInst5->InitTransformation();
+		scene->AddItem(boxInst5);
+		HitableInstance* boxInst6 = new HitableInstance(box);
+		boxInst6->SetMaterial(indigo);
+		trf.AddOffset(0.3, 0, 3.33);
+		boxInst6->AddMatrix(trf);
+		trf.Reset();
+		boxInst6->InitTransformation();
+		scene->AddItem(boxInst6);
+		HitableInstance* boxInst7 = new HitableInstance(box);
+		boxInst7->SetMaterial(indigo);
+		trf.AddOffset(0.3, 0, 4);
+		boxInst7->AddMatrix(trf);
+		trf.Reset();
+		boxInst7->InitTransformation();
+		scene->AddItem(boxInst7);
+		
 		
 		const Vec3 from (0,0,5);
 		const Vec3 to (0,0.5,0);
