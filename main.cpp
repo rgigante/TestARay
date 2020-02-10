@@ -21,8 +21,8 @@
 #include "hitableinstance.hpp"
 
 // global var to enable console debug
-const int g_xRes = 64;
-const int g_yRes = 64;
+const int g_xRes = 400;
+const int g_yRes = 400;
 
 //#define MATRIX_TESTS
 //#define NEW_HITABLE_TESTS
@@ -208,30 +208,50 @@ int main()
 		// init the scene
 		Scene* scene = new Scene();
 		
+		// allocate lambertians
+		LambertianReflector*  white = new LambertianReflector("white", Vec3(0.9, 0.9, 0.9));
+		scene->AddMaterial(white);
+		
 		// allocate metals
 		MetalReflector*  red = new MetalReflector("red", Vec3(0.9, 0, 0));
 		MetalReflector*  green = new MetalReflector("green", Vec3(0, 0.9, 0));
+		MetalReflector*  blue = new MetalReflector("blue", Vec3(0, 0, 0.9));
 		scene->AddMaterial(red);
 		scene->AddMaterial(green);
+		scene->AddMaterial(blue);
 		
-		Box* boxRed = new Box("box Red", Vec3(0.5, 0.5, 0.5), Vec3(-0.5,-0.5,-0.5), red);
+		Triangle* trifloor1 = new Triangle("triFloor1", Vec3(-2, 0, -2), Vec3(2, 0, 5), Vec3(2, 0, -2), white);
+		scene->AddItem(trifloor1);
+		Triangle* trifloor2 = new Triangle("triFloor2", Vec3(2, 0, 5), Vec3(-2, 0, -2), Vec3(-2, 0, 5), white);
+		scene->AddItem(trifloor2);
+		
+		Box* boxRed = new Box("box Red", Vec3(1.2, 3, .5), Vec3(0.2,0,0), red);
 		scene->AddItem(boxRed);
 		
-//		Sphere* sphereRed = new Sphere("sphere Red", Vec3(0.5, 0.5, 0.5), 0.5, red);
-//		scene->AddItem(sphereRed);
+		Box* boxGreen = new Box("box Green", Vec3(-0.2, .5, .5), Vec3(-.7, 0, 0), green);
+		scene->AddItem(boxGreen);
 		
-//		HitableInstance* instance2 = new HitableInstance(sphereRed);
-//		Matrix trf;
-//		trf.Reset();
-//		trf.AddOffset(1,0,0);
-//		trf.AddNonUniformScale(1,1,2);
-//		trf.AddOffset(1,0,-0.5);
-//		instance2->AddMatrix(trf);
-//		instance2->InitTransformation();
-//		instance2->SetName("instanceRed");
-//		scene->AddItem(instance2);
+		HitableInstance* instance2 = new HitableInstance(boxGreen);
+		Matrix trf;
+		trf.Reset();
+		trf.AddRotationY(30);
+		trf.AddOffset(0, 1, 0);
+		instance2->AddMatrix(trf);
+		instance2->InitTransformation();
+		instance2->SetName("instanceGreen");
+		scene->AddItem(instance2);
 		
-		const Vec3 from (4,4,4);
+		HitableInstance* instance3 = new HitableInstance(boxGreen);
+		trf.Reset();
+		trf.AddRotationY(-30);
+		trf.AddOffset(0, 2, 0);
+		instance3->SetMaterial(blue);
+		instance3->AddMatrix(trf);
+		instance3->InitTransformation();
+		instance3->SetName("instanceBlue");
+		scene->AddItem(instance3);
+		
+		const Vec3 from (0,2,10);
 		const Vec3 to (0,0,0);
 		const Vec3 up (0,1,0);
 		const float fov = 40;

@@ -26,6 +26,7 @@ public:
 private:
 	Vec3 _a, _b; // _a represents the further positive coordinate, _b represents the further negative coordinate
 	Vec3 _c, _r; // _c represents the box center, _r represents the box radius
+	Vec3 _nrms[6] = {Vec3(0,0,1), Vec3(0,0,-1), Vec3(0,1,0), Vec3(0,-1,0), Vec3(1,0,0), Vec3(-1,0,0)};
 };
 
 #endif /* box_hpp */
