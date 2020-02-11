@@ -36,15 +36,34 @@ bool Hitable::Hit(const Ray& r, float t_min, float t_max, HitRecord& rec, bool d
 	
 	// allocate a temp bool to store the hit case
 	bool hitDetected = false;
+	bool aabbHitDetected = false;
 	
+#ifdef USE_BBOX
 	// If the hitable is "visible" in the scene, try to pierce it
 	if (IsVisible())
+	{
+		aabbHitDetected = _bbox.HitBBox(ray, t_min, t_max, debugRay);
+		if (aabbHitDetected)
+		{
+			hitDetected = Hit2(ray, t_min, t_max, rec, debugRay);
+		
+			// tranform back points and normals based on hitable global transformation
+			rec.p = _gm * rec.p;
+			rec.n = (_gim.Get3x3().Transpose() * rec.n).GetNormalized();
+			rec.objID = _objID;
+		}
+	}
+#else
+	if (IsVisible())
+	{
 		hitDetected = Hit2(ray, t_min, t_max, rec, debugRay);
-	
-	// tranform back points and normals based on hitable global transformation
-	rec.p = _gm * rec.p;
-	rec.n = (_gim.Get3x3().Transpose() * rec.n).GetNormalized();
-	rec.objID = _objID;
+		
+		// tranform back points and normals based on hitable global transformation
+		rec.p = _gm * rec.p;
+		rec.n = (_gim.Get3x3().Transpose() * rec.n).GetNormalized();
+		rec.objID = _objID;
+	}
+#endif
 	
 	// return the hit case
 	return (hitDetected);

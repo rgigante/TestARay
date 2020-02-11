@@ -9,7 +9,10 @@
 #define hitable_hpp
 
 #include "ray.hpp"
+#include "bbox.hpp"
 #include "matrix.hpp"
+
+//#define USE_BBOX
 
 class Material;
 class Matrix;
@@ -56,6 +59,9 @@ public:
 	bool SetMaterial(Material const * mat){ _mat = mat; return (!mat) ? false : true; };
 	Material const * GetMaterial()  { if (_mat) return _mat; return nullptr;}
 	
+	// bbox-related methods
+	BBox * GetBBox() { return &_bbox; }
+	
 	// transformation-related methods
 	bool InitTransformation();
 	const Matrix& GetMatrixAt(int idx) { return _mtrs[idx]; }
@@ -82,6 +88,8 @@ private:
 	Material const * _mat = nullptr;
 	// the pointer to the string assigned to the hitable
 	char const * _name = "";
+	// the hitable BBox (aabb)
+	BBox _bbox;
 	
 };
 

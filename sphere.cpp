@@ -8,6 +8,17 @@
 #include "sphere.hpp"
 #include "matrix.hpp"
 
+Sphere::Sphere(char const* name, Vec3 cen, float r, Material const * mat, bool visible /*= true*/)
+{
+	_center = cen;
+	_radius = r;
+	SetName(name);
+	SetVisible(visible);
+	SetMaterial(mat);
+	if (GetBBox())
+		GetBBox()->SetCenterAndRadius(cen, Vec3(r));
+}
+
 bool Sphere::SolveQuadratic(const float &a, const float &b, const float &c, float &x0, float &x1)
 {
 	float discr = b * b - 4 * a * c;

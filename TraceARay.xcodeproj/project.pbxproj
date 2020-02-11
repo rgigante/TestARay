@@ -14,6 +14,7 @@
 		636A6F5221E8AB54009713F6 /* scene.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 636A6F5021E8AB54009713F6 /* scene.cpp */; };
 		6383492D21F3C786005AB34B /* hitableinstance.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6383492B21F3C786005AB34B /* hitableinstance.cpp */; };
 		638C56D821EF685E00DB2E84 /* matrix.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 638C56D621EF685E00DB2E84 /* matrix.cpp */; };
+		639BEF8A23F2E22100BC52D0 /* bbox.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 639BEF8923F2E22100BC52D0 /* bbox.cpp */; };
 		63A94B7121E73C6200F2DF28 /* trimesh.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 63A94B6F21E73C6200F2DF28 /* trimesh.cpp */; };
 		63BD981323F1964900683FA6 /* box.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 63BD981223F1964900683FA6 /* box.cpp */; };
 		63DB56A121E6989A004BABF2 /* utils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 63DB569F21E6989A004BABF2 /* utils.cpp */; };
@@ -52,6 +53,8 @@
 		6383492C21F3C786005AB34B /* hitableinstance.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = hitableinstance.hpp; sourceTree = "<group>"; };
 		638C56D621EF685E00DB2E84 /* matrix.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = matrix.cpp; sourceTree = "<group>"; };
 		638C56D721EF685E00DB2E84 /* matrix.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = matrix.hpp; sourceTree = "<group>"; };
+		639BEF8823F2E22100BC52D0 /* bbox.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = bbox.hpp; sourceTree = "<group>"; };
+		639BEF8923F2E22100BC52D0 /* bbox.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = bbox.cpp; sourceTree = "<group>"; };
 		63A94B6F21E73C6200F2DF28 /* trimesh.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = trimesh.cpp; sourceTree = "<group>"; };
 		63A94B7021E73C6200F2DF28 /* trimesh.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = trimesh.hpp; sourceTree = "<group>"; };
 		63BD981123F1964900683FA6 /* box.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = box.hpp; sourceTree = "<group>"; };
@@ -100,6 +103,8 @@
 		630D567F2093682100F925B8 /* Source */ = {
 			isa = PBXGroup;
 			children = (
+				639BEF8923F2E22100BC52D0 /* bbox.cpp */,
+				639BEF8823F2E22100BC52D0 /* bbox.hpp */,
 				63BD981223F1964900683FA6 /* box.cpp */,
 				63BD981123F1964900683FA6 /* box.hpp */,
 				63EE6C1E21E0A37F00F4A6AE /* camera.cpp */,
@@ -194,6 +199,7 @@
 				63DB56A121E6989A004BABF2 /* utils.cpp in Sources */,
 				6326AAE321EB99B600CA8594 /* framebuffer.cpp in Sources */,
 				63EE6C2321E0FBBA00F4A6AE /* materials.cpp in Sources */,
+				639BEF8A23F2E22100BC52D0 /* bbox.cpp in Sources */,
 				63EE6C1421DFBE0C00F4A6AE /* hitable.cpp in Sources */,
 				636A6F5221E8AB54009713F6 /* scene.cpp in Sources */,
 				63BD981323F1964900683FA6 /* box.cpp in Sources */,

@@ -1,24 +1,20 @@
 //
-//  box.cpp
+//  bbox.cpp
 //  TraceARay
 //
-//  Created by Riccardo Gigante on 10/02/2020.
+//  Created by Riccardo Gigante on 11/02/2020.
 //
 
-#include "box.hpp"
+#include "bbox.hpp"
 
-Box::Box(char const* name, Vec3 pt1, Vec3 pt2, Material const * mat, bool visible /*= true*/)
+
+BBox::BBox(Vec3 pt1, Vec3 pt2)
 {
 	SetPoints(pt1, pt2);
-	SetName(name);
-	SetVisible(visible);
-	SetMaterial(mat);
-	if (GetBBox())
-		GetBBox()->SetPoints(pt1, pt2);
 }
 
 
-void Box::SetPoints(Vec3 pt1, Vec3 pt2)
+void BBox::SetPoints(Vec3 pt1, Vec3 pt2)
 {
 	_a[0] = pt1.x() > pt2.x() ? pt1.x() : pt2.x();
 	_b[0] = pt1.x() > pt2.x() ? pt2.x() : pt1.x();
@@ -35,7 +31,30 @@ void Box::SetPoints(Vec3 pt1, Vec3 pt2)
 	_r = _a - _c;
 }
 
-bool Box::Hit2 (const Ray& r, float t_min, float t_max, HitRecord& rec, bool debugRay /*= false*/)
+void BBox::SetCenterAndRadius(Vec3 c, Vec3 r)
+{
+	_c = c;
+	_r = r;
+	_a = _c + _r * 0.5;
+	_b = _c - _r * 0.5;
+}
+
+void BBox::AddPoint(Vec3 pt)
+{
+	_a[0] = pt[0] > _a[0] ? pt[0] : _a[0];
+	_b[0] = pt[0] < _b[0] ? pt[0] : _b[0];
+	
+	_a[1] = pt[1] > _a[1] ? pt[1] : _a[1];
+	_b[1] = pt[1] < _b[1] ? pt[1] : _b[1];
+	
+	_a[2] = pt[2] > _a[2] ? pt[2] : _a[2];
+	_b[2] = pt[2] < _b[2] ? pt[2] : _b[2];
+	
+	_c = (_a + _b) / 2;
+	_r = _a - _c;
+}
+
+bool BBox::HitBBox (const Ray& r, float t_min, float t_max, bool debugRay /*= false*/)
 {
 	Ray ray(r);
 	const Vec3 rpos = r.GetOrigin();
@@ -45,10 +64,8 @@ bool Box::Hit2 (const Ray& r, float t_min, float t_max, HitRecord& rec, bool deb
 	const Vec3 bRpos = _b - rpos;
 	const Vec3 aRpos = _a - rpos;
 	
-	rec.mat = GetMaterial();
-	
 	float smaller_tmax = 0, larger_tmin = 0;
-
+	
 	float val_b = bRpos.x() * invRayDirX;
 	float val_a = aRpos.x() * invRayDirX;
 	const float tminX = val_b < val_a ? val_b : val_a;
@@ -63,7 +80,7 @@ bool Box::Hit2 (const Ray& r, float t_min, float t_max, HitRecord& rec, bool deb
 	val_a = aRpos.z() * invRayDirZ;
 	const float tminZ = val_b < val_a ? val_b : val_a;
 	const float tmaxZ = val_b >= val_a ? val_b : val_a;
-
+	
 	if (tminX >= tminY && tminX >= tminZ)
 		larger_tmin = tminX;
 	else if (tminY >= tminX && tminY >= tminZ)
@@ -84,27 +101,9 @@ bool Box::Hit2 (const Ray& r, float t_min, float t_max, HitRecord& rec, bool deb
 		<< "\t\t\t\t- tmin(s):" << tminX <<", " << tminY <<", " << tminZ << "\n"
 		<< "\t\t\t\t- tmax(s):" << tmaxX <<", " << tmaxY <<", " << tmaxZ << "\n"
 		<< "\t\t\t\t- smaller_tmax:" << smaller_tmax <<" / larger_tmin:" << larger_tmin << "\n";
-
-	if (smaller_tmax >= larger_tmin)
-	{
-		rec.t = larger_tmin;
-		rec.p = ray.PointAtParameter(larger_tmin);
-		if (abs(rec.p.z() - _a.z()) < 1e-6)
-			rec.n = Vec3(0,0,1);
-		else if (abs(rec.p.z() - _b.z()) < 1e-6)
-			rec.n = Vec3(0,0,-1);
-		else if (abs(rec.p.y() - _a.y()) < 1e-6)
-			rec.n = Vec3(0,1,0);
-		else if (abs(rec.p.y() - _b.y()) < 1e-6)
-			rec.n = Vec3(0,-1,0);
-		else if (abs(rec.p.x() - _a.x()) < 1e-6)
-			rec.n = Vec3(1,0,0);
-		else //if (abs(rec.p.x() - _b.x()) < 1e-6)
-			rec.n = Vec3(-1,0,0);
-		
-		if (rec.t > t_min && rec.t < t_max)
+	
+	if (smaller_tmax >= larger_tmin && larger_tmin > t_min && larger_tmin < t_max)
 			return true;
-	}
 	
 	return false;
 }

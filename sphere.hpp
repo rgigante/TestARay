@@ -15,7 +15,7 @@ class Sphere: public Hitable
 {
 public:
 	~Sphere(){}
-	Sphere(char const* name, Vec3 cen, float r, Material const * mat, bool visible = true) : _center(cen), _radius(r) { SetName(name); SetVisible(visible); SetMaterial(mat); }
+	Sphere(char const* name, Vec3 cen, float r, Material const * mat, bool visible = true);
 	bool Hit2 (const Ray& r, float t_min, float t_max, HitRecord& rec, bool debugRay = false);
 	bool SolveQuadratic(const float &a, const float &b, const float &c, float &x0, float &x1);
 	

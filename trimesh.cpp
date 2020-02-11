@@ -47,6 +47,11 @@ bool TriMesh::SetVertexes(Vec3* points, int pointsCnt)
 	_vertexesCnt = pointsCnt;
 	_vertexes = points;
 	
+	// init the bbox
+	BBox* aabb = GetBBox();
+	for (int i = 0; i < pointsCnt && aabb; i++)
+		aabb->AddPoint(points[i]);
+	
 	return true;
 }
 

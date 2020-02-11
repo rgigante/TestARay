@@ -32,6 +32,7 @@ class Vec3
 public:
 	Vec3() {}
 	Vec3(float e0, float e1, float e2) {	e[0] = e0; e[1] = e1; e[2] = e2; }
+	Vec3(float v) {	e[0] = v; e[1] = v; e[2] = v; }
 	~Vec3()	{}
 	inline float x() const { return e[0]; }
 	inline float y() const { return e[1]; }
