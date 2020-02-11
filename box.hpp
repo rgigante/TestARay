@@ -17,6 +17,7 @@ public:
 	~Box(){}
 	Box(char const* name, Vec3 pt1, Vec3 pt2, Material const * mat, bool visible = true);
 	bool Hit2 (const Ray& r, float t_min, float t_max, HitRecord& rec, bool debugRay = false);
+	
 	Vec3 GetA(){ return _a; }
 	Vec3 GetB(){ return _b; }
 	Vec3 GetCenter() { return _c; }
@@ -24,7 +25,7 @@ public:
 	void SetPoints(Vec3 pt1, Vec3 pt2);
 	
 private:
-	Vec3 _a, _b; // _a represents the further positive coordinate, _b represents the further negative coordinate
+	Vec3 _a, _b; // _a represents the further positive point, _b represents the further negative point
 	Vec3 _c, _r; // _c represents the box center, _r represents the box radius
 };
 

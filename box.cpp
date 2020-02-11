@@ -18,38 +18,16 @@ Box::Box(char const* name, Vec3 pt1, Vec3 pt2, Material const * mat, bool visibl
 
 void Box::SetPoints(Vec3 pt1, Vec3 pt2)
 {
-	if (pt1.x() > pt2.x())
-	{
-		_a[0] = pt1.x();
-		_b[0] = pt2.x();
-	}
-	else
-	{
-		_a[0] = pt2.x();
-		_b[0] = pt1.x();
-	}
+	_a[0] = pt1.x() > pt2.x() ? pt1.x() : pt2.x();
+	_b[0] = pt1.x() > pt2.x() ? pt2.x() : pt1.x();
 	
-	if (pt1.y() > pt2.y())
-	{
-		_a[1] = pt1.y();
-		_b[1] = pt2.y();
-	}
-	else
-	{
-		_a[1] = pt2.y();
-		_b[1] = pt1.y();
-	}
 	
-	if (pt1.z() > pt2.z())
-	{
-		_a[2] = pt1.z();
-		_b[2] = pt2.z();
-	}
-	else
-	{
-		_a[2] = pt2.z();
-		_b[2] = pt1.z();
-	}
+	_a[1] = pt1.y() > pt2.y() ? pt1.y() : pt2.y();
+	_b[1] = pt1.y() > pt2.y() ? pt2.y() : pt1.y();
+	
+	
+	_a[2] = pt1.z() > pt2.z() ? pt1.z() : pt2.z();
+	_b[2] = pt1.z() > pt2.z() ? pt2.z() : pt1.z();
 	
 	_c = (_a + _b) / 2;
 	_r = _a - _c;
