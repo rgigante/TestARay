@@ -26,454 +26,477 @@ const int g_yRes = 400;
 
 //#define MATRIX_TESTS
 //#define NEW_HITABLE_TESTS
-#define SPHERE_TESTS
+//#define SPHERE_TESTS
 //#define BOX_TESTS
 //#define TRI_TESTS
 //#define ALL_TESTS
-//#define STANDARD_RUN
+#define STANDARD_RUN
 #define EXECUTE_RENDER
+
+int NewHitableTests()
+{
+	// init the scene
+	Scene* scene = new Scene();
+	
+	// allocate metals
+	MetalReflector*  red = new MetalReflector("red", Vec3(0.9, 0, 0));
+	MetalReflector*  green = new MetalReflector("green", Vec3(0, 0.9, 0));
+	MetalReflector*  cyan = new MetalReflector("cyan", Vec3(0.9, 0.9, 0.9));
+	scene->AddMaterial(red);
+	scene->AddMaterial(green);
+	scene->AddMaterial(cyan);
+	
+	// allocate transformation
+	Matrix trf;
+	
+	Triangle* triRed = new Triangle("triRed", Vec3(-0.5, 0.5, 0.7), Vec3(0.5, -0.5, 0.7), Vec3(0.5, 0.5, 0.7), red);
+	trf.AddOffset(.1, .1, 0);
+	triRed->AddMatrix(trf);
+	triRed->InitTransformation();
+	scene->AddItem(triRed);
+	
+	Triangle* triGreen = new Triangle("triGreen", Vec3(-0.5, 0.5, 0), Vec3(0.5, -0.5, 0), Vec3(0.5, 0.5, 0), green);
+	scene->AddItem(triGreen);
+	
+	HitableInstance* instanceTriRed = new HitableInstance(triRed);
+	trf.Reset();
+	trf.AddOffset(0,0,-.25);
+	trf.AddUniformScale(.5); //.79 / .8 / .81
+	instanceTriRed->AddMatrix(trf);
+	instanceTriRed->InitTransformation();
+	instanceTriRed->SetName("instanceCyan");
+	instanceTriRed->SetMaterial(cyan);
+	scene->AddItem(instanceTriRed);
+	
+	const Vec3 from (0,0,2);
+	const Vec3 to (0,0,0);
+	const Vec3 up (0,1,0);
+	const float fov = 40;
+	const float aperture = 0; //0.05;
+	const float focusDistance = 5; //(from - to).Length();
+	
+	// add camera to the scene
+	scene->AddCamera(new Camera(from, to, up, fov, aperture, focusDistance, g_xRes, g_yRes));
+	
+	// init the array storing the color used to identify different object IDs
+	scene->InitObjIDColors();
+	
+	scene->RenderPixel(40 * g_xRes/64.0, 27 * g_yRes/64.0, 0, true); //hit top-right
+	scene->RenderPixel(50 * g_xRes/64.0, 27 * g_yRes/64.0, 0, true); //hit top-right
+	scene->RenderPixel(60 * g_xRes/64.0, 27 * g_yRes/64.0, 0, true); //hit top-right
+	
+#ifdef EXECUTE_RENDER
+	Framebuffer* fb = new Framebuffer(g_xRes, g_yRes, 3);
+	if (!fb)
+		return -1;
+	
+	std::ofstream rgbImage;
+	rgbImage.open("/Users/riccardogigante/Desktop/test_color_NEW_HITABLE_TESTS.ppm", std::ofstream::out);
+	
+	std::ofstream nrmImage;
+	nrmImage.open("/Users/riccardogigante/Desktop/test_normal_NEW_HITABLE_TESTS.ppm", std::ofstream::out);
+	
+	std::ofstream objIDImage;
+	objIDImage.open("/Users/riccardogigante/Desktop/test_objID_NEW_HITABLE_TESTS.ppm", std::ofstream::out);
+	
+	scene->Render(1, 0, fb, &rgbImage, &nrmImage, &objIDImage);
+	
+	rgbImage.close();
+	nrmImage.close();
+	objIDImage.close();
+	
+	// dispose the framebuffer
+	if (fb)
+	{
+		delete fb;
+		fb = nullptr;
+	}
+#endif
+	
+	// dispose the scene (camera, items and materials)
+	if (scene)
+	{
+		delete(scene);
+		scene = nullptr;
+	}
+	
+	return 0;
+}
+
+int TriTest()
+{
+	// init the scene
+	Scene* scene = new Scene();
+	
+	// allocate metals
+	MetalReflector*  red = new MetalReflector("red", Vec3(0.9, 0, 0));
+	MetalReflector*  green = new MetalReflector("green", Vec3(0, 0.9, 0));
+	scene->AddMaterial(red);
+	scene->AddMaterial(green);
+	
+	Triangle* tri = new Triangle("triRed", Vec3(-0.5, 0.5, 0.5), Vec3(0.5, -0.5, 0.5), Vec3(0.5, 0.5, 0.5), red);
+	//		scene->AddItem(tri);
+	Triangle* tri2 = new Triangle("triGreen", Vec3(-0.5, 0.5, 0), Vec3(0.5, -0.5, 0), Vec3(0.5, 0.5, 0), green);
+	scene->AddItem(tri2);
+	
+	HitableInstance* instance2 = new HitableInstance(tri);
+	Matrix trf;
+	trf.Reset();
+	trf.AddOffset(0,0,.5);
+	trf.AddUniformScale(.5); //.79 / .8 / .81
+	instance2->AddMatrix(trf);
+	instance2->InitTransformation();
+	instance2->SetName("instanceRed");
+	scene->AddItem(instance2);
+	
+	const Vec3 from (0,0,2);
+	const Vec3 to (0,0,0);
+	const Vec3 up (0,1,0);
+	const float fov = 40;
+	const float aperture = 0; //0.05;
+	const float focusDistance = 5; //(from - to).Length();
+	
+	// add camera to the scene
+	scene->AddCamera(new Camera(from, to, up, fov, aperture, focusDistance, g_xRes, g_yRes));
+	
+	// init the array storing the color used to identify different object IDs
+	scene->InitObjIDColors();
+	
+	scene->RenderPixel(52 * g_xRes/64.0, 52 * g_yRes/64.0, 0, true);
+	scene->RenderPixel(46 * g_xRes/64.0, 46 * g_yRes/64.0, 0, true);
+	
+#ifdef EXECUTE_RENDER
+	Framebuffer* fb = new Framebuffer(g_xRes, g_yRes, 3);
+	if (!fb)
+		return -1;
+	
+	std::ofstream rgbImage, nrmImage;
+	rgbImage.open("/Users/riccardogigante/Desktop/test_color_TRI_TESTS.ppm", std::ofstream::out);
+	nrmImage.open("/Users/riccardogigante/Desktop/test_normal_TRI_TESTS.ppm", std::ofstream::out);
+	
+	scene->Render(1, 0, fb, &rgbImage, &nrmImage);
+	
+	rgbImage.close();
+	nrmImage.close();
+	
+	// dispose the framebuffer
+	if (fb)
+	{
+		delete fb;
+		fb = nullptr;
+	}
+#endif
+	
+	// dispose the scene (camera, items and materials)
+	if (scene)
+	{
+		delete(scene);
+		scene = nullptr;
+	}
+	
+	return 0;
+}
+
+int BoxTest()
+{
+	// init the scene
+	Scene* scene = new Scene();
+	
+	// allocate lambertians
+	LambertianReflector*  white = new LambertianReflector("white", Vec3(0.9, 0.9, 0.9));
+	scene->AddMaterial(white);
+	
+	// allocate metals
+	MetalReflector*  red = new MetalReflector("red", Vec3(0.9, 0, 0));
+	MetalReflector*  green = new MetalReflector("green", Vec3(0, 0.9, 0));
+	MetalReflector*  blue = new MetalReflector("blue", Vec3(0, 0, 0.9));
+	scene->AddMaterial(red);
+	scene->AddMaterial(green);
+	scene->AddMaterial(blue);
+	
+	Triangle* trifloor1 = new Triangle("triFloor1", Vec3(-2, 0, -2), Vec3(2, 0, 5), Vec3(2, 0, -2), white);
+	scene->AddItem(trifloor1);
+	Triangle* trifloor2 = new Triangle("triFloor2", Vec3(2, 0, 5), Vec3(-2, 0, -2), Vec3(-2, 0, 5), white);
+	scene->AddItem(trifloor2);
+	
+	Matrix trf;
+	
+	Box* boxRed = new Box("box Red", Vec3(0.2, 1, .5), Vec3(1.2,3,0), red);
+	scene->AddItem(boxRed);
+	trf.AddRotationY(-45);
+	trf.AddOffset(0.5, 0, -0.5);
+	boxRed->AddMatrix(trf);
+	trf.Reset();
+	boxRed->InitTransformation();
+	
+	Box* boxGreen = new Box("box Green", Vec3(-0.7, 0.0, .5), Vec3(-.2, 0.5, 0), green);
+	scene->AddItem(boxGreen);
+	
+	HitableInstance* instanceGreenBox = new HitableInstance(boxGreen);
+	trf.AddRotationY(30);
+	trf.AddOffset(0, 1, 0);
+	instanceGreenBox->AddMatrix(trf);
+	trf.Reset();
+	instanceGreenBox->InitTransformation();
+	instanceGreenBox->SetName("instanceGreen");
+	scene->AddItem(instanceGreenBox);
+	
+	HitableInstance* instanceGreenBoxBeingBlue = new HitableInstance(boxGreen);
+	trf.AddRotationY(-30);
+	trf.AddOffset(0, 2, 0);
+	instanceGreenBoxBeingBlue->SetMaterial(blue);
+	instanceGreenBoxBeingBlue->AddMatrix(trf);
+	trf.Reset();
+	instanceGreenBoxBeingBlue->InitTransformation();
+	instanceGreenBoxBeingBlue->SetName("instanceBlue");
+	scene->AddItem(instanceGreenBoxBeingBlue);
+	
+	const Vec3 from (0,2,10);
+	const Vec3 to (0,0,0);
+	const Vec3 up (0,1,0);
+	const float fov = 40;
+	const float aperture = 0; //0.05;
+	const float focusDistance = 5; //(from - to).Length();
+	
+	// add camera to the scene
+	scene->AddCamera(new Camera(from, to, up, fov, aperture, focusDistance, g_xRes, g_yRes));
+	
+	// init the array storing the color used to identify different object IDs
+	scene->InitObjIDColors();
+	
+	scene->RenderPixel(31 * g_xRes/64.0, 31 * g_yRes/64.0, 0, true);
+	
+#ifdef EXECUTE_RENDER
+	Framebuffer* fb = new Framebuffer(g_xRes, g_yRes, 3);
+	if (!fb)
+		return -1;
+	
+	std::ofstream rgbImage, nrmImage;
+	rgbImage.open("/Users/riccardogigante/Desktop/test_color_BOX_TESTS.ppm", std::ofstream::out);
+	nrmImage.open("/Users/riccardogigante/Desktop/test_normal_BOX_TESTS.ppm", std::ofstream::out);
+	
+	scene->Render(1, 0, fb, &rgbImage, &nrmImage);
+	
+	rgbImage.close();
+	nrmImage.close();
+	
+	// dispose the framebuffer
+	if (fb)
+	{
+		delete fb;
+		fb = nullptr;
+	}
+#endif
+	
+	// dispose the scene (camera, items and materials)
+	if (scene)
+	{
+		delete(scene);
+		scene = nullptr;
+	}
+	
+	return 0;
+}
+
+int SphereTest()
+{
+	// init the scene
+	Scene* scene = new Scene();
+	
+	// allocate metals
+	MetalReflector*  red = new MetalReflector("red", Vec3(0.9, 0, 0));
+	MetalReflector*  green = new MetalReflector("green", Vec3(0, 0.9, 0));
+	scene->AddMaterial(red);
+	scene->AddMaterial(green);
+	
+	Sphere* sphereRed = new Sphere("sphere Red", Vec3(0, 0, 1), 1, red);
+	scene->AddItem(sphereRed);
+	
+	Box* boxGreen = new Box("Green box", Vec3(1, 1, 1), Vec3(-1, -1, -1), green);
+	scene->AddItem(boxGreen);
+	
+	HitableInstance* instance2 = new HitableInstance(sphereRed);
+	Matrix trf;
+	trf.Reset();
+	trf.AddOffset(1,0,0);
+	trf.AddNonUniformScale(1,1,2);
+	trf.AddOffset(1,0,-0.5);
+	instance2->AddMatrix(trf);
+	instance2->InitTransformation();
+	instance2->SetName("instanceRed");
+	scene->AddItem(instance2);
+	
+	const Vec3 from (0,0,4);
+	const Vec3 to (0,0,0);
+	const Vec3 up (0,1,0);
+	const float fov = 40;
+	const float aperture = 0; //0.05;
+	const float focusDistance = 5; //(from - to).Length();
+	
+	// add camera to the scene
+	scene->AddCamera(new Camera(from, to, up, fov, aperture, focusDistance, g_xRes, g_yRes));
+	
+	// init the array storing the color used to identify different object IDs
+	scene->InitObjIDColors();
+	
+	scene->RenderPixel(46 * g_xRes/64.0, (64 - 46) * g_yRes/64.0, 0, true);
+	
+#ifdef EXECUTE_RENDER
+	Framebuffer* fb = new Framebuffer(g_xRes, g_yRes, 3);
+	if (!fb)
+		return -1;
+	
+	std::ofstream rgbImage, nrmImage;
+	rgbImage.open("/Users/riccardogigante/Desktop/test_color_SPHERE_TESTS.ppm", std::ofstream::out);
+	nrmImage.open("/Users/riccardogigante/Desktop/test_normal_SPHERE_TESTS.ppm", std::ofstream::out);
+	
+	scene->Render(1, 0, fb, &rgbImage, &nrmImage);
+	
+	rgbImage.close();
+	nrmImage.close();
+	
+	// dispose the framebuffer
+	if (fb)
+	{
+		delete fb;
+		fb = nullptr;
+	}
+#endif
+	
+	// dispose the scene (camera, items and materials)
+	if (scene)
+	{
+		delete(scene);
+		scene = nullptr;
+	}
+	
+	return 0;
+}
+
+int AllTest()
+{
+	// init the scene
+	Scene* scene = new Scene();
+	
+	// allocate lambertians
+	LambertianReflector*  white = new LambertianReflector("white", Vec3(0.9, 0.9, 0.9));
+	scene->AddMaterial(white);
+	
+	// allocate metals
+	MetalReflector*  red = new MetalReflector("red", Vec3(0.9, 0, 0));
+	MetalReflector*  green = new MetalReflector("green", Vec3(0, 0.9, 0));
+	MetalReflector*  blue = new MetalReflector("blue", Vec3(0, 0, 0.9));
+	scene->AddMaterial(red);
+	scene->AddMaterial(green);
+	scene->AddMaterial(blue);
+	
+	Triangle* trifloor1 = new Triangle("triFloor1", Vec3(-2, -0.5, -2), Vec3(2, -0.5, 5), Vec3(2, -0.5, -2), white);
+	scene->AddItem(trifloor1);
+	Triangle* trifloor2 = new Triangle("triFloor2", Vec3(2, -0.5, 5), Vec3(-2, -0.5, -2), Vec3(-2, -0.5, 5), white);
+	scene->AddItem(trifloor2);
+	
+	Triangle* tri = new Triangle("triRed", Vec3(-0.5, 0.5, -0.5), Vec3(0.5, -0.5, -0.5), Vec3(0.5, 0.5, -0.5), red);
+	//		scene->AddItem(tri);
+	Triangle* tri2 = new Triangle("triGreen", Vec3(-0.5, 0.5, 0), Vec3(0.5, -0.5, 0), Vec3(0.5, 0.5, 0), green);
+	scene->AddItem(tri2);
+	
+	HitableInstance* instance1 = new HitableInstance(tri);
+	Matrix trf;
+	trf.AddOffset(0.5, 0, -1);
+	instance1->AddMatrix(trf);
+	instance1->InitTransformation();
+	instance1->SetName("instanceRed");
+	scene->AddItem(instance1);
+	
+	Sphere* sphere = new Sphere("Sphere", Vec3(-1,0,0), 0.5, blue);
+	scene->AddItem(sphere);
+	
+	HitableInstance* instance2 = new HitableInstance(sphere);
+	trf.Reset();
+	trf.AddOffset(1.5, -0.25, 1);
+	instance2->AddMatrix(trf);
+	trf.Reset();
+	trf.AddUniformScale(0.5);
+	instance2->AddMatrix(trf);
+	trf.Reset();
+	trf.AddNonUniformScale(1,1,2);
+	instance2->AddMatrix(trf);
+	instance2->InitTransformation();
+	instance2->SetName("instanceBlu");
+	scene->AddItem(instance2);
+	
+	const Vec3 from (5,5,5);
+	const Vec3 to (0,0,0);
+	const Vec3 up (0,1,0);
+	const float fov = 40;
+	const float aperture = 0; //0.05;
+	const float focusDistance = 5; //(from - to).Length();
+	
+	// add camera to the scene
+	scene->AddCamera(new Camera(from, to, up, fov, aperture, focusDistance, g_xRes, g_yRes));
+	
+	// init the array storing the color used to identify different object IDs
+	scene->InitObjIDColors();
+	scene->RenderPixel(21 * g_xRes/64, (64-32) * g_yRes/64, 0, true);
+	
+#ifdef EXECUTE_RENDER
+	Framebuffer* fb = new Framebuffer(g_xRes, g_yRes, 3);
+	if (!fb)
+		return -1;
+	
+	std::ofstream rgbImage, nrmImage, objIDImage;
+	rgbImage.open("/Users/riccardogigante/Desktop/test_color_ALL_TESTS.ppm", std::ofstream::out);
+	nrmImage.open("/Users/riccardogigante/Desktop/test_normal_ALL_TESTS.ppm", std::ofstream::out);
+	objIDImage.open("/Users/riccardogigante/Desktop/test_objID_ALL_TESTS.ppm", std::ofstream::out);
+	
+	scene->Render(16, 0, fb, &rgbImage, &nrmImage, &objIDImage);
+	
+	rgbImage.close();
+	nrmImage.close();
+	objIDImage.close();
+	
+	// dispose the framebuffer
+	if (fb)
+	{
+		delete fb;
+		fb = nullptr;
+	}
+#endif
+	
+	// dispose the scene (camera, items and materials)
+	if (scene)
+	{
+		delete(scene);
+		scene = nullptr;
+	}
+	
+	return 0;
+}
 
 int main()
 {
 #ifdef MATRIX_TESTS
-	{
-		MatrixTests();
-	}
+	MatrixTests();
 #endif
 	
 #ifdef NEW_HITABLE_TESTS
-	{
-		// init the scene
-		Scene* scene = new Scene();
-		
-		// allocate metals
-		MetalReflector*  red = new MetalReflector("red", Vec3(0.9, 0, 0));
-		MetalReflector*  green = new MetalReflector("green", Vec3(0, 0.9, 0));
-		MetalReflector*  cyan = new MetalReflector("cyan", Vec3(0.9, 0.9, 0.9));
-		scene->AddMaterial(red);
-		scene->AddMaterial(green);
-		scene->AddMaterial(cyan);
-		
-		// allocate transformation
-		Matrix trf;
-		
-		Triangle* triRed = new Triangle("triRed", Vec3(-0.5, 0.5, 0.7), Vec3(0.5, -0.5, 0.7), Vec3(0.5, 0.5, 0.7), red);
-		trf.AddOffset(.1, .1, 0);
-		triRed->AddMatrix(trf);
-		triRed->InitTransformation();
-		scene->AddItem(triRed);
-		
-		Triangle* triGreen = new Triangle("triGreen", Vec3(-0.5, 0.5, 0), Vec3(0.5, -0.5, 0), Vec3(0.5, 0.5, 0), green);
-		scene->AddItem(triGreen);
-		
-		HitableInstance* instanceTriRed = new HitableInstance(triRed);
-		trf.Reset();
-		trf.AddOffset(0,0,-.25);
-		trf.AddUniformScale(.5); //.79 / .8 / .81
-		instanceTriRed->AddMatrix(trf);
-		instanceTriRed->InitTransformation();
-		instanceTriRed->SetName("instanceCyan");
-		instanceTriRed->SetMaterial(cyan);
-		scene->AddItem(instanceTriRed);
-		
-		const Vec3 from (0,0,2);
-		const Vec3 to (0,0,0);
-		const Vec3 up (0,1,0);
-		const float fov = 40;
-		const float aperture = 0; //0.05;
-		const float focusDistance = 5; //(from - to).Length();
-		
-		// add camera to the scene
-		scene->AddCamera(new Camera(from, to, up, fov, aperture, focusDistance, g_xRes, g_yRes));
-		
-		// init the array storing the color used to identify different object IDs
-		scene->InitObjIDColors();
-		
-		scene->RenderPixel(40 * g_xRes/64.0, 27 * g_yRes/64.0, 0, true); //hit top-right
-		scene->RenderPixel(50 * g_xRes/64.0, 27 * g_yRes/64.0, 0, true); //hit top-right
-		scene->RenderPixel(60 * g_xRes/64.0, 27 * g_yRes/64.0, 0, true); //hit top-right
-		
-#ifdef EXECUTE_RENDER
-		Framebuffer* fb = new Framebuffer(g_xRes, g_yRes, 3);
-		if (!fb)
-			return -1;
-		
-		std::ofstream rgbImage;
-		rgbImage.open("/Users/riccardogigante/Desktop/test_color_NEW_HITABLE_TESTS.ppm", std::ofstream::out);
-		
-		std::ofstream nrmImage;
-		nrmImage.open("/Users/riccardogigante/Desktop/test_normal_NEW_HITABLE_TESTS.ppm", std::ofstream::out);
-		
-		std::ofstream objIDImage;
-		objIDImage.open("/Users/riccardogigante/Desktop/test_objID_NEW_HITABLE_TESTS.ppm", std::ofstream::out);
-		
-		scene->Render(1, 0, fb, &rgbImage, &nrmImage, &objIDImage);
-		
-		rgbImage.close();
-		nrmImage.close();
-		objIDImage.close();
-		
-		// dispose the framebuffer
-		if (fb)
-		{
-			delete fb;
-			fb = nullptr;
-		}
-#endif
-		
-		// dispose the scene (camera, items and materials)
-		if (scene)
-		{
-			delete(scene);
-			scene = nullptr;
-		}
-	}
-#endif
-	
-#ifdef TRI_TESTS
-	{
-		// init the scene
-		Scene* scene = new Scene();
-		
-		// allocate metals
-		MetalReflector*  red = new MetalReflector("red", Vec3(0.9, 0, 0));
-		MetalReflector*  green = new MetalReflector("green", Vec3(0, 0.9, 0));
-		scene->AddMaterial(red);
-		scene->AddMaterial(green);
-		
-		Triangle* tri = new Triangle("triRed", Vec3(-0.5, 0.5, 0.5), Vec3(0.5, -0.5, 0.5), Vec3(0.5, 0.5, 0.5), red);
-//		scene->AddItem(tri);
-		Triangle* tri2 = new Triangle("triGreen", Vec3(-0.5, 0.5, 0), Vec3(0.5, -0.5, 0), Vec3(0.5, 0.5, 0), green);
-		scene->AddItem(tri2);
-		
-		HitableInstance* instance2 = new HitableInstance(tri);
-		Matrix trf;
-		trf.Reset();
-		trf.AddOffset(0,0,.5);
-		trf.AddUniformScale(.5); //.79 / .8 / .81
-		instance2->AddMatrix(trf);
-		instance2->InitTransformation();
-		instance2->SetName("instanceRed");
-		scene->AddItem(instance2);
-		
-		const Vec3 from (0,0,2);
-		const Vec3 to (0,0,0);
-		const Vec3 up (0,1,0);
-		const float fov = 40;
-		const float aperture = 0; //0.05;
-		const float focusDistance = 5; //(from - to).Length();
-		
-		// add camera to the scene
-		scene->AddCamera(new Camera(from, to, up, fov, aperture, focusDistance, g_xRes, g_yRes));
-		
-		// init the array storing the color used to identify different object IDs
-		scene->InitObjIDColors();
-		
-		scene->RenderPixel(52 * g_xRes/64.0, 52 * g_yRes/64.0, 0, true);
-		scene->RenderPixel(46 * g_xRes/64.0, 46 * g_yRes/64.0, 0, true);
-		
-#ifdef EXECUTE_RENDER
-		Framebuffer* fb = new Framebuffer(g_xRes, g_yRes, 3);
-		if (!fb)
-			return -1;
-		
-		std::ofstream rgbImage, nrmImage;
-		rgbImage.open("/Users/riccardogigante/Desktop/test_color_TRI_TESTS.ppm", std::ofstream::out);
-		nrmImage.open("/Users/riccardogigante/Desktop/test_normal_TRI_TESTS.ppm", std::ofstream::out);
-		
-		scene->Render(1, 0, fb, &rgbImage, &nrmImage);
-		
-		rgbImage.close();
-		nrmImage.close();
-		
-		// dispose the framebuffer
-		if (fb)
-		{
-			delete fb;
-			fb = nullptr;
-		}
-#endif
-		
-		// dispose the scene (camera, items and materials)
-		if (scene)
-		{
-			delete(scene);
-			scene = nullptr;
-		}
-	}
-#endif
-	
-#ifdef BOX_TESTS
-	{
-		// init the scene
-		Scene* scene = new Scene();
-		
-		// allocate lambertians
-		LambertianReflector*  white = new LambertianReflector("white", Vec3(0.9, 0.9, 0.9));
-		scene->AddMaterial(white);
-		
-		// allocate metals
-		MetalReflector*  red = new MetalReflector("red", Vec3(0.9, 0, 0));
-		MetalReflector*  green = new MetalReflector("green", Vec3(0, 0.9, 0));
-		MetalReflector*  blue = new MetalReflector("blue", Vec3(0, 0, 0.9));
-		scene->AddMaterial(red);
-		scene->AddMaterial(green);
-		scene->AddMaterial(blue);
-		
-		Triangle* trifloor1 = new Triangle("triFloor1", Vec3(-2, 0, -2), Vec3(2, 0, 5), Vec3(2, 0, -2), white);
-		scene->AddItem(trifloor1);
-		Triangle* trifloor2 = new Triangle("triFloor2", Vec3(2, 0, 5), Vec3(-2, 0, -2), Vec3(-2, 0, 5), white);
-		scene->AddItem(trifloor2);
-		
-		Matrix trf;
-		
-		Box* boxRed = new Box("box Red", Vec3(0.2, 1, .5), Vec3(1.2,3,0), red);
-		scene->AddItem(boxRed);
-		trf.AddRotationY(-45);
-		trf.AddOffset(0.5, 0, -0.5);
-		boxRed->AddMatrix(trf);
-		trf.Reset();
-		boxRed->InitTransformation();
-		
-		Box* boxGreen = new Box("box Green", Vec3(-0.7, 0.0, .5), Vec3(-.2, 0.5, 0), green);
-		scene->AddItem(boxGreen);
-		
-		HitableInstance* instanceGreenBox = new HitableInstance(boxGreen);
-		trf.AddRotationY(30);
-		trf.AddOffset(0, 1, 0);
-		instanceGreenBox->AddMatrix(trf);
-		trf.Reset();
-		instanceGreenBox->InitTransformation();
-		instanceGreenBox->SetName("instanceGreen");
-		scene->AddItem(instanceGreenBox);
-		
-		HitableInstance* instanceGreenBoxBeingBlue = new HitableInstance(boxGreen);
-		trf.AddRotationY(-30);
-		trf.AddOffset(0, 2, 0);
-		instanceGreenBoxBeingBlue->SetMaterial(blue);
-		instanceGreenBoxBeingBlue->AddMatrix(trf);
-		trf.Reset();
-		instanceGreenBoxBeingBlue->InitTransformation();
-		instanceGreenBoxBeingBlue->SetName("instanceBlue");
-		scene->AddItem(instanceGreenBoxBeingBlue);
-		
-		const Vec3 from (0,2,10);
-		const Vec3 to (0,0,0);
-		const Vec3 up (0,1,0);
-		const float fov = 40;
-		const float aperture = 0; //0.05;
-		const float focusDistance = 5; //(from - to).Length();
-		
-		// add camera to the scene
-		scene->AddCamera(new Camera(from, to, up, fov, aperture, focusDistance, g_xRes, g_yRes));
-		
-		// init the array storing the color used to identify different object IDs
-		scene->InitObjIDColors();
-		
-		scene->RenderPixel(31 * g_xRes/64.0, 31 * g_yRes/64.0, 0, true);
-		
-#ifdef EXECUTE_RENDER
-		Framebuffer* fb = new Framebuffer(g_xRes, g_yRes, 3);
-		if (!fb)
-			return -1;
-		
-		std::ofstream rgbImage, nrmImage;
-		rgbImage.open("/Users/riccardogigante/Desktop/test_color_BOX_TESTS.ppm", std::ofstream::out);
-		nrmImage.open("/Users/riccardogigante/Desktop/test_normal_BOX_TESTS.ppm", std::ofstream::out);
-		
-		scene->Render(1, 0, fb, &rgbImage, &nrmImage);
-		
-		rgbImage.close();
-		nrmImage.close();
-		
-		// dispose the framebuffer
-		if (fb)
-		{
-			delete fb;
-			fb = nullptr;
-		}
-#endif
-		
-		// dispose the scene (camera, items and materials)
-		if (scene)
-		{
-			delete(scene);
-			scene = nullptr;
-		}
-	}
+	NewHitableTests();
 #endif
 	
 #ifdef SPHERE_TESTS
-	{
-		// init the scene
-		Scene* scene = new Scene();
-		
-		// allocate metals
-		MetalReflector*  red = new MetalReflector("red", Vec3(0.9, 0, 0));
-		MetalReflector*  green = new MetalReflector("green", Vec3(0, 0.9, 0));
-		scene->AddMaterial(red);
-		scene->AddMaterial(green);
-		
-		Sphere* sphereRed = new Sphere("sphere Red", Vec3(-0.5, 0.5, 0.5), 0.5, red);
-		scene->AddItem(sphereRed);
-		
-		HitableInstance* instance2 = new HitableInstance(sphereRed);
-		Matrix trf;
-		trf.Reset();
-		trf.AddOffset(1,0,0);
-		trf.AddNonUniformScale(1,1,2);
-		trf.AddOffset(1,0,-0.5);
-		instance2->AddMatrix(trf);
-		instance2->InitTransformation();
-		instance2->SetName("instanceRed");
-		scene->AddItem(instance2);
-		
-		const Vec3 from (0,4,4);
-		const Vec3 to (0,0,0);
-		const Vec3 up (0,1,0);
-		const float fov = 40;
-		const float aperture = 0; //0.05;
-		const float focusDistance = 5; //(from - to).Length();
-		
-		// add camera to the scene
-		scene->AddCamera(new Camera(from, to, up, fov, aperture, focusDistance, g_xRes, g_yRes));
-		
-		// init the array storing the color used to identify different object IDs
-		scene->InitObjIDColors();
-		
-		scene->RenderPixel(40 * g_xRes/64.0, 33 * g_yRes/64.0, 0, true);
-		scene->RenderPixel(45 * g_xRes/64.0, 33 * g_yRes/64.0, 0, true);
-		
-#ifdef EXECUTE_RENDER
-		Framebuffer* fb = new Framebuffer(g_xRes, g_yRes, 3);
-		if (!fb)
-			return -1;
-		
-		std::ofstream rgbImage, nrmImage;
-		rgbImage.open("/Users/riccardogigante/Desktop/test_color_SPHERE_TESTS.ppm", std::ofstream::out);
-		nrmImage.open("/Users/riccardogigante/Desktop/test_normal_SPHERE_TESTS.ppm", std::ofstream::out);
-		
-		scene->Render(1, 0, fb, &rgbImage, &nrmImage);
-		
-		rgbImage.close();
-		nrmImage.close();
-		
-		// dispose the framebuffer
-		if (fb)
-		{
-			delete fb;
-			fb = nullptr;
-		}
+	SphereTest();
 #endif
-		
-		// dispose the scene (camera, items and materials)
-		if (scene)
-		{
-			delete(scene);
-			scene = nullptr;
-		}
-	}
+	
+#ifdef BOX_TESTS
+	BoxTest();
+#endif
+	
+#ifdef TRI_TESTS
+	TriTest();
 #endif
 	
 #ifdef ALL_TESTS
-	{
-		// init the scene
-		Scene* scene = new Scene();
-		
-		// allocate lambertians
-		LambertianReflector*  white = new LambertianReflector("white", Vec3(0.9, 0.9, 0.9));
-		scene->AddMaterial(white);
-		
-		// allocate metals
-		MetalReflector*  red = new MetalReflector("red", Vec3(0.9, 0, 0));
-		MetalReflector*  green = new MetalReflector("green", Vec3(0, 0.9, 0));
-		MetalReflector*  blue = new MetalReflector("blue", Vec3(0, 0, 0.9));
-		scene->AddMaterial(red);
-		scene->AddMaterial(green);
-		scene->AddMaterial(blue);
-		
-		Triangle* trifloor1 = new Triangle("triFloor1", Vec3(-2, -0.5, -2), Vec3(2, -0.5, 5), Vec3(2, -0.5, -2), white);
-		scene->AddItem(trifloor1);
-		Triangle* trifloor2 = new Triangle("triFloor2", Vec3(2, -0.5, 5), Vec3(-2, -0.5, -2), Vec3(-2, -0.5, 5), white);
-		scene->AddItem(trifloor2);
-		
-		Triangle* tri = new Triangle("triRed", Vec3(-0.5, 0.5, -0.5), Vec3(0.5, -0.5, -0.5), Vec3(0.5, 0.5, -0.5), red);
-//		scene->AddItem(tri);
-		Triangle* tri2 = new Triangle("triGreen", Vec3(-0.5, 0.5, 0), Vec3(0.5, -0.5, 0), Vec3(0.5, 0.5, 0), green);
-		scene->AddItem(tri2);
-		
-		HitableInstance* instance1 = new HitableInstance(tri);
-		Matrix trf;
-		trf.AddOffset(0.5, 0, -1);
-		instance1->AddMatrix(trf);
-		instance1->InitTransformation();
-		instance1->SetName("instanceRed");
-		scene->AddItem(instance1);
-		
-		Sphere* sphere = new Sphere("Sphere", Vec3(-1,0,0), 0.5, blue);
-		scene->AddItem(sphere);
-		
-		HitableInstance* instance2 = new HitableInstance(sphere);
-		trf.Reset();
-		trf.AddOffset(1.5, -0.25, 1);
-		instance2->AddMatrix(trf);
-		trf.Reset();
-		trf.AddUniformScale(0.5);
-		instance2->AddMatrix(trf);
-		trf.Reset();
-		trf.AddNonUniformScale(1,1,2);
-		instance2->AddMatrix(trf);
-		instance2->InitTransformation();
-		instance2->SetName("instanceBlu");
-		scene->AddItem(instance2);
-		
-		const Vec3 from (5,5,5);
-		const Vec3 to (0,0,0);
-		const Vec3 up (0,1,0);
-		const float fov = 40;
-		const float aperture = 0; //0.05;
-		const float focusDistance = 5; //(from - to).Length();
-		
-		// add camera to the scene
-		scene->AddCamera(new Camera(from, to, up, fov, aperture, focusDistance, g_xRes, g_yRes));
-		
-		// init the array storing the color used to identify different object IDs
-		scene->InitObjIDColors();
-		
-		scene->RenderPixel(60 * g_xRes/64, 60 * g_yRes/64, 0, true); //hit top-right
-		scene->RenderPixel(53 * g_xRes/64, 53 * g_yRes/64, 0, true); //hit top-right
-		scene->RenderPixel(10 * g_xRes/64, 10 * g_yRes/64, 0, true); //no hit bottom-left
-#ifdef EXECUTE_RENDER
-		Framebuffer* fb = new Framebuffer(g_xRes, g_yRes, 3);
-		if (!fb)
-			return -1;
-		
-		std::ofstream rgbImage, nrmImage, objIDImage;
-		rgbImage.open("/Users/riccardogigante/Desktop/test_color_ALL_TESTS.ppm", std::ofstream::out);
-		nrmImage.open("/Users/riccardogigante/Desktop/test_normal_ALL_TESTS.ppm", std::ofstream::out);
-		objIDImage.open("/Users/riccardogigante/Desktop/test_objID_ALL_TESTS.ppm", std::ofstream::out);
-		
-		scene->Render(1, 0, fb, &rgbImage, &nrmImage, &objIDImage);
-		
-		rgbImage.close();
-		nrmImage.close();
-		objIDImage.close();
-		
-		// dispose the framebuffer
-		if (fb)
-		{
-			delete fb;
-			fb = nullptr;
-		}
-#endif
-		
-		// dispose the scene (camera, items and materials)
-		if (scene)
-		{
-			delete(scene);
-			scene = nullptr;
-		}
-	}
+	AllTest();
 #endif
 	
 #ifdef STANDARD_RUN
@@ -763,7 +786,7 @@ int main()
 		if (!fb)
 			return -1;
 		
-		scene->Render(1, 0, fb, &rgbImage, &nrmImage, &objIDImage);
+		scene->Render(16, 0, fb, &rgbImage, &nrmImage, &objIDImage);
 		
 		rgbImage.close();
 		nrmImage.close();

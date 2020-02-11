@@ -35,8 +35,8 @@ void BBox::SetCenterAndRadius(Vec3 c, Vec3 r)
 {
 	_c = c;
 	_r = r;
-	_a = _c + _r * 0.5;
-	_b = _c - _r * 0.5;
+	_a = _c + _r;
+	_b = _c - _r;
 }
 
 void BBox::AddPoint(Vec3 pt)
@@ -58,51 +58,74 @@ bool BBox::HitBBox (const Ray& r, float t_min, float t_max, bool debugRay /*= fa
 {
 	Ray ray(r);
 	const Vec3 rpos = r.GetOrigin();
-	const float invRayDirX = abs(r.GetDirection().x()) >= 1e-6 ? 1 /r.GetDirection().x() : 1e6;
-	const float invRayDirY = abs(r.GetDirection().y()) >= 1e-6 ? 1 /r.GetDirection().y() : 1e6;
-	const float invRayDirZ = abs(r.GetDirection().z()) >= 1e-6 ? 1 /r.GetDirection().z() : 1e6;
-	const Vec3 bRpos = _b - rpos;
-	const Vec3 aRpos = _a - rpos;
 	
-	float smaller_tmax = 0, larger_tmin = 0;
+	//check ray dir
+	const float invRayDirX = abs(r.GetDirection().x()) >= _dirThreshold ? 1 /r.GetDirection().x() : _invDirThreshold;
+	const float invRayDirY = abs(r.GetDirection().y()) >= _dirThreshold ? 1 /r.GetDirection().y() : _invDirThreshold;
+	const float invRayDirZ = abs(r.GetDirection().z()) >= _dirThreshold ? 1 /r.GetDirection().z() : _invDirThreshold;
 	
+	Vec3 bRpos = _b - rpos;
+	// check that ray position and bounding box don't overlap on each axis
+	// if overlap make the term of the delta slightly positive
+	bRpos[0] = abs(bRpos[0]) < _posThreshold ? _posThreshold : bRpos[0];
+	bRpos[1] = abs(bRpos[1]) < _posThreshold ? _posThreshold : bRpos[1];
+	bRpos[2] = abs(bRpos[2]) < _posThreshold ? _posThreshold : bRpos[2];
+	assert(abs(bRpos[0]) >= _posThreshold && abs(bRpos[1]) >= _posThreshold && abs(bRpos[2]) >= _posThreshold );
+	
+	Vec3 aRpos = _a - rpos;
+	// check that ray position and bounding box don't overlap on each axis
+	// if overlap make the term of the delta slightly negative
+	aRpos[0] = abs(aRpos[0]) < _posThreshold ? -_posThreshold : aRpos[0];
+	aRpos[1] = abs(aRpos[1]) < _posThreshold ? -_posThreshold : aRpos[1];
+	aRpos[2] = abs(aRpos[2]) < _posThreshold ? -_posThreshold : aRpos[2];
+	assert(abs(aRpos[0]) >= _posThreshold && abs(aRpos[1]) >= _posThreshold && abs(aRpos[2]) >= _posThreshold );
+	
+	float smallest_tmax = 0, largest_tmin = 0;
+	
+	// calculate intersections for X
 	float val_b = bRpos.x() * invRayDirX;
 	float val_a = aRpos.x() * invRayDirX;
+	// identify min and max values
 	const float tminX = val_b < val_a ? val_b : val_a;
 	const float tmaxX = val_b >= val_a ? val_b : val_a;
 	
+	// calculate intersections for Y
 	val_b = bRpos.y() * invRayDirY;
 	val_a = aRpos.y() * invRayDirY;
+	// identify min and max values
 	const float tminY = val_b < val_a ? val_b : val_a;
 	const float tmaxY = val_b >= val_a ? val_b : val_a;
 	
+	// calculate intersections for Z
 	val_b = bRpos.z() * invRayDirZ;
 	val_a = aRpos.z() * invRayDirZ;
+	// identify min and max values
 	const float tminZ = val_b < val_a ? val_b : val_a;
 	const float tmaxZ = val_b >= val_a ? val_b : val_a;
 	
+	// identify
 	if (tminX >= tminY && tminX >= tminZ)
-		larger_tmin = tminX;
+		largest_tmin = tminX;
 	else if (tminY >= tminX && tminY >= tminZ)
-		larger_tmin = tminY;
+		largest_tmin = tminY;
 	else // if (tminZ >= tminX && tminZ >= tminY)
-		larger_tmin = tminZ;
+		largest_tmin = tminZ;
 	
 	if (tmaxX <= tmaxY && tmaxX <= tmaxZ)
-		smaller_tmax = tmaxX;
+		smallest_tmax = tmaxX;
 	else if (tmaxY <= tmaxX && tmaxY <= tmaxZ)
-		smaller_tmax = tmaxY;
+		smallest_tmax = tmaxY;
 	else // if (tmaxZ <= tmaxX && tmaxZ <= tmaxY)
-		smaller_tmax = tmaxZ;
+		smallest_tmax = tmaxZ;
 	
 	
 	if (debugRay) std::cout << "\t\t\t\t- a/b: "<< _a << "/" << _b << "\n"
 		<< "\t\t\t\t- c/r: "<< _c << "/" << _r << "\n"
 		<< "\t\t\t\t- tmin(s):" << tminX <<", " << tminY <<", " << tminZ << "\n"
 		<< "\t\t\t\t- tmax(s):" << tmaxX <<", " << tmaxY <<", " << tmaxZ << "\n"
-		<< "\t\t\t\t- smaller_tmax:" << smaller_tmax <<" / larger_tmin:" << larger_tmin << "\n";
+		<< "\t\t\t\t- smaller_tmax:" << smallest_tmax <<" / larger_tmin:" << largest_tmin << "\n";
 	
-	if (smaller_tmax >= larger_tmin && larger_tmin > t_min && larger_tmin < t_max)
+	if (smallest_tmax >= largest_tmin && largest_tmin > t_min && largest_tmin < t_max)
 			return true;
 	
 	return false;

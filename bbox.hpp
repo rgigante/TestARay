@@ -33,6 +33,10 @@ private:
 	Vec3 _b = Vec3(0.0); // _b represents the further negative point
 	Vec3 _c = Vec3(0.0); // _c represents the box center
 	Vec3 _r = Vec3(0.0); // _r represents the box radius
+	
+	const float _dirThreshold = 1e-6;
+	const float _invDirThreshold = 1 / _dirThreshold;
+	const float _posThreshold = 1e-3;
 };
 
 

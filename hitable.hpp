@@ -12,7 +12,7 @@
 #include "bbox.hpp"
 #include "matrix.hpp"
 
-#define USE_BBOX
+//#define USE_BBOX
 
 class Material;
 class Matrix;
