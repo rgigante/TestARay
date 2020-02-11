@@ -22,8 +22,10 @@ public:
 	bool Hit2 (const Ray& r, float t_min, float t_max, HitRecord& rec, bool debugRay = false);
 	
 private:
-	Vec3 _a, _b, _c, _ab, _bc, _ca, _n;
-	bool _isTriMesh;
+	Vec3 _a = Vec3(0.0), _b = Vec3(0.0), _c = Vec3(0.0);
+	Vec3 _ab = Vec3(0.0), _bc = Vec3(0.0), _ca = Vec3(0.0);
+	Vec3 _n = Vec3(0.0);
+	bool _isTriMesh = false;
 };
 
 #endif /* triangle_hpp */

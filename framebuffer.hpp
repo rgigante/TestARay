@@ -24,10 +24,10 @@ public:
 	bool SpoolToPPM(std::ofstream * of, const char* type);
 	
 private:
-	float** _color;
-	float** _normal;
-	float** _objectID;
-	int _xRes, _yRes, _nChans;
+	float** _color = nullptr;
+	float** _normal = nullptr;
+	float** _objectID = nullptr;
+	int _xRes = 0, _yRes = 0, _nChans = 0;
 };
 
 #endif /* framebuffer_hpp */

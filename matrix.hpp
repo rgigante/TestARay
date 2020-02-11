@@ -421,9 +421,9 @@ public:
 	}
 	
 private:
-	int _col, _row;
+	int _col = 0, _row = 0;
 	std::vector<std::vector<double>> _mtx;
-	Vec3 _sclNU;
+	Vec3 _sclNU = Vec3(1.0);
 };
 
 void MatrixTests();

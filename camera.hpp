@@ -19,10 +19,10 @@ public:
 	int GetYRes(){ return _yRes; }
 	
 private:
-	Vec3 _eyePos, _u, _v, _w;
-	Vec3 _lowerLeftCorner, _hVec, _vVec;
-	float _ratio, _filmWidth, _filmHeight, _vFOV, _aperture, _focusDist;
-	int _xRes, _yRes;
+	Vec3 _eyePos = Vec3(0.0), _u = Vec3(0.0), _v = Vec3(0.0), _w = Vec3(0.0);
+	Vec3 _lowerLeftCorner = Vec3(0.0), _hVec = Vec3(0.0), _vVec = Vec3(0.0);
+	float _ratio = 0.0, _filmWidth = 0.0, _filmHeight = 0.0, _vFOV = 0.0, _aperture = 0.0, _focusDist = 0.0;
+	int _xRes = 0, _yRes = 0;
 };
 
 #endif /* camera_hpp */

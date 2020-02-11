@@ -44,9 +44,9 @@ public:
 	}
 	
 private:
-	Vec3 _pos; // ray firing position
-	Vec3 _dir; // ray firing direction
-	float _u, _v;
+	Vec3 _pos = Vec3(0.0); // ray firing position
+	Vec3 _dir = Vec3(0.0); // ray firing direction
+	float _u = 0.0, _v = 0.0;
 };
 
 #endif /* ray_hpp */

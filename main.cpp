@@ -26,11 +26,11 @@ const int g_yRes = 400;
 
 //#define MATRIX_TESTS
 //#define NEW_HITABLE_TESTS
-//#define SPHERE_TESTS
+#define SPHERE_TESTS
 //#define BOX_TESTS
 //#define TRI_TESTS
 //#define ALL_TESTS
-#define STANDARD_RUN
+//#define STANDARD_RUN
 #define EXECUTE_RENDER
 
 int main()

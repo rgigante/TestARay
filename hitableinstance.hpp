@@ -19,7 +19,7 @@ public:
 	bool Hit2 (const Ray& r, float t_min, float t_max, HitRecord& rec, bool debugRay = false);
 	
 private:
-	Hitable* _obj;
+	Hitable* _obj = nullptr;
 };
 
 #endif /* hitable_instance_hpp */

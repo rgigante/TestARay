@@ -25,8 +25,10 @@ public:
 	void SetPoints(Vec3 pt1, Vec3 pt2);
 	
 private:
-	Vec3 _a, _b; // _a represents the further positive point, _b represents the further negative point
-	Vec3 _c, _r; // _c represents the box center, _r represents the box radius
+	Vec3 _a = Vec3(0.0); // _a represents the further positive point
+	Vec3 _b = Vec3(0.0); // _b represents the further negative point
+	Vec3 _c = Vec3(0.0); // _c represents the box center
+	Vec3 _r = Vec3(0.0); // _r represents the box radius
 };
 
 #endif /* box_hpp */

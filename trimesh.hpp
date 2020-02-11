@@ -27,15 +27,15 @@ public:
 		
 private:
 	// vertexes array
-	Vec3* _vertexes;
+	Vec3* _vertexes = nullptr;
 	// vertexes count
-	int _vertexesCnt;
+	int _vertexesCnt = 0;
 	// vertex-tri array
-	int* _triIndexes;
+	int* _triIndexes = nullptr;
 	// tris count
-	int _trisCnt;
+	int _trisCnt = 0;
 	// triangles array
-	Triangle** _tris;
+	Triangle** _tris = nullptr;
 };
 
 #endif /* trimesh_hpp */

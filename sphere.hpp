@@ -20,8 +20,8 @@ public:
 	bool SolveQuadratic(const float &a, const float &b, const float &c, float &x0, float &x1);
 	
 private:
-	Vec3 _center;
-	float _radius;
+	Vec3 _center = Vec3(0.0);
+	float _radius = 0.0;
 };
 
 #endif /* sphere_hpp */

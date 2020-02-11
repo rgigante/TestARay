@@ -29,7 +29,7 @@ public:
 	
 private:
 	// the pointer to the string assigned to the hitable
-	char const* _name;
+	char const* _name = nullptr;
 	// the index to the material;
 	unsigned long _matID = 0;
 };
@@ -42,7 +42,7 @@ public:
 	bool Scatter(const Ray& rHit, const HitRecord& rec, Vec3& attenuation, Ray& rScatter) const;
 	
 private:
-	Vec3 _albedo; // the color of the reflector
+	Vec3 _albedo = Vec3(0.0); // the color of the reflector
 };
 
 class MetalReflector : public Material
@@ -52,8 +52,8 @@ public:
 	~MetalReflector(){};
 	bool Scatter(const Ray& rHit, const HitRecord& rec, Vec3& attenuation, Ray& rScatter) const;
 private:
-	Vec3 _albedo;
-	float _roughness;
+	Vec3 _albedo = Vec3(0.0);
+	float _roughness = 0.0;
 };
 
 class Dielectric : public Material
@@ -63,7 +63,7 @@ public:
 	~Dielectric(){};
 	bool Scatter(const Ray& rHit, const HitRecord& rec, Vec3& attenuation, Ray& rScatter) const;
 private:
-	float _refrIndex;
+	float _refrIndex = 1.0;
 };
 
 #endif /* materials_hpp */
