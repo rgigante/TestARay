@@ -151,6 +151,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\bbox.hpp" />
+    <ClInclude Include="..\box.hpp" />
     <ClInclude Include="..\camera.hpp" />
     <ClInclude Include="..\drand48.h" />
     <ClInclude Include="..\framebuffer.hpp" />
@@ -170,6 +172,8 @@
     <ClInclude Include="pch.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\bbox.cpp" />
+    <ClCompile Include="..\box.cpp" />
     <ClCompile Include="..\camera.cpp" />
     <ClCompile Include="..\drand48.cpp" />
     <ClCompile Include="..\framebuffer.cpp" />

@@ -66,6 +66,12 @@
     <ClInclude Include="..\drand48.h">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\bbox.hpp">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\box.hpp">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\camera.cpp">
@@ -114,6 +120,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\drand48.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\bbox.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\box.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
