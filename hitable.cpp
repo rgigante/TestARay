@@ -42,6 +42,7 @@ bool Hitable::Hit(const Ray& r, float t_min, float t_max, HitRecord& rec, bool d
 	// If the hitable is "visible" in the scene, try to pierce it
 	if (IsVisible())
 	{
+		// check BBox to be properly initializied (like in Box, Sphere, Trimesh, instances) otherwise don't use it
 		if (_bbox.IsValid())
 		{
 			aabbHitDetected = _bbox.HitBBox(ray, t_min, t_max, debugRay);

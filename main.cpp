@@ -309,18 +309,14 @@ int SphereTest()
 	scene->AddMaterial(red);
 	scene->AddMaterial(green);
 	
-	Sphere* sphereRed = new Sphere("sphere Red", Vec3(0, 0, 1), 1, red);
+	Sphere* sphereRed = new Sphere("sphere Red", Vec3(-0.5, 0, 0), 0.4, red);
 	scene->AddItem(sphereRed);
-	
-	Box* boxGreen = new Box("Green box", Vec3(1, 1, 1), Vec3(-1, -1, -1), green);
-	scene->AddItem(boxGreen);
 	
 	HitableInstance* instance2 = new HitableInstance(sphereRed);
 	Matrix trf;
 	trf.Reset();
 	trf.AddOffset(1,0,0);
-	trf.AddNonUniformScale(1,1,2);
-	trf.AddOffset(1,0,-0.5);
+	trf.AddNonUniformScale(1,2,1);
 	instance2->AddMatrix(trf);
 	instance2->InitTransformation();
 	instance2->SetName("instanceRed");

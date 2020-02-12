@@ -7,6 +7,16 @@
 
 #include "hitableinstance.hpp"
 
+HitableInstance::HitableInstance(Hitable* obj)
+{
+	_obj = obj;
+	
+	BBox* instanceBBox = GetBBox();
+	// copy BBox information from the source object
+	if (instanceBBox && obj->GetBBox())
+		instanceBBox->SetPoints(obj->GetBBox()->GetA(), obj->GetBBox()->GetB());
+}
+
 bool HitableInstance::Hit2(const Ray& r, float t_min, float t_max, HitRecord& rec, bool debugRay /*= false*/)
 {
 	// store the material for the current hitable
