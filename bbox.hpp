@@ -29,6 +29,9 @@ public:
 	bool IsValid() { return _a != _b; }
 	
 private:
+	void UpdateBBoxCenterAndRadius();
+	
+private:
 	Vec3 _a = Vec3(0.0); // _a represents the further positive point
 	Vec3 _b = Vec3(0.0); // _b represents the further negative point
 	Vec3 _c = Vec3(0.0); // _c represents the box center

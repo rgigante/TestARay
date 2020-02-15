@@ -13,22 +13,22 @@ BBox::BBox(Vec3 pt1, Vec3 pt2)
 	SetPoints(pt1, pt2);
 }
 
+void BBox::UpdateBBoxCenterAndRadius()
+{
+	_c = (_a + _b) / 2;
+	_r = _a - _c;
+}
+
 
 void BBox::SetPoints(Vec3 pt1, Vec3 pt2)
 {
-	_a[0] = pt1.x() > pt2.x() ? pt1.x() : pt2.x();
-	_b[0] = pt1.x() > pt2.x() ? pt2.x() : pt1.x();
+	for (int i = 0; i < 3; i ++)
+	{
+		_a[i] = pt1[i] > pt2[i] ? pt1[i] : pt2[i];
+		_b[i] = pt1[i] > pt2[i] ? pt2[i] : pt1[i];
+	}
 	
-	
-	_a[1] = pt1.y() > pt2.y() ? pt1.y() : pt2.y();
-	_b[1] = pt1.y() > pt2.y() ? pt2.y() : pt1.y();
-	
-	
-	_a[2] = pt1.z() > pt2.z() ? pt1.z() : pt2.z();
-	_b[2] = pt1.z() > pt2.z() ? pt2.z() : pt1.z();
-	
-	_c = (_a + _b) / 2;
-	_r = _a - _c;
+	UpdateBBoxCenterAndRadius();
 }
 
 void BBox::SetCenterAndRadius(Vec3 c, Vec3 r)
@@ -41,88 +41,72 @@ void BBox::SetCenterAndRadius(Vec3 c, Vec3 r)
 
 void BBox::AddPoint(Vec3 pt)
 {
-	_a[0] = pt[0] > _a[0] ? pt[0] : _a[0];
-	_b[0] = pt[0] < _b[0] ? pt[0] : _b[0];
+	for (int i = 0; i < 3; i++)
+	{
+		_a[i] = pt[i] > _a[i] ? pt[i] : _a[i];
+		_b[i] = pt[i] < _b[i] ? pt[i] : _b[i];
+	}
 	
-	_a[1] = pt[1] > _a[1] ? pt[1] : _a[1];
-	_b[1] = pt[1] < _b[1] ? pt[1] : _b[1];
-	
-	_a[2] = pt[2] > _a[2] ? pt[2] : _a[2];
-	_b[2] = pt[2] < _b[2] ? pt[2] : _b[2];
-	
-	_c = (_a + _b) / 2;
-	_r = _a - _c;
+	UpdateBBoxCenterAndRadius();
 }
 
 bool BBox::HitBBox (const Ray& r, float t_min, float t_max, bool debugRay /*= false*/)
-{
-	Ray ray(r);
-	const Vec3 rpos = r.GetOrigin();
+{	const Vec3 rpos = r.GetOrigin();
+	const Vec3 rdir = r.GetDirection();
+	Vec3 invRayDir;
 	
 	//check ray dir
-	const float invRayDirX = abs(r.GetDirection().x()) >= _dirThreshold ? 1 /r.GetDirection().x() : _invDirThreshold;
-	const float invRayDirY = abs(r.GetDirection().y()) >= _dirThreshold ? 1 /r.GetDirection().y() : _invDirThreshold;
-	const float invRayDirZ = abs(r.GetDirection().z()) >= _dirThreshold ? 1 /r.GetDirection().z() : _invDirThreshold;
+	invRayDir[0] = abs(r.GetDirection().x()) >= _dirThreshold ? 1 /r.GetDirection().x() : _invDirThreshold;
+	invRayDir[1] = abs(r.GetDirection().y()) >= _dirThreshold ? 1 /r.GetDirection().y() : _invDirThreshold;
+	invRayDir[2] = abs(r.GetDirection().z()) >= _dirThreshold ? 1 /r.GetDirection().z() : _invDirThreshold;
 	
 	Vec3 bRpos = _b - rpos;
 	// check that ray position and bounding box don't overlap on each axis
 	// if overlap make the term of the delta slightly positive
-	bRpos[0] = abs(bRpos[0]) < _posThreshold ? _posThreshold : bRpos[0];
-	bRpos[1] = abs(bRpos[1]) < _posThreshold ? _posThreshold : bRpos[1];
-	bRpos[2] = abs(bRpos[2]) < _posThreshold ? _posThreshold : bRpos[2];
-	assert(abs(bRpos[0]) >= _posThreshold && abs(bRpos[1]) >= _posThreshold && abs(bRpos[2]) >= _posThreshold );
-	
 	Vec3 aRpos = _a - rpos;
 	// check that ray position and bounding box don't overlap on each axis
 	// if overlap make the term of the delta slightly negative
-	aRpos[0] = abs(aRpos[0]) < _posThreshold ? -_posThreshold : aRpos[0];
-	aRpos[1] = abs(aRpos[1]) < _posThreshold ? -_posThreshold : aRpos[1];
-	aRpos[2] = abs(aRpos[2]) < _posThreshold ? -_posThreshold : aRpos[2];
-	assert(abs(aRpos[0]) >= _posThreshold && abs(aRpos[1]) >= _posThreshold && abs(aRpos[2]) >= _posThreshold );
+	for (int i = 0; i < 3; i++)
+	{
+		aRpos[i] = abs(aRpos[i]) < _posThreshold ? -_posThreshold : aRpos[i];
+		bRpos[i] = abs(bRpos[i]) < _posThreshold ?  _posThreshold : bRpos[i];
+		assert(abs(bRpos[i]) >= _posThreshold);
+		assert(abs(aRpos[0]) >= -_posThreshold);
+	}
 	
 	float smallest_tmax = 0, largest_tmin = 0;
+	Vec3 tminValues, tmaxValues;
 	
-	// calculate intersections for X
-	float val_b = bRpos.x() * invRayDirX;
-	float val_a = aRpos.x() * invRayDirX;
-	// identify min and max values
-	const float tminX = val_b < val_a ? val_b : val_a;
-	const float tmaxX = val_b >= val_a ? val_b : val_a;
-	
-	// calculate intersections for Y
-	val_b = bRpos.y() * invRayDirY;
-	val_a = aRpos.y() * invRayDirY;
-	// identify min and max values
-	const float tminY = val_b < val_a ? val_b : val_a;
-	const float tmaxY = val_b >= val_a ? val_b : val_a;
-	
-	// calculate intersections for Z
-	val_b = bRpos.z() * invRayDirZ;
-	val_a = aRpos.z() * invRayDirZ;
-	// identify min and max values
-	const float tminZ = val_b < val_a ? val_b : val_a;
-	const float tmaxZ = val_b >= val_a ? val_b : val_a;
+	// calculate intersections for x,y,z
+	for (int i = 0; i < 3 ; i++)
+	{
+		float val_b = bRpos[i] * invRayDir[i];
+		float val_a = aRpos[i] * invRayDir[i];
+		// identify min and max values
+		tminValues[i] = val_b < val_a ? val_b : val_a;
+		tmaxValues[i] = val_b >= val_a ? val_b : val_a;
+	}
 	
 	// identify
-	if (tminX >= tminY && tminX >= tminZ)
-		largest_tmin = tminX;
-	else if (tminY >= tminX && tminY >= tminZ)
-		largest_tmin = tminY;
+	if (tminValues[0] >= tminValues[1] && tminValues[0] >= tminValues[2])
+		largest_tmin = tminValues[0];
+	else if (tminValues[1] >= tminValues[0] && tminValues[1] >= tminValues[2])
+		largest_tmin = tminValues[1];
 	else // if (tminZ >= tminX && tminZ >= tminY)
-		largest_tmin = tminZ;
+		largest_tmin = tminValues[2];
 	
-	if (tmaxX <= tmaxY && tmaxX <= tmaxZ)
-		smallest_tmax = tmaxX;
-	else if (tmaxY <= tmaxX && tmaxY <= tmaxZ)
-		smallest_tmax = tmaxY;
+	if (tmaxValues[0] <= tmaxValues[1] && tmaxValues[0] <= tmaxValues[2])
+		smallest_tmax = tmaxValues[0];
+	else if (tmaxValues[1] <= tmaxValues[0] && tmaxValues[1] <= tmaxValues[2])
+		smallest_tmax = tmaxValues[1];
 	else // if (tmaxZ <= tmaxX && tmaxZ <= tmaxY)
-		smallest_tmax = tmaxZ;
+		smallest_tmax = tmaxValues[2];
 	
 	
 	if (debugRay) std::cout << "\t\t\t\t- a/b: "<< _a << "/" << _b << "\n"
 		<< "\t\t\t\t- c/r: "<< _c << "/" << _r << "\n"
-		<< "\t\t\t\t- tmin(s):" << tminX <<", " << tminY <<", " << tminZ << "\n"
-		<< "\t\t\t\t- tmax(s):" << tmaxX <<", " << tmaxY <<", " << tmaxZ << "\n"
+		<< "\t\t\t\t- tmin(s):" << tminValues << "\n"
+		<< "\t\t\t\t- tmax(s):" << tmaxValues << "\n"
 		<< "\t\t\t\t- smaller_tmax:" << smallest_tmax <<" / larger_tmin:" << largest_tmin << "\n";
 	
 	if (smallest_tmax >= largest_tmin && largest_tmin > t_min && largest_tmin < t_max)
