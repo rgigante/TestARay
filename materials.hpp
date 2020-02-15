@@ -90,7 +90,10 @@ public:
 	bool Emission(const Ray& rHit, const HitRecord& rec, Vec3& emission) const
 	{
 		emission = _emission;
-		return true;
+		if (_emission.Length())
+			return true;
+		else
+			return false;
 	}
 	
 private:

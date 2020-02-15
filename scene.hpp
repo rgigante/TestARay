@@ -23,10 +23,22 @@ public:
 	
 	void AddItem(Hitable* item);
 	
-	void AddMaterial(Material* material) { if(material) _materials.push_back(material); }
+	void AddMaterial(Material* material)
+	{
+		if(material)
+			_materials.push_back(material);
+		
+	}
 	
 	void AddCamera(Camera* cam){ if (cam) _cams.push_back(cam); }
-	Camera* GetCamera(const int i){ return _cams.at(i); }
+	Camera* GetCamera(const int i)
+	{
+		if (_cams.size() > 0)
+			return _cams.at(i);
+		else
+			return nullptr;
+		
+	}
 	
 	void AddEnvironment(Environment* env){ if (env) _envs.push_back(env); }
 	Environment* GetEnvironment(const int i)
@@ -42,10 +54,10 @@ public:
 	bool RenderPixel(const int x = 1, const int y = 1, const int activeCamIdx = 0, const bool debugRay = false);
 	
 	bool Hit (const Ray& r, float t_min, float t_max, HitRecord& rec, bool debugRay = false) const;
+	void Shade(Vec3& col, Vec3& nrm, Vec3& objID, const Ray& r, int depth = 0);
+	void ShadeDebug(Vec3& col, const Ray& r, int depth = 0, const bool debugRay = false);
 	
-	void Color(Vec3& col, Vec3& nrm, Vec3& objID, const Ray& r, int depth = 0);
-	void DebugColor(Vec3& col, const Ray& r, int depth = 0, const bool debugRay = false);
-	
+private:
 	void InitObjIDColors();
 	
 	

@@ -21,15 +21,15 @@
 #include "hitableinstance.hpp"
 
 // global var to enable console debug
-const int g_xRes = 400;
-const int g_yRes = 400;
+const int g_xRes = 256;
+const int g_yRes = 256;
 
-#define MATRIX_TESTS
-#define NEW_HITABLE_TESTS
-#define SPHERE_TESTS
-#define BOX_TESTS
-#define TRI_TESTS
-#define ALL_TESTS
+//#define MATRIX_TESTS
+//#define NEW_HITABLE_TESTS
+//#define SPHERE_TESTS
+//#define BOX_TESTS
+//#define TRI_TESTS
+//#define ALL_TESTS
 #define EMISSION_TESTS
 #define STANDARD_RUN
 #define EXECUTE_RENDER
@@ -82,9 +82,6 @@ int NewHitableTests()
 	
 	// add camera to the scene
 	scene->AddCamera(new Camera(from, to, up, fov, aperture, focusDistance, g_xRes, g_yRes));
-	
-	// init the array storing the color used to identify different object IDs
-	scene->InitObjIDColors();
 	
 	scene->RenderPixel(40 * g_xRes/64.0, 27 * g_yRes/64.0, 0, true); //hit top-right
 	scene->RenderPixel(50 * g_xRes/64.0, 27 * g_yRes/64.0, 0, true); //hit top-right
@@ -167,9 +164,6 @@ int TriTest()
 	
 	// add camera to the scene
 	scene->AddCamera(new Camera(from, to, up, fov, aperture, focusDistance, g_xRes, g_yRes));
-	
-	// init the array storing the color used to identify different object IDs
-	scene->InitObjIDColors();
 	
 	scene->RenderPixel(52 * g_xRes/64.0, 52 * g_yRes/64.0, 0, true);
 	scene->RenderPixel(46 * g_xRes/64.0, 46 * g_yRes/64.0, 0, true);
@@ -274,9 +268,6 @@ int BoxTest()
 	// add camera to the scene
 	scene->AddCamera(new Camera(from, to, up, fov, aperture, focusDistance, g_xRes, g_yRes));
 	
-	// init the array storing the color used to identify different object IDs
-	scene->InitObjIDColors();
-	
 	scene->RenderPixel(31 * g_xRes/64.0, 31 * g_yRes/64.0, 0, true);
 	
 #ifdef EXECUTE_RENDER
@@ -349,9 +340,6 @@ int EmissionTest()
 	// add camera to the scene
 	scene->AddCamera(new Camera(from, to, up, fov, aperture, focusDistance, g_xRes, g_yRes));
 	
-	// init the array storing the color used to identify different object IDs
-	scene->InitObjIDColors();
-	
 	scene->RenderPixel(32/64.0 * g_xRes, (64-32)/64.0 * g_yRes, 0, true); // inside emitter
 	scene->RenderPixel(32/64.0 * g_xRes, (64-40)/64.0 * g_yRes, 0, true); // outside emitter
 	
@@ -366,7 +354,7 @@ int EmissionTest()
 	objIDImage.open("/Users/riccardogigante/Desktop/test_objID_EMISSION_TESTS.ppm", std::ofstream::out);
 	
 	
-	scene->Render(16, 0, fb, &rgbImage, &nrmImage, &objIDImage);
+	scene->Render(1, 0, fb, &rgbImage, &nrmImage, &objIDImage);
 	
 	rgbImage.close();
 	nrmImage.close();
@@ -427,9 +415,6 @@ int SphereTest()
 	
 	// add camera to the scene
 	scene->AddCamera(new Camera(from, to, up, fov, aperture, focusDistance, g_xRes, g_yRes));
-	
-	// init the array storing the color used to identify different object IDs
-	scene->InitObjIDColors();
 	
 	scene->RenderPixel(46/64.0 * g_xRes, (64 - 46)/64.0 * g_yRes, 0, true);
 	
@@ -531,8 +516,6 @@ int AllTest()
 	// add camera to the scene
 	scene->AddCamera(new Camera(from, to, up, fov, aperture, focusDistance, g_xRes, g_yRes));
 	
-	// init the array storing the color used to identify different object IDs
-	scene->InitObjIDColors();
 	scene->RenderPixel(21 * g_xRes/64, (64-32) * g_yRes/64, 0, true);
 	
 #ifdef EXECUTE_RENDER
@@ -545,7 +528,7 @@ int AllTest()
 	nrmImage.open("/Users/riccardogigante/Desktop/test_normal_ALL_TESTS.ppm", std::ofstream::out);
 	objIDImage.open("/Users/riccardogigante/Desktop/test_objID_ALL_TESTS.ppm", std::ofstream::out);
 	
-	scene->Render(16, 0, fb, &rgbImage, &nrmImage, &objIDImage);
+	scene->Render(1, 0, fb, &rgbImage, &nrmImage, &objIDImage);
 	
 	rgbImage.close();
 	nrmImage.close();
@@ -603,15 +586,27 @@ int main()
 	{
 		// init the scene
 		Scene* scene = new Scene();
-		
-		// set the environment
-		Gradient* env = new Gradient("standard gradient", Vec3(1.0, 1.0, 1.0), Vec3(0.5, 0.7, 1.0));
-		scene->AddEnvironment(env);
+//
+//		// set the environment
+//		Gradient* env = new Gradient("standard gradient", Vec3(1.0, 1.0, 1.0), Vec3(0.5, 0.7, 1.0));
+//		scene->AddEnvironment(env);
 		
 		//allocate a glass
 		Dielectric* glass = new Dielectric("glass", 1.33);
 		scene->AddMaterial(glass);
+		//allocate a red glass
+		Dielectric* redGlass = new Dielectric("red glass", 1.33, Vec3(.9, .2, .2));
+		scene->AddMaterial(redGlass);
+		//allocate a yellow glass
+		Dielectric* yellowGlass = new Dielectric("yellow glass", 1.33, Vec3(.9, .9, .2));
+		scene->AddMaterial(yellowGlass);
+
 		// allocate lambertians
+		LambertianReflector*  white = new LambertianReflector("white", Vec3(0.95, 0.95, 0.95));
+		scene->AddMaterial(white);
+//		LambertianReflector*  whiteEmitter = new LambertianReflector("white lambertian emitter", Vec3(0,0,0), Vec3(1,1,1));
+		DiffuseEmitter*  whiteEmitter = new DiffuseEmitter("white diffuse emitter", Vec3(1,1,1));
+		scene->AddMaterial(whiteEmitter);
 		LambertianReflector*  green = new LambertianReflector("green", Vec3(0.0, 0.9, 0.0));
 		scene->AddMaterial(green);
 		LambertianReflector*  red   = new LambertianReflector("red", Vec3(0.9, 0.0, 0.0));
@@ -643,6 +638,10 @@ int main()
 		scene->AddItem(bigSphere);
 		// the air bubble
 		scene->AddItem(new Sphere("airSphere", Vec3(0.25, -0.2, -0.8), -0.05, glass));
+		
+		// the light bubble
+		scene->AddItem(new Sphere("lightSphere", Vec3(0, 1, 2), 0.2, whiteEmitter));
+		
 		// the small green sphere on the back
 		scene->AddItem(new Sphere("greenSphere", Vec3(-0.35, -0.4, -1), 0.1, green));
 		// the small red sphere on the back
@@ -786,21 +785,38 @@ int main()
 		inst->InitTransformation();
 		scene->AddItem(inst);
 		
-		HitableInstance* inst2 = new HitableInstance(new Triangle("cyanMTriangle", Vec3(-0.5, 0.5, -1.5), Vec3(0.5, -0.5, -1.5), Vec3(0.5, 0.5, -1.5), cyanM));
+		Triangle* instanceTri = new Triangle("cyanMTriangle", Vec3(-0.5, 0.5, -1.5), Vec3(0.5, -0.5, -1.5), Vec3(0.5, 0.5, -1.5), white);
+		scene->AddItem(instanceTri);
+		instanceTri->SetVisible(false);
+		
+		HitableInstance* inst2 = new HitableInstance(instanceTri);
+		inst2->SetMaterial(cyanM);
 		trf.AddOffset(-1,1,0);
-	//		trf2.AddNonUniformScale(.5, 1, 1);
 		inst2->AddMatrix(trf);
 		trf.Reset();
 		inst2->InitTransformation();
 		scene->AddItem(inst2);
 		
-		HitableInstance* inst3 = new HitableInstance(new Sphere("bigSphere2", Vec3(0, 0, 0), 0.2, glass));
+		Sphere* instanceSphere = new Sphere("instanced sphere", Vec3(0, 0, 0), 0.2, white);
+		instanceSphere->SetVisible(false);
+		
+		HitableInstance* inst3 = new HitableInstance(instanceSphere);
+		inst3->SetMaterial(redGlass);
+		scene->AddItem(inst3);
 		trf.AddOffset(-.5, .5, 0);
 		trf.AddNonUniformScale(1, 1, .33);
 		inst3->AddMatrix(trf);
 		trf.Reset();
 		inst3->InitTransformation();
-		scene->AddItem(inst3);
+		
+		HitableInstance* inst4 = new HitableInstance(instanceSphere);
+		inst4->SetMaterial(yellowGlass);
+		scene->AddItem(inst4);
+		trf.AddOffset(.5, .5, 0);
+		trf.AddNonUniformScale(1, 1, 2);
+		inst4->AddMatrix(trf);
+		trf.Reset();
+		inst4->InitTransformation();
 
 		// the rainbow spheres
 		scene->AddItem(new Sphere("redSphere", Vec3(-0.3, -0.45, 4), 0.05, red));
@@ -878,9 +894,6 @@ int main()
 		// add camera to the scene
 		scene->AddCamera(new Camera(from, to, up, fov, aperture, focusDistance, g_xRes, g_yRes));
 		
-		// init the array storing the color used to identify different object IDs
-		scene->InitObjIDColors();
-		
 		std::ofstream rgbImage, nrmImage, objIDImage;
 		rgbImage.open("/Users/riccardogigante/Desktop/test_color.ppm", std::ofstream::out);
 		nrmImage.open("/Users/riccardogigante/Desktop/test_normal.ppm", std::ofstream::out);
@@ -890,7 +903,7 @@ int main()
 		if (!fb)
 			return -1;
 		
-		scene->Render(16, 0, fb, &rgbImage, &nrmImage, &objIDImage);
+		scene->Render(32, 0, fb, &rgbImage, &nrmImage, &objIDImage);
 		
 		rgbImage.close();
 		nrmImage.close();
