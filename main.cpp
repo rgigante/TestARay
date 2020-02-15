@@ -24,12 +24,13 @@
 const int g_xRes = 400;
 const int g_yRes = 400;
 
-//#define MATRIX_TESTS
-//#define NEW_HITABLE_TESTS
-//#define SPHERE_TESTS
-//#define BOX_TESTS
-//#define TRI_TESTS
-//#define ALL_TESTS
+#define MATRIX_TESTS
+#define NEW_HITABLE_TESTS
+#define SPHERE_TESTS
+#define BOX_TESTS
+#define TRI_TESTS
+#define ALL_TESTS
+#define EMISSION_TESTS
 #define STANDARD_RUN
 #define EXECUTE_RENDER
 
@@ -37,6 +38,10 @@ int NewHitableTests()
 {
 	// init the scene
 	Scene* scene = new Scene();
+	
+	// set the environment
+	Gradient* env = new Gradient("standard gradient", Vec3(1.0, 1.0, 1.0), Vec3(0.5, 0.7, 1.0));
+	scene->AddEnvironment(env);
 	
 	// allocate metals
 	MetalReflector*  red = new MetalReflector("red", Vec3(0.9, 0, 0));
@@ -128,6 +133,10 @@ int TriTest()
 	// init the scene
 	Scene* scene = new Scene();
 	
+	// set the environment
+	Gradient* env = new Gradient("standard gradient", Vec3(1.0, 1.0, 1.0), Vec3(0.5, 0.7, 1.0));
+	scene->AddEnvironment(env);
+	
 	// allocate metals
 	MetalReflector*  red = new MetalReflector("red", Vec3(0.9, 0, 0));
 	MetalReflector*  green = new MetalReflector("green", Vec3(0, 0.9, 0));
@@ -174,7 +183,7 @@ int TriTest()
 	rgbImage.open("/Users/riccardogigante/Desktop/test_color_TRI_TESTS.ppm", std::ofstream::out);
 	nrmImage.open("/Users/riccardogigante/Desktop/test_normal_TRI_TESTS.ppm", std::ofstream::out);
 	
-	scene->Render(1, 0, fb, &rgbImage, &nrmImage);
+	scene->Render(16, 0, fb, &rgbImage, &nrmImage);
 	
 	rgbImage.close();
 	nrmImage.close();
@@ -201,6 +210,10 @@ int BoxTest()
 {
 	// init the scene
 	Scene* scene = new Scene();
+	
+	// set the environment
+	Gradient* env = new Gradient("standard gradient", Vec3(1.0, 1.0, 1.0), Vec3(0.5, 0.7, 1.0));
+	scene->AddEnvironment(env);
 	
 	// allocate lambertians
 	LambertianReflector*  white = new LambertianReflector("white", Vec3(0.9, 0.9, 0.9));
@@ -275,10 +288,89 @@ int BoxTest()
 	rgbImage.open("/Users/riccardogigante/Desktop/test_color_BOX_TESTS.ppm", std::ofstream::out);
 	nrmImage.open("/Users/riccardogigante/Desktop/test_normal_BOX_TESTS.ppm", std::ofstream::out);
 	
-	scene->Render(1, 0, fb, &rgbImage, &nrmImage);
+	scene->Render(16, 0, fb, &rgbImage, &nrmImage);
 	
 	rgbImage.close();
 	nrmImage.close();
+	
+	// dispose the framebuffer
+	if (fb)
+	{
+		delete fb;
+		fb = nullptr;
+	}
+#endif
+	
+	// dispose the scene (camera, items and materials)
+	if (scene)
+	{
+		delete(scene);
+		scene = nullptr;
+	}
+	
+	return 0;
+}
+
+int EmissionTest()
+{
+	// init the scene
+	Scene* scene = new Scene();
+	
+	// allocate lambertians
+	LambertianReflector*  white = new LambertianReflector("white", Vec3(0.9, 0.9, 0.9));
+	scene->AddMaterial(white);
+	
+	// allocate metals
+	MetalReflector*  red = new MetalReflector("red", Vec3(0.9, 0, 0));
+	scene->AddMaterial(red);
+	
+	// allocate emitter
+	DiffuseEmitter*  light = new DiffuseEmitter("light", Vec3(1, 1, 1));
+	scene->AddMaterial(light);
+	
+	Triangle* trifloor1 = new Triangle("triFloor1", Vec3(-2, 0, -2), Vec3(2, 0, 5), Vec3(2, 0, -2), white);
+	scene->AddItem(trifloor1);
+	Triangle* trifloor2 = new Triangle("triFloor2", Vec3(2, 0, 5), Vec3(-2, 0, -2), Vec3(-2, 0, 5), white);
+	scene->AddItem(trifloor2);
+	
+	Sphere* redSphere = new Sphere("Red Sphere", Vec3(-1, .5, 0), 0.5, red);
+		scene->AddItem(redSphere);
+	
+	Sphere* emittingSphere = new Sphere("Emitting Sphere", Vec3(1, .5, 0), 0.5, light);
+	scene->AddItem(emittingSphere);
+	
+	const Vec3 from (0,2,10);
+	const Vec3 to (0,0,0);
+	const Vec3 up (0,1,0);
+	const float fov = 40;
+	const float aperture = 0; //0.05;
+	const float focusDistance = 5; //(from - to).Length();
+	
+	// add camera to the scene
+	scene->AddCamera(new Camera(from, to, up, fov, aperture, focusDistance, g_xRes, g_yRes));
+	
+	// init the array storing the color used to identify different object IDs
+	scene->InitObjIDColors();
+	
+	scene->RenderPixel(32/64.0 * g_xRes, (64-32)/64.0 * g_yRes, 0, true); // inside emitter
+	scene->RenderPixel(32/64.0 * g_xRes, (64-40)/64.0 * g_yRes, 0, true); // outside emitter
+	
+#ifdef EXECUTE_RENDER
+	Framebuffer* fb = new Framebuffer(g_xRes, g_yRes, 3);
+	if (!fb)
+		return -1;
+	
+	std::ofstream rgbImage, nrmImage, objIDImage;
+	rgbImage.open("/Users/riccardogigante/Desktop/test_color_EMISSION_TESTS.ppm", std::ofstream::out);
+	nrmImage.open("/Users/riccardogigante/Desktop/test_normal_EMISSION_TESTS.ppm", std::ofstream::out);
+	objIDImage.open("/Users/riccardogigante/Desktop/test_objID_EMISSION_TESTS.ppm", std::ofstream::out);
+	
+	
+	scene->Render(16, 0, fb, &rgbImage, &nrmImage, &objIDImage);
+	
+	rgbImage.close();
+	nrmImage.close();
+	objIDImage.close();
 	
 	// dispose the framebuffer
 	if (fb)
@@ -302,6 +394,10 @@ int SphereTest()
 {
 	// init the scene
 	Scene* scene = new Scene();
+	
+	// set the environment
+	Gradient* env = new Gradient("standard gradient", Vec3(1.0, 1.0, 1.0), Vec3(0.5, 0.7, 1.0));
+	scene->AddEnvironment(env);
 	
 	// allocate metals
 	MetalReflector*  red = new MetalReflector("red", Vec3(0.9, 0, 0));
@@ -335,7 +431,7 @@ int SphereTest()
 	// init the array storing the color used to identify different object IDs
 	scene->InitObjIDColors();
 	
-	scene->RenderPixel(46 * g_xRes/64.0, (64 - 46) * g_yRes/64.0, 0, true);
+	scene->RenderPixel(46/64.0 * g_xRes, (64 - 46)/64.0 * g_yRes, 0, true);
 	
 #ifdef EXECUTE_RENDER
 	Framebuffer* fb = new Framebuffer(g_xRes, g_yRes, 3);
@@ -373,6 +469,10 @@ int AllTest()
 {
 	// init the scene
 	Scene* scene = new Scene();
+	
+	// set the environment
+	Gradient* env = new Gradient("standard gradient", Vec3(1.0, 1.0, 1.0), Vec3(0.5, 0.7, 1.0));
+	scene->AddEnvironment(env);
 	
 	// allocate lambertians
 	LambertianReflector*  white = new LambertianReflector("white", Vec3(0.9, 0.9, 0.9));
@@ -491,6 +591,10 @@ int main()
 	TriTest();
 #endif
 	
+#ifdef EMISSION_TESTS
+	EmissionTest();
+#endif
+	
 #ifdef ALL_TESTS
 	AllTest();
 #endif
@@ -499,6 +603,10 @@ int main()
 	{
 		// init the scene
 		Scene* scene = new Scene();
+		
+		// set the environment
+		Gradient* env = new Gradient("standard gradient", Vec3(1.0, 1.0, 1.0), Vec3(0.5, 0.7, 1.0));
+		scene->AddEnvironment(env);
 		
 		//allocate a glass
 		Dielectric* glass = new Dielectric("glass", 1.33);

@@ -59,28 +59,65 @@ bool Scene::Hit(const Ray &r, float t_min, float t_max, HitRecord &rec, bool deb
 void Scene::Color(Vec3& col, Vec3& nrm, Vec3& objID, const Ray& r, int depth/* = 0*/)
 {
 	HitRecord rec;
-	if (Hit(r, _epsHit, MAXFLOAT, rec))
+	const bool isHit = Hit(r, _epsHit, MAXFLOAT, rec);
+	if (isHit)
 	{
 		Ray scattered(Vec3(0, 0, 0), Vec3(0, 0, 0));
 		Vec3 attenuation(0, 0, 0);
-		if (depth < _maxDepth && rec.mat && rec.mat->Scatter(r, rec, attenuation, scattered))
+		Vec3 emission(0, 0, 0);
+		
+		const bool isBelowMaxDepth = depth < _maxDepth;
+		bool isScattered = false;
+		bool isEmitted = false;
+		
+		if (isBelowMaxDepth)
 		{
-			Color(col, nrm, objID, scattered, depth + 1);
-			nrm = Vec3(rec.n.x() + 1, rec.n.y() + 1, rec.n.z() + 1) * 0.5;
-			objID = _objIDcolors[rec.objID];
-			col *= attenuation;
-			return;
+			if (rec.mat)
+			{
+				isEmitted = rec.mat->Emission(r, rec, emission);
+				isScattered = rec.mat->Scatter(r, rec, attenuation, scattered);
+				
+				if (isScattered && isEmitted)
+				{
+					Color(col, nrm, objID, scattered, depth + 1);
+					
+					// calculate attenuation
+					col = (col * attenuation) + emission;
+				}
+				else if(isEmitted)
+				{
+					col = emission;
+				}
+				else
+				{
+					// color value (YELLOW) assigned for debugging scope
+					col = Vec3(1, 1, 0);
+				}
+				
+				if (depth == 0)
+				{
+					// calculate normal
+					nrm = Vec3(rec.n.x() + 1, rec.n.y() + 1, rec.n.z() + 1) * 0.5;
+					// calculate objID
+					objID = _objIDcolors[rec.objID];
+				}
+				
+				return;
+			}
 		}
-		// color value (YELLOW) assigned for debugging scope
-		col = Vec3(1, 1, 0);
-		return;
 	}
 	
-	// compute the background color
-	const float blend = 0.5 * (r.GetDirection().y() + 1.0);
-	col = Lerp(Vec3(1.0, 1.0, 1.0), Vec3(0.5, 0.7, 1.0), blend);
-	nrm = Vec3(0,0,0);
-	objID = Vec3(0,0,0);
+	Environment* env = GetEnvironment(0);
+	if (env)
+		col = env->Col(r);
+	else
+		col = Vec3(0,0,0);
+	
+	if (depth == 0)
+	{
+		nrm = Vec3(0,0,0);
+		objID = Vec3(0,0,0);
+	}
 	
 	return;
 }
@@ -88,31 +125,54 @@ void Scene::Color(Vec3& col, Vec3& nrm, Vec3& objID, const Ray& r, int depth/* =
 void Scene::DebugColor(Vec3& col, const Ray& r, int depth/* = 0*/, const bool debugRay /*= false*/)
 {
 	HitRecord rec;
-	Ray scattered(Vec3(0, 0, 0), Vec3(0, 0, 0));
-	Vec3 attenuation(0, 0, 0);
 	std::cout << "\t- ray["<<r<<"]\n";
 	std::cout << "\t\t- depth["<<depth<<"]\n\t\t- col["<<col<<"]\n";
 	const bool isHit = Hit(r, _epsHit, MAXFLOAT, rec, debugRay);
 	if (isHit)
 	{
-		bool isBelowMaxDepth = depth < _maxDepth;
+		Ray scattered(Vec3(0, 0, 0), Vec3(0, 0, 0));
+		Vec3 attenuation(0, 0, 0);
+		Vec3 emission (0, 0, 0);
+		
+		const bool isBelowMaxDepth = depth < _maxDepth;
 		bool isScattered = false;
-		if (rec.mat)
-			isScattered = rec.mat->Scatter(r, rec, attenuation, scattered);
-		std::cout << "\t\t- scatter["<<scattered<<"]\n\t\t- atten["<<attenuation<<"]\n";
-		if (isBelowMaxDepth && isScattered)
+		bool isEmitted = false;
+		
+		if (isBelowMaxDepth)
 		{
-			DebugColor(col, scattered, depth + 1, debugRay);
-			col *= attenuation;
-			return;
+			if (rec.mat)
+			{
+				isScattered = rec.mat->Scatter(r, rec, attenuation, scattered);
+				isEmitted = rec.mat->Emission(r, rec, emission);
+				std::cout << "\t\t- scatter["<<scattered<<"]\n\t\t- atten["<<attenuation<<"]\n" << "\t\t- emission["<<emission<<"]\n";
+				if (isScattered && isEmitted)
+				{
+					DebugColor(col, scattered, depth + 1, debugRay);
+					col = (col * attenuation) + emission;
+					return;
+				}
+				else if(isEmitted)
+				{
+					col = emission;
+					return;
+				}
+				else
+				{
+					col = Vec3(0,0,0);
+					return;
+				}
+			}
 		}
+		
 		// color value (YELLOW) assigned for debugging scope
 		col = Vec3(1, 1, 0);
 		return;
 	}
-	const float blendY = 0.5 * (r.GetDirection().y() + 1.0);
-	const float blendX = 0.5 * (r.GetDirection().x() + 1.0);
-	col = Lerp(Vec3(1,0,0), Vec3(0,0,1), blendY) + Lerp(Vec3(0,0,0), Vec3(0,1,0), blendX);
+	
+	Environment* env = GetEnvironment(0);
+	if (env)
+		col = env->Col(r);
+	
 	return;
 }
 
@@ -172,27 +232,28 @@ bool Scene::Render(const int samples/* = 1*/, const int activeCamIdx /* = 0*/, F
 	for (int s = 1; s < samples + 1; ++s)
 	{
 		std::cout << "Rendering [" << s << "/" << samples << "]\n";
-		float inv_s = 1.0 / float(s);
+		const float inv_s = 1.0 / float(s);
 		
 		// loop over the pixels to compute their colors
-		for (int j = ny - 1; j>= 0; --j)
+		for (int j = ny - 1; j >= 0; --j)
 		{
-			const float inv_ny = 1.0 / float(ny);
+			const float inv_ny = 1.0 / float(ny - 1);
 			for (int i = 0; i < nx; ++i)
 			{
-				const float inv_nx = 1.0 / float(nx);
-//				std::cout << "--- start pixel ["<<i<<","<<j<<"]\n";
+				const float inv_nx = 1.0 / float(nx - 1);
 //				u = float(i + drand48()) * inv_nx;
 //				v = float(j + drand48()) * inv_ny;
 				u = float(i) * inv_nx;
 				v = float(j) * inv_ny;
+				
+//				std::cout << "--- start pixel ["<<i<<" ("<<u<<"), "<<j<<" ("<<v<<")]\n";
 				
 				// create the starting ray from  the camera
 				r = activeCam->CreateRay(u, v);
 				
 				// add the values returned by the ray recursively exploring the scene by hitting its items
 				Color(rgb, nrm, objID, r);
-//				std::cout << "--- end pixel ["<< rgb <<"]\n";
+//				std::cout << " col["<< rgb <<"]\n";
 				
 				// update with color
 				fb->GetColor()[j][3 * i + 0] = (fb->GetColor()[j][3 * i + 0] * ( s - 1 ) + rgb[0]) * inv_s;

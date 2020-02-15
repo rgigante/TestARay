@@ -21,7 +21,7 @@ char const * Material::GetName()
 	return nullptr;
 }
 
-LambertianReflector::LambertianReflector (char const * name, const Vec3& a) : _albedo(a){ SetName(name); }
+LambertianReflector::LambertianReflector (char const * name, const Vec3& a/* = Vec3 (0.95)*/, const Vec3& e /* = Vec3 (0.0)*/) : _albedo(a), _emission(e){ SetName(name); }
 
 bool LambertianReflector::Scatter(const Ray& rHit, const HitRecord& rec, Vec3& attenuation, Ray& rScatter) const
 {
@@ -31,7 +31,13 @@ bool LambertianReflector::Scatter(const Ray& rHit, const HitRecord& rec, Vec3& a
 	return true;
 }
 
-MetalReflector::MetalReflector(char const * name, const Vec3& a, float r /*= 0*/) : _albedo(a), _roughness(r){ SetName(name); }
+bool LambertianReflector::Emission(const Ray& rHit, const HitRecord& rec, Vec3& emission) const
+{
+	emission = _emission;
+	return true;
+}
+
+MetalReflector::MetalReflector(char const * name, const Vec3& a /* = Vec3 (0.95)*/, float r /*= 0*/, const Vec3& e /* = Vec3 (0.0)*/) : _albedo(a), _roughness(r), _emission(e){ SetName(name); }
 
 bool MetalReflector::Scatter(const Ray &rHit, const HitRecord &rec, Vec3 &attenuation, Ray &rScatter) const
 {
@@ -54,7 +60,13 @@ bool MetalReflector::Scatter(const Ray &rHit, const HitRecord &rec, Vec3 &attenu
 	return false;
 }
 
-Dielectric::Dielectric(char const * name, float ri) : _refrIndex(ri){ SetName(name); }
+bool MetalReflector::Emission(const Ray& rHit, const HitRecord& rec, Vec3& emission) const
+{
+	emission = _emission;
+	return true;
+}
+
+Dielectric::Dielectric(char const * name, float ri, const Vec3& a, const Vec3& e) : _absorption(a), _emission(e), _refrIndex(ri){ SetName(name); }
 
 bool Dielectric::Scatter(const Ray &rHit, const HitRecord &rec, Vec3 &attenuation, Ray &rScatter) const
 {
@@ -63,7 +75,7 @@ bool Dielectric::Scatter(const Ray &rHit, const HitRecord &rec, Vec3 &attenuatio
 
 	float niOverNt = 0.0, reflProb = 1.0, cosine = 0.0;
 
-	attenuation = Vec3 (1.0, 1.0, 1.0);
+	attenuation = _absorption;
 	if (Dot(rHit.GetDirection(), rec.n) > 0)
 	{
 		adjustedNormal = -rec.n;
@@ -87,5 +99,11 @@ bool Dielectric::Scatter(const Ray &rHit, const HitRecord &rec, Vec3 &attenuatio
 	else
 		rScatter = Ray(rec.p, refrDir);
 
+	return true;
+}
+
+bool Dielectric::Emission(const Ray& rHit, const HitRecord& rec, Vec3& emission) const
+{
+	emission = _emission;
 	return true;
 }

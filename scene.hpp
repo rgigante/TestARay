@@ -12,6 +12,7 @@
 #include "camera.hpp"
 #include "framebuffer.hpp"
 #include "materials.hpp"
+#include "environment.hpp"
 #include <vector>
 
 class Scene
@@ -26,6 +27,16 @@ public:
 	
 	void AddCamera(Camera* cam){ if (cam) _cams.push_back(cam); }
 	Camera* GetCamera(const int i){ return _cams.at(i); }
+	
+	void AddEnvironment(Environment* env){ if (env) _envs.push_back(env); }
+	Environment* GetEnvironment(const int i)
+	{
+		if (_envs.size() > 0)
+			return _envs.at(i);
+		else
+			return nullptr;
+		
+	}
 	
 	bool Render(const int samples, const int activeCamIdx, Framebuffer* const fb, std::ofstream * color = nullptr, std::ofstream * normal = nullptr, std::ofstream * objectID = nullptr);
 	bool RenderPixel(const int x = 1, const int y = 1, const int activeCamIdx = 0, const bool debugRay = false);
@@ -42,6 +53,7 @@ private:
 	std::vector<Hitable*> _items;
 	std::vector<Material*> _materials;
 	std::vector<Camera*> _cams;
+	std::vector<Environment*> _envs;
 	std::vector<Vec3> _objIDcolors;
 	
 	float _epsHit = 1e-5;
