@@ -6,7 +6,7 @@
 //
 
 #include "framebuffer.hpp"
-
+#include "utils.hpp"
 
 Framebuffer::Framebuffer(int xRes, int yRes, int chans):_xRes(xRes), _yRes(yRes), _nChans(chans)
 {
@@ -92,7 +92,8 @@ bool Framebuffer::SpoolToPPM(std::ofstream * of, const char* type)
 				if (strcmp(type, "color") == 0)
 				{
 					// apply some "minimal" gamma correction (gamma 2 -> x^1/2)
-					*of << int(255.99 * sqrt(_color[j][3 * i + 0])) << " " <<  int(255.99 * sqrt(_color[j][3 * i + 1])) << " " << int(255.99 * sqrt(_color[j][3 * i + 2])) << "\n";
+					// added support to clip between 0 and 1 to allow emitters to work properly
+					*of << int(255.99 * clip(float(sqrt(_color[j][3 * i + 0])), float(0.0), float(1.0))) << " " <<  int(255.99 * clip(float(sqrt(_color[j][3 * i + 1])), float(0.0), float(1.0))) << " " << int(255.99 * clip(float(sqrt(_color[j][3 * i + 2])), float(0.0), float(1.0))) << "\n";
 				}
 				if (strcmp(type, "normal") == 0)
 				{

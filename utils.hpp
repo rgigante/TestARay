@@ -17,6 +17,16 @@ template <class T>T Lerp(T start, T end, float blend)
 	return start * (1.0 - blend) + end * blend;
 }
 
+// clipping template function
+template <typename T>
+T clip(T in, T low, T high);
+template <typename T>
+T clip(T in, T low, T high)
+{
+	return fmin(fmax(in, low), high);
+}
+
+
 // Schlick formula approximation
 float schlick(float cosine, float ref_idx);
 
