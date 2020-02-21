@@ -14,6 +14,7 @@
 		636A6F5221E8AB54009713F6 /* scene.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 636A6F5021E8AB54009713F6 /* scene.cpp */; };
 		6383492D21F3C786005AB34B /* hitableinstance.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6383492B21F3C786005AB34B /* hitableinstance.cpp */; };
 		638C56D821EF685E00DB2E84 /* matrix.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 638C56D621EF685E00DB2E84 /* matrix.cpp */; };
+		6397AA7024002A9700292619 /* rectangle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6397AA6E24002A9700292619 /* rectangle.cpp */; };
 		639BEF8A23F2E22100BC52D0 /* bbox.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 639BEF8923F2E22100BC52D0 /* bbox.cpp */; };
 		63A27A9523F7E3C800F6E0E4 /* environment.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 63A27A9323F7E3C800F6E0E4 /* environment.cpp */; };
 		63A94B7121E73C6200F2DF28 /* trimesh.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 63A94B6F21E73C6200F2DF28 /* trimesh.cpp */; };
@@ -54,6 +55,8 @@
 		6383492C21F3C786005AB34B /* hitableinstance.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = hitableinstance.hpp; sourceTree = "<group>"; };
 		638C56D621EF685E00DB2E84 /* matrix.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = matrix.cpp; sourceTree = "<group>"; };
 		638C56D721EF685E00DB2E84 /* matrix.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = matrix.hpp; sourceTree = "<group>"; };
+		6397AA6E24002A9700292619 /* rectangle.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = rectangle.cpp; sourceTree = "<group>"; };
+		6397AA6F24002A9700292619 /* rectangle.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = rectangle.hpp; sourceTree = "<group>"; };
 		639BEF8823F2E22100BC52D0 /* bbox.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = bbox.hpp; sourceTree = "<group>"; };
 		639BEF8923F2E22100BC52D0 /* bbox.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = bbox.cpp; sourceTree = "<group>"; };
 		63A27A9323F7E3C800F6E0E4 /* environment.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = environment.cpp; sourceTree = "<group>"; };
@@ -128,6 +131,8 @@
 				638C56D721EF685E00DB2E84 /* matrix.hpp */,
 				630D56842093755E00F925B8 /* ray.cpp */,
 				630D56852093755E00F925B8 /* ray.hpp */,
+				6397AA6E24002A9700292619 /* rectangle.cpp */,
+				6397AA6F24002A9700292619 /* rectangle.hpp */,
 				636A6F5021E8AB54009713F6 /* scene.cpp */,
 				636A6F5121E8AB54009713F6 /* scene.hpp */,
 				63EE6C1521DFBEFE00F4A6AE /* sphere.cpp */,
@@ -183,6 +188,7 @@
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
+				English,
 				en,
 			);
 			mainGroup = 630D566A209361C100F925B8;
@@ -215,6 +221,7 @@
 				63A94B7121E73C6200F2DF28 /* trimesh.cpp in Sources */,
 				6383492D21F3C786005AB34B /* hitableinstance.cpp in Sources */,
 				638C56D821EF685E00DB2E84 /* matrix.cpp in Sources */,
+				6397AA7024002A9700292619 /* rectangle.cpp in Sources */,
 				630D56802093694C00F925B8 /* main.cpp in Sources */,
 				63EE6C1721DFBEFE00F4A6AE /* sphere.cpp in Sources */,
 			);

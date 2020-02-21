@@ -16,6 +16,7 @@
 #include "triangle.hpp"
 #include "box.hpp"
 #include "trimesh.hpp"
+#include "rectangle.hpp"
 #include "materials.hpp"
 #include "hitable.hpp"
 #include "hitableinstance.hpp"
@@ -25,16 +26,17 @@ const int g_xRes = 256;
 const int g_yRes = 256;
 
 //#define MATRIX_TESTS
-//#define NEW_HITABLE_TESTS
-//#define SPHERE_TESTS
-//#define BOX_TESTS
-//#define TRI_TESTS
-//#define ALL_TESTS
-#define EMISSION_TESTS
-#define STANDARD_RUN
+//#define NEW_HITABLE_TEST
+//#define SPHERE_TEST
+//#define BOX_TEST
+//#define TRI_TEST
+//#define ALL_TEST
+#define RECTANGLE_TEST
+//#define EMISSION_TEST
+//#define STANDARD_RUN
 #define EXECUTE_RENDER
 
-int NewHitableTests()
+int NewHitableTest()
 {
 	// init the scene
 	Scene* scene = new Scene();
@@ -93,13 +95,13 @@ int NewHitableTests()
 		return -1;
 	
 	std::ofstream rgbImage;
-	rgbImage.open("/Users/riccardogigante/Desktop/test_color_NEW_HITABLE_TESTS.ppm", std::ofstream::out);
+	rgbImage.open("/Users/riccardogigante/Desktop/test_color_NEW_HITABLE_TEST.ppm", std::ofstream::out);
 	
 	std::ofstream nrmImage;
-	nrmImage.open("/Users/riccardogigante/Desktop/test_normal_NEW_HITABLE_TESTS.ppm", std::ofstream::out);
+	nrmImage.open("/Users/riccardogigante/Desktop/test_normal_NEW_HITABLE_TEST.ppm", std::ofstream::out);
 	
 	std::ofstream objIDImage;
-	objIDImage.open("/Users/riccardogigante/Desktop/test_objID_NEW_HITABLE_TESTS.ppm", std::ofstream::out);
+	objIDImage.open("/Users/riccardogigante/Desktop/test_objID_NEW_HITABLE_TEST.ppm", std::ofstream::out);
 	
 	scene->Render(1, 0, fb, &rgbImage, &nrmImage, &objIDImage);
 	
@@ -174,8 +176,8 @@ int TriTest()
 		return -1;
 	
 	std::ofstream rgbImage, nrmImage;
-	rgbImage.open("/Users/riccardogigante/Desktop/test_color_TRI_TESTS.ppm", std::ofstream::out);
-	nrmImage.open("/Users/riccardogigante/Desktop/test_normal_TRI_TESTS.ppm", std::ofstream::out);
+	rgbImage.open("/Users/riccardogigante/Desktop/test_color_TRI_TEST.ppm", std::ofstream::out);
+	nrmImage.open("/Users/riccardogigante/Desktop/test_normal_TRI_TEST.ppm", std::ofstream::out);
 	
 	scene->Render(16, 0, fb, &rgbImage, &nrmImage);
 	
@@ -276,8 +278,8 @@ int BoxTest()
 		return -1;
 	
 	std::ofstream rgbImage, nrmImage;
-	rgbImage.open("/Users/riccardogigante/Desktop/test_color_BOX_TESTS.ppm", std::ofstream::out);
-	nrmImage.open("/Users/riccardogigante/Desktop/test_normal_BOX_TESTS.ppm", std::ofstream::out);
+	rgbImage.open("/Users/riccardogigante/Desktop/test_color_BOX_TEST.ppm", std::ofstream::out);
+	nrmImage.open("/Users/riccardogigante/Desktop/test_normal_BOX_TEST.ppm", std::ofstream::out);
 	
 	scene->Render(16, 0, fb, &rgbImage, &nrmImage);
 	
@@ -340,8 +342,8 @@ int EmissionTest()
 	// add camera to the scene
 	scene->AddCamera(new Camera(from, to, up, fov, aperture, focusDistance, g_xRes, g_yRes));
 	
-	scene->RenderPixel(32/64.0 * g_xRes, (64-32)/64.0 * g_yRes, 0, true); // inside emitter
-	scene->RenderPixel(32/64.0 * g_xRes, (64-40)/64.0 * g_yRes, 0, true); // outside emitter
+	scene->RenderPixel(32/64.0 * g_xRes, (64-32+8)/64.0 * g_yRes, 0, true); // inside emitter
+	scene->RenderPixel(32/64.0 * g_xRes, (64-32-8)/64.0 * g_yRes, 0, true); // outside emitter
 	
 #ifdef EXECUTE_RENDER
 	Framebuffer* fb = new Framebuffer(g_xRes, g_yRes, 3);
@@ -349,12 +351,88 @@ int EmissionTest()
 		return -1;
 	
 	std::ofstream rgbImage, nrmImage, objIDImage;
-	rgbImage.open("/Users/riccardogigante/Desktop/test_color_EMISSION_TESTS.ppm", std::ofstream::out);
-	nrmImage.open("/Users/riccardogigante/Desktop/test_normal_EMISSION_TESTS.ppm", std::ofstream::out);
-	objIDImage.open("/Users/riccardogigante/Desktop/test_objID_EMISSION_TESTS.ppm", std::ofstream::out);
+	rgbImage.open("/Users/riccardogigante/Desktop/test_color_EMISSION_TEST.ppm", std::ofstream::out);
+	nrmImage.open("/Users/riccardogigante/Desktop/test_normal_EMISSION_TEST.ppm", std::ofstream::out);
+	objIDImage.open("/Users/riccardogigante/Desktop/test_objID_EMISSION_TEST.ppm", std::ofstream::out);
 	
 	
 	scene->Render(1, 0, fb, &rgbImage, &nrmImage, &objIDImage);
+	
+	rgbImage.close();
+	nrmImage.close();
+	objIDImage.close();
+	
+	// dispose the framebuffer
+	if (fb)
+	{
+		delete fb;
+		fb = nullptr;
+	}
+#endif
+	
+	// dispose the scene (camera, items and materials)
+	if (scene)
+	{
+		delete(scene);
+		scene = nullptr;
+	}
+	
+	return 0;
+}
+
+int RectangleTest()
+{
+	// init the scene
+	Scene* scene = new Scene();
+	
+	// set the environment
+	Gradient* env = new Gradient("standard gradient", Vec3(1.0, 1.0, 1.0), Vec3(0.5, 0.7, 1.0));
+	scene->AddEnvironment(env);
+	
+	// allocate lambertians
+	LambertianReflector*  white = new LambertianReflector("white", Vec3(0.9, 0.9, 0.9));
+	scene->AddMaterial(white);
+
+	Triangle* trifloor1 = new Triangle("triFloor1", Vec3(-2, 0, -2), Vec3(2, 0, 5), Vec3(2, 0, -2), white);
+	scene->AddItem(trifloor1);
+	Triangle* trifloor2 = new Triangle("triFloor2", Vec3(2, 0, 5), Vec3(-2, 0, -2), Vec3(-2, 0, 5), white);
+	scene->AddItem(trifloor2);
+	
+	// allocate metals
+	MetalReflector*  metal = new MetalReflector("Metal", Vec3(0.9, 0.0, 0.9));
+	scene->AddMaterial(metal);
+	
+	Rectangle* redRect1 = new Rectangle("Front Rectangle", Vec3(-1,0.5,0), Vec3(2,0,0), Vec3(0,1,0) , metal);
+		scene->AddItem(redRect1);
+	
+	Rectangle* redRect2 = new Rectangle("Back Rectangle", Vec3(-1,3,0), Vec3(2,0,0), Vec3(0,-1,0) , metal);
+	scene->AddItem(redRect2);
+	
+	const Vec3 from (0,4,10);
+	const Vec3 to (0,0,0);
+	const Vec3 up (0,1,0);
+	const float fov = 40;
+	const float aperture = 0; //0.05;
+	const float focusDistance = 5; //(from - to).Length();
+	
+	// add camera to the scene
+	scene->AddCamera(new Camera(from, to, up, fov, aperture, focusDistance, g_xRes, g_yRes));
+	
+	scene->RenderPixel(32/64.0 * g_xRes, (24)/64.0 * g_yRes, 0, true); // front rectangle
+	scene->RenderPixel(32/64.0 * g_xRes, (40)/64.0 * g_yRes, 0, true); // back rectangle
+	
+#ifdef EXECUTE_RENDER
+	Framebuffer* fb = new Framebuffer(g_xRes, g_yRes, 3);
+	if (!fb)
+		return -1;
+	
+	std::ofstream rgbImage, nrmImage, objIDImage;
+	rgbImage.open("/Users/riccardogigante/Desktop/test_color_RECTANGLE_TEST.ppm", std::ofstream::out);
+	nrmImage.open("/Users/riccardogigante/Desktop/test_normal_RECTANGLE_TEST.ppm", std::ofstream::out);
+	objIDImage.open("/Users/riccardogigante/Desktop/test_objID_RECTANGLE_TEST.ppm", std::ofstream::out);
+	
+	
+	scene->Render(8, 0, fb, &rgbImage, &nrmImage, &objIDImage);
 	
 	rgbImage.close();
 	nrmImage.close();
@@ -424,8 +502,8 @@ int SphereTest()
 		return -1;
 	
 	std::ofstream rgbImage, nrmImage;
-	rgbImage.open("/Users/riccardogigante/Desktop/test_color_SPHERE_TESTS.ppm", std::ofstream::out);
-	nrmImage.open("/Users/riccardogigante/Desktop/test_normal_SPHERE_TESTS.ppm", std::ofstream::out);
+	rgbImage.open("/Users/riccardogigante/Desktop/test_color_SPHERE_TEST.ppm", std::ofstream::out);
+	nrmImage.open("/Users/riccardogigante/Desktop/test_normal_SPHERE_TEST.ppm", std::ofstream::out);
 	
 	scene->Render(1, 0, fb, &rgbImage, &nrmImage);
 	
@@ -524,9 +602,9 @@ int AllTest()
 		return -1;
 	
 	std::ofstream rgbImage, nrmImage, objIDImage;
-	rgbImage.open("/Users/riccardogigante/Desktop/test_color_ALL_TESTS.ppm", std::ofstream::out);
-	nrmImage.open("/Users/riccardogigante/Desktop/test_normal_ALL_TESTS.ppm", std::ofstream::out);
-	objIDImage.open("/Users/riccardogigante/Desktop/test_objID_ALL_TESTS.ppm", std::ofstream::out);
+	rgbImage.open("/Users/riccardogigante/Desktop/test_color_ALL_TEST.ppm", std::ofstream::out);
+	nrmImage.open("/Users/riccardogigante/Desktop/test_normal_ALL_TEST.ppm", std::ofstream::out);
+	objIDImage.open("/Users/riccardogigante/Desktop/test_objID_ALL_TEST.ppm", std::ofstream::out);
 	
 	scene->Render(1, 0, fb, &rgbImage, &nrmImage, &objIDImage);
 	
@@ -558,27 +636,31 @@ int main()
 	MatrixTests();
 #endif
 	
-#ifdef NEW_HITABLE_TESTS
-	NewHitableTests();
+#ifdef NEW_HITABLE_TEST
+	NewHitableTest();
 #endif
 	
-#ifdef SPHERE_TESTS
+#ifdef SPHERE_TEST
 	SphereTest();
 #endif
 	
-#ifdef BOX_TESTS
+#ifdef BOX_TEST
 	BoxTest();
 #endif
 	
-#ifdef TRI_TESTS
+#ifdef TRI_TEST
 	TriTest();
 #endif
 	
-#ifdef EMISSION_TESTS
+#ifdef EMISSION_TEST
 	EmissionTest();
 #endif
 	
-#ifdef ALL_TESTS
+#ifdef RECTANGLE_TEST
+	RectangleTest();
+#endif
+	
+#ifdef ALL_TEST
 	AllTest();
 #endif
 	
@@ -903,7 +985,7 @@ int main()
 		if (!fb)
 			return -1;
 		
-		scene->Render(1024, 0, fb, &rgbImage, &nrmImage, &objIDImage);
+		scene->Render(4, 0, fb, &rgbImage, &nrmImage, &objIDImage);
 		
 		rgbImage.close();
 		nrmImage.close();

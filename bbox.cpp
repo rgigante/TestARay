@@ -56,9 +56,9 @@ bool BBox::HitBBox (const Ray& r, float t_min, float t_max, bool debugRay /*= fa
 	Vec3 invRayDir;
 	
 	//check ray dir
-	invRayDir[0] = abs(r.GetDirection().x()) >= _dirThreshold ? 1 /r.GetDirection().x() : _invDirThreshold;
-	invRayDir[1] = abs(r.GetDirection().y()) >= _dirThreshold ? 1 /r.GetDirection().y() : _invDirThreshold;
-	invRayDir[2] = abs(r.GetDirection().z()) >= _dirThreshold ? 1 /r.GetDirection().z() : _invDirThreshold;
+	invRayDir[0] = abs(rdir[0]) >= _dirThreshold ? 1 / rdir[0] : _invDirThreshold;
+	invRayDir[1] = abs(rdir[1]) >= _dirThreshold ? 1 / rdir[1] : _invDirThreshold;
+	invRayDir[2] = abs(rdir[2]) >= _dirThreshold ? 1 / rdir[2] : _invDirThreshold;
 	
 	Vec3 bRpos = _b - rpos;
 	// check that ray position and bounding box don't overlap on each axis

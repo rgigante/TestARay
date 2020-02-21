@@ -88,7 +88,7 @@ void Scene::Shade(Vec3& col, Vec3& nrm, Vec3& objID, const Ray& r, int depth/* =
 			}
 			else
 			{
-				// color value (YELLOW) assigned for debugging scope
+				// color value (RED) assigned for debugging scope
 				col = Vec3(1, 0, 0);
 			}
 			
@@ -150,7 +150,7 @@ void Scene::ShadeDebug(Vec3& col, const Ray& r, int depth/* = 0*/, const bool de
 			}
 			else
 			{
-				// color value (YELLOW) assigned for debugging scope
+				// color value (RED) assigned for debugging scope
 				col = Vec3(1, 0, 0);
 			}
 			
