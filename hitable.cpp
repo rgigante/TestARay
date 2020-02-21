@@ -48,7 +48,7 @@ bool Hitable::Hit(const Ray& r, float t_min, float t_max, HitRecord& rec, bool d
 			aabbHitDetected = _bbox.HitBBox(ray, t_min, t_max, debugRay);
 			if (aabbHitDetected)
 			{
-				hitDetected = Hit2(ray, t_min, t_max, rec, debugRay);
+				hitDetected = HitPrimitive(ray, t_min, t_max, rec, debugRay);
 			
 				// tranform back points and normals based on hitable global transformation
 				rec.p = _gm * rec.p;
@@ -58,7 +58,7 @@ bool Hitable::Hit(const Ray& r, float t_min, float t_max, HitRecord& rec, bool d
 		}
 		else
 		{
-			hitDetected = Hit2(ray, t_min, t_max, rec, debugRay);
+			hitDetected = HitPrimitive(ray, t_min, t_max, rec, debugRay);
 			
 			// tranform back points and normals based on hitable global transformation
 			rec.p = _gm * rec.p;
@@ -69,7 +69,7 @@ bool Hitable::Hit(const Ray& r, float t_min, float t_max, HitRecord& rec, bool d
 #else
 	if (IsVisible())
 	{
-		hitDetected = Hit2(ray, t_min, t_max, rec, debugRay);
+		hitDetected = HitPrimitive(ray, t_min, t_max, rec, debugRay);
 		
 		// tranform back points and normals based on hitable global transformation
 		rec.p = _gm * rec.p;

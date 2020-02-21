@@ -16,7 +16,7 @@ public:
 	HitableInstance(Hitable* obj);
 	~HitableInstance(){}
 	
-	bool Hit2 (const Ray& r, float t_min, float t_max, HitRecord& rec, bool debugRay = false);
+	bool HitPrimitive (const Ray& r, float t_min, float t_max, HitRecord& rec, bool debugRay = false);
 	
 private:
 	Hitable* _obj = nullptr;

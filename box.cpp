@@ -43,7 +43,7 @@ void Box::SetCenterAndRadius(const Vec3 & c, const Vec3 & r)
 	_b = _c - _r;
 }
 
-bool Box::Hit2 (const Ray& r, float t_min, float t_max, HitRecord& rec, bool debugRay /*= false*/)
+bool Box::HitPrimitive (const Ray& r, float t_min, float t_max, HitRecord& rec, bool debugRay /*= false*/)
 {
 	rec.mat = GetMaterial();
 	

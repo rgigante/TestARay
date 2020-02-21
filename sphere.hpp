@@ -16,7 +16,7 @@ class Sphere: public Hitable
 public:
 	~Sphere(){}
 	Sphere(char const* name, Vec3 cen, float r, Material const * mat, bool visible = true);
-	bool Hit2 (const Ray& r, float t_min, float t_max, HitRecord& rec, bool debugRay = false);
+	bool HitPrimitive (const Ray& r, float t_min, float t_max, HitRecord& rec, bool debugRay = false);
 	bool SolveQuadratic(const float &a, const float &b, const float &c, float &x0, float &x1);
 	
 private:

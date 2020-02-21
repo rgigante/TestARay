@@ -71,7 +71,7 @@ public:
 	const Matrix& GetGlobalInverseMatrix() { return _gim; }
 	
 	// Virtual methods (override in derived classes)
-	virtual bool Hit2 (const Ray& r, float t_min, float t_max, HitRecord& rec, bool debugRay = false) = 0;
+	virtual bool HitPrimitive (const Ray& r, float t_min, float t_max, HitRecord& rec, bool debugRay = false) = 0;
 	
 private:
 	// the transformation stack

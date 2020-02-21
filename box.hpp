@@ -16,7 +16,7 @@ class Box: public Hitable
 public:
 	~Box(){}
 	Box(char const* name, const Vec3 & pt1, const Vec3 & pt2, Material const * mat, bool visible = true);
-	bool Hit2 (const Ray& r, float t_min, float t_max, HitRecord& rec, bool debugRay = false);
+	bool HitPrimitive (const Ray& r, float t_min, float t_max, HitRecord& rec, bool debugRay = false);
 	
 	Vec3 GetA(){ return _a; }
 	Vec3 GetB(){ return _b; }

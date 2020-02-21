@@ -37,7 +37,7 @@ bool Sphere::SolveQuadratic(const float &a, const float &b, const float &c, floa
 	return true;
 }
 
-bool Sphere::Hit2(const Ray& r, float t_min, float t_max, HitRecord& rec, bool debugRay  /*= false*/)
+bool Sphere::HitPrimitive(const Ray& r, float t_min, float t_max, HitRecord& rec, bool debugRay  /*= false*/)
 {
 	Ray ray(r);
 	

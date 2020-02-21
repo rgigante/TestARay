@@ -82,7 +82,7 @@ bool TriMesh::InitTris()
 	return true;
 }
 
-bool TriMesh::Hit2(const Ray& r, float t_min, float t_max, HitRecord& rec, bool debugRay /*= false*/)
+bool TriMesh::HitPrimitive(const Ray& r, float t_min, float t_max, HitRecord& rec, bool debugRay /*= false*/)
 {
 	HitRecord tempRec;
 	bool hitAnything = false;
@@ -90,7 +90,7 @@ bool TriMesh::Hit2(const Ray& r, float t_min, float t_max, HitRecord& rec, bool 
 	
 	for (int i = 0; i < _trisCnt; ++i)
 	{
-		if (_tris[i]->Hit2(r, t_min, closestSoFar, tempRec, debugRay))
+		if (_tris[i]->HitPrimitive(r, t_min, closestSoFar, tempRec, debugRay))
 		{
 			hitAnything = true;
 			closestSoFar = tempRec.t;

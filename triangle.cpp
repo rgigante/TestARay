@@ -7,7 +7,7 @@
 
 #include "triangle.hpp"
 
-bool Triangle::Hit2(const Ray& r, float t_min, float t_max, HitRecord& rec, bool debugRay /*= false*/)
+bool Triangle::HitPrimitive(const Ray& r, float t_min, float t_max, HitRecord& rec, bool debugRay /*= false*/)
 {
 	Ray ray(r);
 	

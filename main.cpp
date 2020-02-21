@@ -605,7 +605,7 @@ int main()
 		LambertianReflector*  white = new LambertianReflector("white", Vec3(0.95, 0.95, 0.95));
 		scene->AddMaterial(white);
 //		LambertianReflector*  whiteEmitter = new LambertianReflector("white lambertian emitter", Vec3(0,0,0), Vec3(1,1,1));
-		DiffuseEmitter*  whiteEmitter = new DiffuseEmitter("white diffuse emitter", Vec3(1,1,1));
+		DiffuseEmitter*  whiteEmitter = new DiffuseEmitter("white diffuse emitter", Vec3(10,10,10));
 		scene->AddMaterial(whiteEmitter);
 		LambertianReflector*  green = new LambertianReflector("green", Vec3(0.0, 0.9, 0.0));
 		scene->AddMaterial(green);
@@ -640,7 +640,7 @@ int main()
 		scene->AddItem(new Sphere("airSphere", Vec3(0.25, -0.2, -0.8), -0.05, glass));
 		
 		// the light bubble
-		scene->AddItem(new Sphere("lightSphere", Vec3(0, 1, 2), 0.2, whiteEmitter));
+		scene->AddItem(new Sphere("lightSphere", Vec3(0, 1, 2), 0.1, whiteEmitter));
 		
 		// the small green sphere on the back
 		scene->AddItem(new Sphere("greenSphere", Vec3(-0.35, -0.4, -1), 0.1, green));
@@ -903,7 +903,7 @@ int main()
 		if (!fb)
 			return -1;
 		
-		scene->Render(32, 0, fb, &rgbImage, &nrmImage, &objIDImage);
+		scene->Render(1024, 0, fb, &rgbImage, &nrmImage, &objIDImage);
 		
 		rgbImage.close();
 		nrmImage.close();
