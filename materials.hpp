@@ -89,8 +89,10 @@ public:
 	virtual bool Scatter(const Ray& rHit, const HitRecord& rec, Vec3& attenuation, Ray& rScatter) const { return false; }
 	bool Emission(const Ray& rHit, const HitRecord& rec, Vec3& emission) const
 	{
+
+		float val = Dot(rHit.GetDirection(), rec.n);
 		emission = _emission;
-		if (_emission.Length())
+		if (_emission.Length() && val < 0)
 			return true;
 		else
 			return false;

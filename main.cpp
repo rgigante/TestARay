@@ -31,8 +31,8 @@ const int g_yRes = 256;
 //#define BOX_TEST
 //#define TRI_TEST
 //#define ALL_TEST
-#define RECTANGLE_TEST
-//#define EMISSION_TEST
+//#define RECTANGLE_TEST
+#define EMISSION_TEST
 //#define STANDARD_RUN
 #define EXECUTE_RENDER
 
@@ -318,8 +318,13 @@ int EmissionTest()
 	scene->AddMaterial(red);
 	
 	// allocate emitter
-	DiffuseEmitter*  light = new DiffuseEmitter("light", Vec3(1, 1, 1));
+	DiffuseEmitter*  light = new DiffuseEmitter("light", Vec3(.3, .4, 1));
 	scene->AddMaterial(light);
+	
+	
+	// allocate emitter
+	DiffuseEmitter*  light2 = new DiffuseEmitter("light", Vec3(2));
+	scene->AddMaterial(light2);
 	
 	Triangle* trifloor1 = new Triangle("triFloor1", Vec3(-2, 0, -2), Vec3(2, 0, 5), Vec3(2, 0, -2), white);
 	scene->AddItem(trifloor1);
@@ -332,8 +337,12 @@ int EmissionTest()
 	Sphere* emittingSphere = new Sphere("Emitting Sphere", Vec3(1, .5, 0), 0.5, light);
 	scene->AddItem(emittingSphere);
 	
-	const Vec3 from (0,2,10);
-	const Vec3 to (0,0,0);
+	Rectangle* emittingRectangle = new Rectangle("Emitting rectangle", Vec3(-1,2,-1), Vec3(2,0,0), Vec3(0,0,2), light2);
+	scene->AddItem(emittingRectangle);
+
+	
+	const Vec3 from (0,1,5);
+	const Vec3 to (0,1,0);
 	const Vec3 up (0,1,0);
 	const float fov = 40;
 	const float aperture = 0; //0.05;
@@ -356,7 +365,7 @@ int EmissionTest()
 	objIDImage.open("/Users/riccardogigante/Desktop/test_objID_EMISSION_TEST.ppm", std::ofstream::out);
 	
 	
-	scene->Render(1, 0, fb, &rgbImage, &nrmImage, &objIDImage);
+	scene->Render(32, 0, fb, &rgbImage, &nrmImage, &objIDImage);
 	
 	rgbImage.close();
 	nrmImage.close();
@@ -392,23 +401,27 @@ int RectangleTest()
 	// allocate lambertians
 	LambertianReflector*  white = new LambertianReflector("white", Vec3(0.9, 0.9, 0.9));
 	scene->AddMaterial(white);
-
-	Triangle* trifloor1 = new Triangle("triFloor1", Vec3(-2, 0, -2), Vec3(2, 0, 5), Vec3(2, 0, -2), white);
-	scene->AddItem(trifloor1);
-	Triangle* trifloor2 = new Triangle("triFloor2", Vec3(2, 0, 5), Vec3(-2, 0, -2), Vec3(-2, 0, 5), white);
-	scene->AddItem(trifloor2);
+	
+	// allocate emitter
+	DiffuseEmitter*  light = new DiffuseEmitter("light", Vec3(.5, .5, .5));
+	scene->AddMaterial(light);
+//
+//	Triangle* trifloor1 = new Triangle("triFloor1", Vec3(-2, 0, -2), Vec3(2, 0, 5), Vec3(2, 0, -2), white);
+//	scene->AddItem(trifloor1);
+//	Triangle* trifloor2 = new Triangle("triFloor2", Vec3(2, 0, 5), Vec3(-2, 0, -2), Vec3(-2, 0, 5), white);
+//	scene->AddItem(trifloor2);
 	
 	// allocate metals
 	MetalReflector*  metal = new MetalReflector("Metal", Vec3(0.9, 0.0, 0.9));
 	scene->AddMaterial(metal);
 	
-	Rectangle* redRect1 = new Rectangle("Front Rectangle", Vec3(-1,0.5,0), Vec3(2,0,0), Vec3(0,1,0) , metal);
+	Rectangle* redRect1 = new Rectangle("Front Rectangle", Vec3(-1,-1.5,0), Vec3(2,0,0), Vec3(0,1,0) , light);
 		scene->AddItem(redRect1);
 	
-	Rectangle* redRect2 = new Rectangle("Back Rectangle", Vec3(-1,3,0), Vec3(2,0,0), Vec3(0,-1,0) , metal);
+	Rectangle* redRect2 = new Rectangle("Back Rectangle", Vec3(-1,1.5,0), Vec3(2,0,0), Vec3(0,-1,0) , light);
 	scene->AddItem(redRect2);
 	
-	const Vec3 from (0,4,10);
+	const Vec3 from (0,0,10);
 	const Vec3 to (0,0,0);
 	const Vec3 up (0,1,0);
 	const float fov = 40;

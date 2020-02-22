@@ -30,26 +30,34 @@ bool Rectangle::HitPrimitive (const Ray& r, float t_min, float t_max, HitRecord&
 	
 	const Vec3 rpos = r.GetOrigin();
 	const Vec3 rdir = r.GetDirection();
-	const float dotDirN = Dot(rdir, _n);
+	const float dotDirNrm = Dot(rdir, _n);
 	
-	if (abs(dotDirN) > 0)
+	if (abs(dotDirNrm) > 0)
 	{
-		const float t = Dot((_p - rpos), _n)/dotDirN;
-		if (abs(t) < 1e-6)
-			return false;
-		const Vec3 pR = rpos + t * rdir;
-		const Vec3 ppR = pR - _p;
-		const float ppRd1 = Dot(ppR, _d1);
-		const float ppRd2 = Dot(ppR, _d2);
-		const bool cond1 = (ppRd1 > 0 && ppRd1 < _w);
-		const bool cond2 = (ppRd2 > 0 && ppRd2 < _h);
-		
-		if (cond1 && cond2)
+		const float t = Dot((_p - rpos), _n)/dotDirNrm;
+		if (t > t_min && t < t_max)
 		{
-			rec.p = pR;
-			rec.n = _n;
-			rec.t = t;
-			return true;
+			// evalute the intersection point
+			const Vec3 p = rpos + t * rdir;
+			
+			// vector to intersection points
+			const Vec3 pp = p - _p;
+			
+			// projection of intersection point vector of rectangle vectors
+			const float ppd1 = Dot(pp, _d1);
+			const float ppd2 = Dot(pp, _d2);
+			
+			// check of point hit being inside width and height
+			const bool cond1 = (ppd1 > 0 && ppd1 < _w);
+			const bool cond2 = (ppd2 > 0 && ppd2 < _h);
+			
+			if (cond1 && cond2)
+			{
+				rec.p = p;
+				rec.n = _n;
+				rec.t = t;
+				return true;
+			}
 		}
 	}
 	return false;
