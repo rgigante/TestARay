@@ -68,7 +68,7 @@ private:
 	std::vector<Environment*> _envs;
 	std::vector<Vec3> _objIDcolors;
 	
-	float _epsHit = 1e-5;
+	float _epsHit = 1e-6;
 	int _maxDepth = 20;
 };
 

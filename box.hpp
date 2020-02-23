@@ -37,6 +37,7 @@ private:
 	const float _dirThreshold = 1e-6;
 	const float _invDirThreshold = 1 / _dirThreshold;
 	const float _posThreshold = 1e-3;
+	const float _nrmThreshold = 1e-3;
 };
 
 #endif /* box_hpp */

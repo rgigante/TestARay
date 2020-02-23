@@ -32,7 +32,8 @@ const int g_yRes = 256;
 //#define TRI_TEST
 //#define ALL_TEST
 //#define RECTANGLE_TEST
-#define EMISSION_TEST
+//#define EMISSION_TEST
+#define CORNELL_BOX
 //#define STANDARD_RUN
 #define EXECUTE_RENDER
 
@@ -212,35 +213,49 @@ int BoxTest()
 	scene->AddEnvironment(env);
 	
 	// allocate lambertians
-	LambertianReflector*  white = new LambertianReflector("white", Vec3(0.9, 0.9, 0.9));
-	scene->AddMaterial(white);
+	LambertianReflector*  whiteDiffuse = new LambertianReflector("white diffuse", Vec3(0.9, 0.9, 0.9));
+	scene->AddMaterial(whiteDiffuse);
+	LambertianReflector*  redDiffuse = new LambertianReflector("red diffuse", Vec3(0.9, 0.1, 0.1));
+	scene->AddMaterial(redDiffuse);
+	LambertianReflector*  greenDiffuse = new LambertianReflector("green diffuse", Vec3(0.1, 0.9, 0.1));
+	scene->AddMaterial(greenDiffuse);
+	LambertianReflector*  blueDiffuse = new LambertianReflector("blue diffuse", Vec3(0.1, 0.1, 0.9));
+	scene->AddMaterial(blueDiffuse);
 	
 	// allocate metals
-	MetalReflector*  red = new MetalReflector("red", Vec3(0.9, 0, 0));
-	MetalReflector*  green = new MetalReflector("green", Vec3(0, 0.9, 0));
-	MetalReflector*  blue = new MetalReflector("blue", Vec3(0, 0, 0.9));
-	scene->AddMaterial(red);
-	scene->AddMaterial(green);
-	scene->AddMaterial(blue);
+	MetalReflector*  redMetal = new MetalReflector("red metal", Vec3(0.9, 0.1, 0.1));
+	MetalReflector*  greenMetal = new MetalReflector("green metal", Vec3(0.1, 0.9, 0.1));
+	MetalReflector*  blueMetal = new MetalReflector("blue metal", Vec3(0.1, 0.1, 0.9));
+	scene->AddMaterial(redMetal);
+	scene->AddMaterial(greenMetal);
+	scene->AddMaterial(blueMetal);
 	
-	Triangle* trifloor1 = new Triangle("triFloor1", Vec3(-2, 0, -2), Vec3(2, 0, 5), Vec3(2, 0, -2), white);
+	Triangle* trifloor1 = new Triangle("triFloor1", Vec3(-20, 0, -20), Vec3(20, 0, 50), Vec3(20, 0, -20), whiteDiffuse);
 	scene->AddItem(trifloor1);
-	Triangle* trifloor2 = new Triangle("triFloor2", Vec3(2, 0, 5), Vec3(-2, 0, -2), Vec3(-2, 0, 5), white);
+	Triangle* trifloor2 = new Triangle("triFloor2", Vec3(20, 0, 50), Vec3(-20, 0, -20), Vec3(-20, 0, 50), whiteDiffuse);
 	scene->AddItem(trifloor2);
 	
 	Matrix trf;
 	
-	Box* boxRed = new Box("box Red", Vec3(0.2, 1, .5), Vec3(1.2,3,0), red);
-	scene->AddItem(boxRed);
-	trf.AddRotationY(-45);
-	trf.AddOffset(0.5, 0, -0.5);
-	boxRed->AddMatrix(trf);
-	trf.Reset();
-	boxRed->InitTransformation();
+//	Box* boxRed = new Box("box Red", Vec3(0.2, 1, .5), Vec3(1.2,3,0), redDiffuse);
+//	scene->AddItem(boxRed);
+//	trf.AddRotationY(-45);
+//	trf.AddOffset(0.5, 0, -0.5);
+//	boxRed->AddMatrix(trf);
+//	trf.Reset();
+//	boxRed->InitTransformation();
 	
-	Box* boxGreen = new Box("box Green", Vec3(-0.7, 0.0, .5), Vec3(-.2, 0.5, 0), green);
-	scene->AddItem(boxGreen);
+	Box * boxGreenBig = new Box("box Red", Vec3(0.0, 0.1, 0.0), Vec3(10.0), redDiffuse);
+	scene->AddItem(boxGreenBig);
 	
+	Box * boxGreenSmall = new Box("box Green", Vec3(0.0, 0.1, 0.0), Vec3(-2.0,2.0,2.0), greenDiffuse);
+	scene->AddItem(boxGreenSmall);
+	
+	Rectangle * rectangleBlue = new Rectangle("Blue Rectangle", Vec3(-2.0,0.1,0.0), Vec3(0.0,5.0,0.0), Vec3(-5.0,0.0,0.0), blueDiffuse);
+	scene->AddItem(rectangleBlue);
+	
+
+#if 0
 	HitableInstance* instanceGreenBox = new HitableInstance(boxGreen);
 	trf.AddRotationY(30);
 	trf.AddOffset(0, 1, 0);
@@ -253,17 +268,18 @@ int BoxTest()
 	HitableInstance* instanceGreenBoxBeingBlue = new HitableInstance(boxGreen);
 	trf.AddRotationY(-30);
 	trf.AddOffset(0, 2, 0);
-	instanceGreenBoxBeingBlue->SetMaterial(blue);
+	instanceGreenBoxBeingBlue->SetMaterial(blueDiffuse);
 	instanceGreenBoxBeingBlue->AddMatrix(trf);
 	trf.Reset();
 	instanceGreenBoxBeingBlue->InitTransformation();
 	instanceGreenBoxBeingBlue->SetName("instanceBlue");
 	scene->AddItem(instanceGreenBoxBeingBlue);
+#endif
 	
-	const Vec3 from (0,2,10);
+	const Vec3 from (0,20,-10000);
 	const Vec3 to (0,0,0);
 	const Vec3 up (0,1,0);
-	const float fov = 40;
+	const float fov = .1;
 	const float aperture = 0; //0.05;
 	const float focusDistance = 5; //(from - to).Length();
 	
@@ -277,14 +293,16 @@ int BoxTest()
 	if (!fb)
 		return -1;
 	
-	std::ofstream rgbImage, nrmImage;
+	std::ofstream rgbImage, nrmImage, objIDImage;
 	rgbImage.open("/Users/riccardogigante/Desktop/test_color_BOX_TEST.ppm", std::ofstream::out);
 	nrmImage.open("/Users/riccardogigante/Desktop/test_normal_BOX_TEST.ppm", std::ofstream::out);
+	objIDImage.open("/Users/riccardogigante/Desktop/test_objID_BOX_TEST.ppm", std::ofstream::out);
 	
-	scene->Render(16, 0, fb, &rgbImage, &nrmImage);
+	scene->Render(16, 0, fb, &rgbImage, &nrmImage, &objIDImage);
 	
 	rgbImage.close();
 	nrmImage.close();
+	objIDImage.close();
 	
 	// dispose the framebuffer
 	if (fb)
@@ -387,6 +405,111 @@ int EmissionTest()
 	}
 	
 	return 0;
+}
+
+int CornellBox()
+{
+	// init the scene
+	Scene* scene = new Scene();
+	
+	// set the environment
+//	Gradient* env = new Gradient("standard gradient", Vec3(1.0, 1.0, 1.0), Vec3(0.5, 0.7, 1.0));
+//	scene->AddEnvironment(env);
+	
+	// allocate lambertians
+	LambertianReflector*  whiteDiffuse = new LambertianReflector("White Diffuse", Vec3(0.9, 0.9, 0.9));
+	scene->AddMaterial(whiteDiffuse);
+	LambertianReflector*  redDiffuse = new LambertianReflector("Red Diffuse", Vec3(0.9, 0.1, 0.1));
+	scene->AddMaterial(redDiffuse);
+	LambertianReflector*  greenDiffuse = new LambertianReflector("Green Diffuse", Vec3(0.1, 0.9, 0.1));
+	scene->AddMaterial(greenDiffuse);
+	
+	// allocate metals
+	MetalReflector*  metal = new MetalReflector("Metal", Vec3(0.9, 0.0, 0.9));
+	scene->AddMaterial(metal);
+	
+	// allocate emitter
+	DiffuseEmitter*  emitter = new DiffuseEmitter("light", Vec3(10));
+	scene->AddMaterial(emitter);
+	
+	// define scene
+	Rectangle * light = new Rectangle("light", Vec3(213,548,227), Vec3(130,0,0), Vec3(0,0,105), emitter);
+	scene->AddItem(light);
+	Rectangle * floor = new Rectangle("floor", Vec3(0,0,0), Vec3(0,0,560), Vec3(550,0,0),  whiteDiffuse);
+	scene->AddItem(floor);
+	Rectangle * ceiling = new Rectangle("ceiling", Vec3(0,549,0), Vec3(550,0,0), Vec3(0,0,560), whiteDiffuse);
+	scene->AddItem(ceiling);
+	Rectangle * backWall = new Rectangle("back", Vec3(0,0,560), Vec3(0,550,0), Vec3(550,0,0), whiteDiffuse);
+	scene->AddItem(backWall);
+	Rectangle * rightWall = new Rectangle("right", Vec3(0,0,0), Vec3(0,550,0), Vec3(0,0,560), greenDiffuse);
+	scene->AddItem(rightWall);
+	Rectangle * leftWall = new Rectangle("left", Vec3(550,0,0), Vec3(0,0,560), Vec3(0,550,0), redDiffuse);
+	scene->AddItem(leftWall);
+	
+	Box * shortBox = new Box ("short", Vec3(0.0), Vec3(165), whiteDiffuse);
+	Matrix trf;
+	trf.AddRotationY(-17);
+	trf.AddOffset(130, 0, 65);
+	shortBox->AddMatrix(trf);
+	trf.Reset();
+	shortBox->InitTransformation();
+	scene->AddItem(shortBox);
+	
+	Box * tallBox = new Box ("tall", Vec3(0), Vec3(165,330,165), whiteDiffuse);
+	trf.AddRotationY(17);
+	trf.AddOffset(265, 0, 296);
+	tallBox->AddMatrix(trf);
+	trf.Reset();
+	tallBox->InitTransformation();
+	scene->AddItem(tallBox);
+	
+	const Vec3 from (278, 273, -800);
+	const Vec3 to (278, 273, 0);
+	const Vec3 up (0,1,0);
+	const float fov = 40;
+	const float aperture = 0; //0.05;
+	const float focusDistance = 800; //(from - to).Length();
+	
+	// add camera to the scene
+	scene->AddCamera(new Camera(from, to, up, fov, aperture, focusDistance, g_xRes, g_yRes));
+	
+	scene->RenderPixel(32/64.0 * g_xRes, (24)/64.0 * g_yRes, 0, true); // front rectangle
+	scene->RenderPixel(32/64.0 * g_xRes, (40)/64.0 * g_yRes, 0, true); // back rectangle
+	
+#ifdef EXECUTE_RENDER
+	Framebuffer* fb = new Framebuffer(g_xRes, g_yRes, 3);
+	if (!fb)
+		return -1;
+	
+	std::ofstream rgbImage, nrmImage, objIDImage;
+	rgbImage.open("/Users/riccardogigante/Desktop/test_color_CORNELL_BOX.ppm", std::ofstream::out);
+	nrmImage.open("/Users/riccardogigante/Desktop/test_normal_CORNELL_BOX.ppm", std::ofstream::out);
+	objIDImage.open("/Users/riccardogigante/Desktop/test_objID_CORNELL_BOX.ppm", std::ofstream::out);
+	
+	
+	scene->Render(512, 0, fb, &rgbImage, &nrmImage, &objIDImage);
+	
+	rgbImage.close();
+	nrmImage.close();
+	objIDImage.close();
+	
+	// dispose the framebuffer
+	if (fb)
+	{
+		delete fb;
+		fb = nullptr;
+	}
+#endif
+	
+	// dispose the scene (camera, items and materials)
+	if (scene)
+	{
+		delete(scene);
+		scene = nullptr;
+	}
+	
+	return 0;
+
 }
 
 int RectangleTest()
@@ -676,6 +799,10 @@ int main()
 #ifdef ALL_TEST
 	AllTest();
 #endif
+		
+#ifdef CORNELL_BOX
+	CornellBox();
+#endif
 	
 #ifdef STANDARD_RUN
 	{
@@ -700,7 +827,7 @@ int main()
 		LambertianReflector*  white = new LambertianReflector("white", Vec3(0.95, 0.95, 0.95));
 		scene->AddMaterial(white);
 //		LambertianReflector*  whiteEmitter = new LambertianReflector("white lambertian emitter", Vec3(0,0,0), Vec3(1,1,1));
-		DiffuseEmitter*  whiteEmitter = new DiffuseEmitter("white diffuse emitter", Vec3(10,10,10));
+		DiffuseEmitter*  whiteEmitter = new DiffuseEmitter("white diffuse emitter", Vec3(6,6,6));
 		scene->AddMaterial(whiteEmitter);
 		LambertianReflector*  green = new LambertianReflector("green", Vec3(0.0, 0.9, 0.0));
 		scene->AddMaterial(green);
@@ -735,7 +862,7 @@ int main()
 		scene->AddItem(new Sphere("airSphere", Vec3(0.25, -0.2, -0.8), -0.05, glass));
 		
 		// the light bubble
-		scene->AddItem(new Sphere("lightSphere", Vec3(0, 1, 2), 0.1, whiteEmitter));
+		scene->AddItem(new Rectangle("lightRect", Vec3(-.5, 2, -.5), Vec3(1,0,0), Vec3(0,0,1), whiteEmitter));
 		
 		// the small green sphere on the back
 		scene->AddItem(new Sphere("greenSphere", Vec3(-0.35, -0.4, -1), 0.1, green));
@@ -998,7 +1125,7 @@ int main()
 		if (!fb)
 			return -1;
 		
-		scene->Render(4, 0, fb, &rgbImage, &nrmImage, &objIDImage);
+		scene->Render(1024, 0, fb, &rgbImage, &nrmImage, &objIDImage);
 		
 		rgbImage.close();
 		nrmImage.close();

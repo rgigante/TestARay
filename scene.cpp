@@ -60,6 +60,10 @@ void Scene::Shade(Vec3& col, Vec3& nrm, Vec3& objID, const Ray& r, int depth/* =
 {
 	HitRecord rec;
 	const bool isHit = Hit(r, _epsHit, MAXFLOAT, rec);
+	assert(!(r.GetDirection().isNaN()));
+	assert(!(r.GetOrigin().isNaN()));
+	assert(!(rec.n.isNaN()));
+	assert(!(rec.p.isNaN()));
 	if (isHit)
 	{
 		Ray scattered(Vec3(0, 0, 0), Vec3(0, 0, 0));
@@ -74,7 +78,8 @@ void Scene::Shade(Vec3& col, Vec3& nrm, Vec3& objID, const Ray& r, int depth/* =
 		{
 			isEmitted = rec.mat->Emission(r, rec, emission);
 			isScattered = rec.mat->Scatter(r, rec, attenuation, scattered);
-			
+			assert(!(scattered.GetDirection().isNaN()));
+			assert(!(scattered.GetOrigin().isNaN()));
 			if (isScattered)
 			{
 				Shade(col, nrm, objID, scattered, depth + 1);

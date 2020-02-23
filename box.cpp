@@ -13,8 +13,8 @@ Box::Box(char const* name, const Vec3 & pt1, const Vec3 & pt2, Material const * 
 	SetName(name);
 	SetVisible(visible);
 	SetMaterial(mat);
-	if (GetBBox())
-		GetBBox()->SetPoints(pt1, pt2);
+//	if (GetBBox())
+//		GetBBox()->SetPoints(pt1, pt2);
 }
 
 void Box::UpdateBoxCenterAndRadius()
@@ -67,10 +67,10 @@ bool Box::HitPrimitive (const Ray& r, float t_min, float t_max, HitRecord& rec, 
 	// adjust by the given pos threshold
 	for (int i = 0; i < 3; i++)
 	{
-		aRpos[i] = abs(aRpos[i]) < _posThreshold ? -_posThreshold : aRpos[i];
+		aRpos[i] = abs(aRpos[i]) < _posThreshold ? _posThreshold : aRpos[i];
 		bRpos[i] = abs(bRpos[i]) < _posThreshold ?  _posThreshold : bRpos[i];
 		assert(abs(bRpos[i]) >= _posThreshold);
-		assert(abs(aRpos[0]) >= -_posThreshold);
+		assert(abs(aRpos[i]) >= -_posThreshold);
 	}
 	
 	float smallest_tmax = 0, largest_tmin = 0;
@@ -112,18 +112,20 @@ bool Box::HitPrimitive (const Ray& r, float t_min, float t_max, HitRecord& rec, 
 	{
 		rec.t = largest_tmin;
 		rec.p = r.PointAtParameter(largest_tmin);
-		if (abs(rec.p.z() - _a.z()) < 1e-6)
+		if (abs(rec.p[2] - _a[2]) < _posThreshold)
 			rec.n = Vec3(0,0,1);
-		else if (abs(rec.p.z() - _b.z()) < 1e-6)
+		else if (abs(rec.p[2] - _b[2]) < _posThreshold)
 			rec.n = Vec3(0,0,-1);
-		else if (abs(rec.p.y() - _a.y()) < 1e-6)
+		else if (abs(rec.p[1] - _a[1]) < _posThreshold)
 			rec.n = Vec3(0,1,0);
-		else if (abs(rec.p.y() - _b.y()) < 1e-6)
+		else if (abs(rec.p[1] - _b[1]) < _posThreshold)
 			rec.n = Vec3(0,-1,0);
-		else if (abs(rec.p.x() - _a.x()) < 1e-6)
+		else if (abs(rec.p[0] - _a[0]) < _posThreshold)
 			rec.n = Vec3(1,0,0);
-		else //if (abs(rec.p.x() - _b.x()) < 1e-6)
+		else if (abs(rec.p[0] - _b[0]) < _posThreshold)
 			rec.n = Vec3(-1,0,0);
+		else
+			assert(true);
 		
 		if (rec.t > t_min && rec.t < t_max)
 			return true;

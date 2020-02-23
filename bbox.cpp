@@ -68,10 +68,10 @@ bool BBox::HitBBox (const Ray& r, float t_min, float t_max, bool debugRay /*= fa
 	// if overlap make the term of the delta slightly negative
 	for (int i = 0; i < 3; i++)
 	{
-		aRpos[i] = abs(aRpos[i]) < _posThreshold ? -_posThreshold : aRpos[i];
+		aRpos[i] = abs(aRpos[i]) < _posThreshold ? _posThreshold : aRpos[i];
 		bRpos[i] = abs(bRpos[i]) < _posThreshold ?  _posThreshold : bRpos[i];
 		assert(abs(bRpos[i]) >= _posThreshold);
-		assert(abs(aRpos[0]) >= -_posThreshold);
+		assert(abs(aRpos[i]) >= -_posThreshold);
 	}
 	
 	float smallest_tmax = 0, largest_tmin = 0;

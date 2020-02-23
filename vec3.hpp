@@ -46,6 +46,7 @@ public:
 	inline float operator[](int i) const { return e[i]; }
 	inline float& operator[](int i) { return e[i]; }
 	
+	inline bool isNaN() const { return (isnan(e[0]) || isnan(e[1]) || isnan(e[2])); }
 	inline bool  operator==(const Vec3 &v);
 	inline bool  operator!=(const Vec3 &v);
 	inline Vec3& operator+=(const Vec3 &v);
