@@ -108,7 +108,7 @@ bool Box::HitPrimitive (const Ray& r, float t_min, float t_max, HitRecord& rec, 
 		<< "\t\t\t\t- tmax(s):" << tmaxValues << "\n"
 		<< "\t\t\t\t- smaller_tmax:" << smallest_tmax <<" / larger_tmin:" << largest_tmin << "\n";
 
-	if (smallest_tmax >= largest_tmin)
+	if ((smallest_tmax - largest_tmin) > _posThreshold && (largest_tmin > t_min && largest_tmin < t_max))
 	{
 		rec.t = largest_tmin;
 		rec.p = r.PointAtParameter(largest_tmin);
@@ -125,10 +125,10 @@ bool Box::HitPrimitive (const Ray& r, float t_min, float t_max, HitRecord& rec, 
 		else if (abs(rec.p[0] - _b[0]) < _posThreshold)
 			rec.n = Vec3(-1,0,0);
 		else
-			assert(true);
+			return false; //THIS NEED TO BE FIXED
+//			assert(false);
 		
-		if (rec.t > t_min && rec.t < t_max)
-			return true;
+		return true;
 	}
 	
 	return false;
