@@ -13,6 +13,7 @@ Framebuffer::Framebuffer(int xRes, int yRes, int chans):_xRes(xRes), _yRes(yRes)
 	_color = nullptr;
 	_normal = nullptr;
 	_objectID = nullptr;
+	_depth = nullptr;
 	
 	if (_xRes == 0 || _yRes == 0)
 		return;
@@ -20,6 +21,7 @@ Framebuffer::Framebuffer(int xRes, int yRes, int chans):_xRes(xRes), _yRes(yRes)
 	_color = new float* [_yRes];
 	_normal = new float* [_yRes];
 	_objectID = new float* [_yRes];
+	_depth = new float* [_yRes];
 	
 	for (int i = 0; i < _yRes; ++i)
 	{
@@ -29,6 +31,8 @@ Framebuffer::Framebuffer(int xRes, int yRes, int chans):_xRes(xRes), _yRes(yRes)
 			_normal[i] = new float[_xRes * _nChans];
 		if (_objectID)
 			_objectID[i] = new float[_xRes * _nChans];
+		if (_depth)
+			_depth[i] = new float[_xRes];
 	}
 }
 
@@ -51,6 +55,11 @@ Framebuffer::~Framebuffer()
 			delete[] _objectID[i];
 			_objectID[i] = nullptr;
 		}
+		if (_depth)
+		{
+			delete[] _depth[i];
+			_depth[i] = nullptr;
+		}
 	}
 	if (_color)
 	{
@@ -68,6 +77,12 @@ Framebuffer::~Framebuffer()
 	{
 		delete[] _objectID;
 		_objectID = nullptr;
+	}
+	
+	if (_depth)
+	{
+		delete[] _depth;
+		_depth = nullptr;
 	}
 }
 
@@ -102,6 +117,11 @@ bool Framebuffer::SpoolToPPM(std::ofstream * of, const char* type)
 				if (strcmp(type, "objectID") == 0)
 				{
 					*of << int(255.99 * _objectID[j][3 * i + 0]) << " " <<  int(255.99 * _objectID[j][3 * i + 1]) << " " << int(255.99 * _objectID[j][3 * i + 2]) << "\n";
+				}
+				if (strcmp(type, "depth") == 0)
+				{
+					const float normalizedZVal = _depth[j][i] / (_maxZDepth - _minZDepth);
+					*of << int(255.99 * normalizedZVal) << " " <<  int(255.99 * normalizedZVal) << " " << int(255.99 * normalizedZVal) << "\n";
 				}
 			}
 		}

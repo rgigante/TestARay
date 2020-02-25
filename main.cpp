@@ -22,8 +22,8 @@
 #include "hitableinstance.hpp"
 
 // global var to enable console debug
-const int g_xRes = 512;
-const int g_yRes = 512;
+const int g_xRes = 256;
+const int g_yRes = 256;
 
 //#define MATRIX_TESTS
 //#define NEW_HITABLE_TEST
@@ -480,13 +480,14 @@ int CornellBox()
 	if (!fb)
 		return -1;
 	
-	std::ofstream rgbImage, nrmImage, objIDImage;
+	std::ofstream rgbImage, nrmImage, objIDImage, depthImage;
 	rgbImage.open("/Users/riccardogigante/Desktop/test_color_CORNELL_BOX.ppm", std::ofstream::out);
 	nrmImage.open("/Users/riccardogigante/Desktop/test_normal_CORNELL_BOX.ppm", std::ofstream::out);
 	objIDImage.open("/Users/riccardogigante/Desktop/test_objID_CORNELL_BOX.ppm", std::ofstream::out);
+	depthImage.open("/Users/riccardogigante/Desktop/test_depth_CORNELL_BOX.ppm", std::ofstream::out);
 	
 	
-	scene->Render(512, 0, fb, &rgbImage, &nrmImage, &objIDImage);
+	scene->Render(128, 0, fb, &rgbImage, &nrmImage, &objIDImage, &depthImage);
 	
 	rgbImage.close();
 	nrmImage.close();

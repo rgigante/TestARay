@@ -56,7 +56,7 @@ bool Scene::Hit(const Ray &r, float t_min, float t_max, HitRecord &rec, bool deb
 	return hitAnything;
 }
 
-void Scene::Shade(Vec3& col, Vec3& nrm, Vec3& objID, const Ray& r, int depth/* = 0*/, const bool debugRay /*= false*/)
+void Scene::Shade(Vec3& col, Vec3& nrm, Vec3& objID, float& zVal, const Ray& r, int depth/* = 0*/, const bool debugRay /*= false*/)
 {
 	HitRecord rec;
 	if (debugRay) std::cout << "\t- ray[" << r << "]\n" << "\t\t- depth[" << depth << "]\n\t\t- col[" << col << "]\n";
@@ -84,7 +84,7 @@ void Scene::Shade(Vec3& col, Vec3& nrm, Vec3& objID, const Ray& r, int depth/* =
 			assert(!(scattered.GetOrigin().isNaN()));
 			if (isScattered)
 			{
-				Shade(col, nrm, objID, scattered, depth + 1, debugRay);
+				Shade(col, nrm, objID, zVal, scattered, depth + 1, debugRay);
 				
 				// calculate attenuation
 				col = (col * attenuation) + emission;
@@ -105,6 +105,7 @@ void Scene::Shade(Vec3& col, Vec3& nrm, Vec3& objID, const Ray& r, int depth/* =
 				nrm = Vec3(rec.n.x() + 1, rec.n.y() + 1, rec.n.z() + 1) * 0.5;
 				// calculate objID
 				objID = _objIDcolors[rec.objID];
+				zVal = rec.t;
 			}
 			
 			return;
@@ -119,6 +120,7 @@ void Scene::Shade(Vec3& col, Vec3& nrm, Vec3& objID, const Ray& r, int depth/* =
 	
 	nrm = Vec3(0,0,0);
 	objID = Vec3(0,0,0);
+	zVal = _epsHit;
 	
 	return;
 }
@@ -206,6 +208,7 @@ bool Scene::RenderPixel(const int xPix/* = 1*/, const int yPix/* = 1*/, const in
 	Vec3 rgb(0,0,0);
 	Vec3 nrm(0,0,0);
 	Vec3 objID(0,0,0);
+	float zValue(0.0);
 	Ray r(Vec3 (0,0,0), Vec3(0,0,0));
 	
 	const int x = xPix;
@@ -221,13 +224,13 @@ bool Scene::RenderPixel(const int xPix/* = 1*/, const int yPix/* = 1*/, const in
 	r = activeCam->CreateRay(u, v);
 
 	// add the values returned by the ray recursively exploring the scene by hitting its items
-	Shade(rgb, nrm, objID, r, 0, debugRay);
-	std::cout << "--- end pixel ["<< rgb <<"],  ["<< nrm <<"],  ["<< objID <<"]\n\n";
+	Shade(rgb, nrm, objID, zValue, r, 0, debugRay);
+	std::cout << "--- end pixel ["<< rgb <<"],  ["<< nrm <<"],  ["<< objID <<"],  ["<< zValue <<"]\n\n";
 	
 	return true;
 }
 
-bool Scene::Render(const int samples/* = 1*/, const int activeCamIdx /* = 0*/, Framebuffer* const fb, std::ofstream * color, std::ofstream * normal, std::ofstream * objectID)
+bool Scene::Render(const int samples/* = 1*/, const int activeCamIdx /* = 0*/, Framebuffer* const fb, std::ofstream * color, std::ofstream * normal, std::ofstream * objectID, std::ofstream * depth)
 {
 	Camera* const activeCam = _cams.at(activeCamIdx);
 	if (!activeCam)
@@ -245,6 +248,7 @@ bool Scene::Render(const int samples/* = 1*/, const int activeCamIdx /* = 0*/, F
 	Vec3 rgb(0,0,0);
 	Vec3 nrm(0,0,0);
 	Vec3 objID(0,0,0);
+	float zVal(-MAXFLOAT);
 	Ray r(Vec3 (0,0,0), Vec3(0,0,0));
 	
 	// loop over samples
@@ -265,14 +269,11 @@ bool Scene::Render(const int samples/* = 1*/, const int activeCamIdx /* = 0*/, F
 				u = float(i) * inv_nx;
 				v = float(j) * inv_ny;
 				
-//				std::cout << "--- start pixel ["<<i<<" ("<<u<<"), "<<j<<" ("<<v<<")]\n";
-				
 				// create the starting ray from  the camera
 				r = activeCam->CreateRay(u, v);
 				
 				// add the values returned by the ray recursively exploring the scene by hitting its items
-				Shade(rgb, nrm, objID, r);
-//				std::cout << " col["<< rgb <<"]\n";
+				Shade(rgb, nrm, objID, zVal, r);
 				
 				// update with color
 				fb->GetColor()[j][3 * i + 0] = (fb->GetColor()[j][3 * i + 0] * ( s - 1 ) + rgb[0]) * inv_s;
@@ -289,9 +290,9 @@ bool Scene::Render(const int samples/* = 1*/, const int activeCamIdx /* = 0*/, F
 				fb->GetObjectID()[j][3 * i + 1] = (fb->GetObjectID()[j][3 * i + 1] * ( s - 1 ) + objID[1]) * inv_s;
 				fb->GetObjectID()[j][3 * i + 2] = (fb->GetObjectID()[j][3 * i + 2] * ( s - 1 ) + objID[2]) * inv_s;
 				
-//				std::cout << "uv [" << u << ", " << v << "] / dir [" << r.GetDirection().x() << ", " << r.GetDirection().y() << ", " << r.GetDirection().z() << "] / col ["<< rgb[0] <<", " << ", "<< rgb[1] << ", " << rgb[2] << "]\n";
-
-			}
+				fb->GetDepth()[j][i] = (fb->GetDepth()[j][i] * ( s - 1 ) + zVal) * inv_s;
+				fb->SetZDepthExtremes(zVal);
+				}
 		}
 		
 		// update the framebuffer with an incremental sample count
@@ -304,6 +305,8 @@ bool Scene::Render(const int samples/* = 1*/, const int activeCamIdx /* = 0*/, F
 				fb->SpoolToPPM(normal, "normal");
 			if (objectID)
 				fb->SpoolToPPM(objectID, "objectID");
+			if (depth)
+				fb->SpoolToPPM(depth, "depth");
 			lrs = s;
 		}
 	}
