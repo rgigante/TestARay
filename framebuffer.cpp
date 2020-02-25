@@ -90,13 +90,14 @@ bool Framebuffer::SpoolToPPM(std::ofstream * of, const char* type)
 {
 	of->seekp(0);
 	
+	// compute the normalizing depth
+	const float normalizingZDepth = 1.0 / (_maxZDepth - _minZDepth);
+	
 	// write the image header
 	*of << "P3\n" << _xRes << " " << _yRes << "\n255\n";
 	
-	if (!_color || !_normal)
+	if (!_color || !_normal || !_objectID || !_depth)
 		return false;
-	
-	Vec3 col (0,0,0);
 	
 	for (int j = _yRes - 1; j>= 0; --j)
 	{
@@ -120,7 +121,8 @@ bool Framebuffer::SpoolToPPM(std::ofstream * of, const char* type)
 				}
 				if (strcmp(type, "depth") == 0)
 				{
-					const float normalizedZVal = _depth[j][i] / (_maxZDepth - _minZDepth);
+					float normalizedZVal;
+					_depth[j][i] > 1e-6 ? normalizedZVal = (_depth[j][i] - _minZDepth) * normalizingZDepth : normalizedZVal = 1.0;
 					*of << int(255.99 * normalizedZVal) << " " <<  int(255.99 * normalizedZVal) << " " << int(255.99 * normalizedZVal) << "\n";
 				}
 			}

@@ -22,8 +22,10 @@ public:
 	float** GetDepth(){ return _depth; }
 	void SetZDepthExtremes(float val)
 	{
+		if (val <= 1e-6) return;
 		val > _maxZDepth ? _maxZDepth = val : _maxZDepth;
 		val < _minZDepth ? _minZDepth = val : _minZDepth;
+		return;
 	}
 	bool GetXRes(){ return _xRes; }
 	bool GetYRes(){ return _yRes; }
