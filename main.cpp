@@ -486,12 +486,12 @@ int CornellBox()
 	objIDImage.open("/Users/riccardogigante/Desktop/test_objID_CORNELL_BOX.ppm", std::ofstream::out);
 	depthImage.open("/Users/riccardogigante/Desktop/test_depth_CORNELL_BOX.ppm", std::ofstream::out);
 	
-	
-	scene->Render(128, 0, fb, &rgbImage, &nrmImage, &objIDImage, &depthImage);
+	scene->Render(64, 0, fb, &rgbImage, &nrmImage, &objIDImage, &depthImage);
 	
 	rgbImage.close();
 	nrmImage.close();
 	objIDImage.close();
+	depthImage.close();
 	
 	// dispose the framebuffer
 	if (fb)
@@ -809,9 +809,9 @@ int main()
 		// init the scene
 		Scene* scene = new Scene();
 //
-//		// set the environment
-//		Gradient* env = new Gradient("standard gradient", Vec3(1.0, 1.0, 1.0), Vec3(0.5, 0.7, 1.0));
-//		scene->AddEnvironment(env);
+		// set the environment
+		Gradient* env = new Gradient("standard gradient", Vec3(1.0, 1.0, 1.0), Vec3(0.5, 0.7, 1.0));
+		scene->AddEnvironment(env);
 		
 		//allocate a glass
 		Dielectric* glass = new Dielectric("glass", 1.33);
@@ -1116,27 +1116,31 @@ int main()
 		// add camera to the scene
 		scene->AddCamera(new Camera(from, to, up, fov, aperture, focusDistance, g_xRes, g_yRes));
 		
-		std::ofstream rgbImage, nrmImage, objIDImage;
-		rgbImage.open("/Users/riccardogigante/Desktop/test_color.ppm", std::ofstream::out);
-		nrmImage.open("/Users/riccardogigante/Desktop/test_normal.ppm", std::ofstream::out);
-		objIDImage.open("/Users/riccardogigante/Desktop/test_objID.ppm", std::ofstream::out);
-
+#ifdef EXECUTE_RENDER
 		Framebuffer* fb = new Framebuffer(g_xRes, g_yRes, 3);
 		if (!fb)
 			return -1;
 		
-		scene->Render(1024, 0, fb, &rgbImage, &nrmImage, &objIDImage);
+		std::ofstream rgbImage, nrmImage, objIDImage, depthImage;
+		rgbImage.open("/Users/riccardogigante/Desktop/test_color_standard.ppm", std::ofstream::out);
+		nrmImage.open("/Users/riccardogigante/Desktop/test_normal_standard.ppm", std::ofstream::out);
+		objIDImage.open("/Users/riccardogigante/Desktop/test_objID_standard.ppm", std::ofstream::out);
+		depthImage.open("/Users/riccardogigante/Desktop/test_depth_standard.ppm", std::ofstream::out);
+		
+		scene->Render(64, 0, fb, &rgbImage, &nrmImage, &objIDImage, &depthImage);
 		
 		rgbImage.close();
 		nrmImage.close();
 		objIDImage.close();
-
+		depthImage.close();
+		
 		// dispose the framebuffer
 		if (fb)
 		{
 			delete fb;
 			fb = nullptr;
 		}
+#endif
 		
 		// dispose the scene (camera, items and materials)
 		if (scene)
@@ -1146,5 +1150,6 @@ int main()
 		}
 	}
 #endif
+	
 	return 0;
 }

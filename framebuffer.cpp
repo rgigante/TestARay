@@ -92,6 +92,7 @@ bool Framebuffer::SpoolToPPM(std::ofstream * of, const char* type)
 	
 	// compute the normalizing depth
 	const float normalizingZDepth = 1.0 / (_maxZDepth - _minZDepth);
+//	std::cout << "_minZDepth: " << _minZDepth << ", _maxZDepth: " << _maxZDepth << ", normalizingZDepth: " << normalizingZDepth << "\n";
 	
 	// write the image header
 	*of << "P3\n" << _xRes << " " << _yRes << "\n255\n";
@@ -123,6 +124,9 @@ bool Framebuffer::SpoolToPPM(std::ofstream * of, const char* type)
 				{
 					float normalizedZVal;
 					_depth[j][i] > 1e-6 ? normalizedZVal = (_depth[j][i] - _minZDepth) * normalizingZDepth : normalizedZVal = 1.0;
+					
+//					std::cout << i <<"/"<< j << ", _depth[j][i]: " << _depth[j][i] << ", normalizedZVal: " << normalizedZVal << "\n" ;
+					
 					*of << int(255.99 * normalizedZVal) << " " <<  int(255.99 * normalizedZVal) << " " << int(255.99 * normalizedZVal) << "\n";
 				}
 			}

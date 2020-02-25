@@ -59,11 +59,12 @@ bool Scene::Hit(const Ray &r, float t_min, float t_max, HitRecord &rec, bool deb
 void Scene::Shade(Vec3& col, Vec3& nrm, Vec3& objID, float& zVal, const Ray& r, int depth/* = 0*/, const bool debugRay /*= false*/)
 {
 	HitRecord rec;
-	if (debugRay) std::cout << "\t- ray[" << r << "]\n" << "\t\t- depth[" << depth
-		<< "]\n\t\t- col  [" << col << "]"
-		<< "]\n\t\t- nrm  [" << nrm << "]"
-		<< "]\n\t\t- objID[" << objID << "]"
-		<< "]\n\t\t- z-dep[" << zVal << "]";
+	if (debugRay) std::cout << "\t- ray[" << r << "]\n"
+		<< "\t\t- depth[" << depth << "]\n"
+		<< "\t\t- col  [" << col << "]\n"
+		<< "\t\t- nrm  [" << nrm << "]\n"
+		<< "\t\t- objID[" << objID << "]\n"
+		<< "\t\t- z-dep[" << zVal << "]\n";
 	const bool isHit = Hit(r, _epsHit, MAXFLOAT, rec, debugRay);
 	assert(!(r.GetDirection().isNaN()));
 	assert(!(r.GetOrigin().isNaN()));
