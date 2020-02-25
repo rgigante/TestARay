@@ -56,10 +56,11 @@ bool Scene::Hit(const Ray &r, float t_min, float t_max, HitRecord &rec, bool deb
 	return hitAnything;
 }
 
-void Scene::Shade(Vec3& col, Vec3& nrm, Vec3& objID, const Ray& r, int depth/* = 0*/)
+void Scene::Shade(Vec3& col, Vec3& nrm, Vec3& objID, const Ray& r, int depth/* = 0*/, const bool debugRay /*= false*/)
 {
 	HitRecord rec;
-	const bool isHit = Hit(r, _epsHit, MAXFLOAT, rec);
+	if (debugRay) std::cout << "\t- ray[" << r << "]\n" << "\t\t- depth[" << depth << "]\n\t\t- col[" << col << "]\n";
+	const bool isHit = Hit(r, _epsHit, MAXFLOAT, rec, debugRay);
 	assert(!(r.GetDirection().isNaN()));
 	assert(!(r.GetOrigin().isNaN()));
 	assert(!(rec.n.isNaN()));
@@ -78,11 +79,12 @@ void Scene::Shade(Vec3& col, Vec3& nrm, Vec3& objID, const Ray& r, int depth/* =
 		{
 			isEmitted = rec.mat->Emission(r, rec, emission);
 			isScattered = rec.mat->Scatter(r, rec, attenuation, scattered);
+			if (debugRay) std::cout << "\t\t- scatter["<<scattered<<"]\n\t\t- atten["<<attenuation<<"]\n" << "\t\t- emission["<<emission<<"]\n";
 			assert(!(scattered.GetDirection().isNaN()));
 			assert(!(scattered.GetOrigin().isNaN()));
 			if (isScattered)
 			{
-				Shade(col, nrm, objID, scattered, depth + 1);
+				Shade(col, nrm, objID, scattered, depth + 1, debugRay);
 				
 				// calculate attenuation
 				col = (col * attenuation) + emission;
@@ -121,56 +123,72 @@ void Scene::Shade(Vec3& col, Vec3& nrm, Vec3& objID, const Ray& r, int depth/* =
 	return;
 }
 
-void Scene::ShadeDebug(Vec3& col, const Ray& r, int depth/* = 0*/, const bool debugRay /*= false*/)
-{
-	HitRecord rec;
-	std::cout << "\t- ray["<<r<<"]\n";
-	std::cout << "\t\t- depth["<<depth<<"]\n\t\t- col["<<col<<"]\n";
-	const bool isHit = Hit(r, _epsHit, MAXFLOAT, rec, debugRay);
-	if (isHit)
-	{
-		Ray scattered(Vec3(0, 0, 0), Vec3(0, 0, 0));
-		Vec3 attenuation(0, 0, 0);
-		Vec3 emission(0, 0, 0);
-		
-		const bool isBelowMaxDepth = depth < _maxDepth;
-		bool isScattered = false;
-		bool isEmitted = false;
-		
-		if (isBelowMaxDepth && rec.mat)
-		{
-			isEmitted = rec.mat->Emission(r, rec, emission);
-			isScattered = rec.mat->Scatter(r, rec, attenuation, scattered);
-			std::cout << "\t\t- scatter["<<scattered<<"]\n\t\t- atten["<<attenuation<<"]\n" << "\t\t- emission["<<emission<<"]\n";
-			if (isScattered)
-			{
-				ShadeDebug(col, scattered, depth + 1);
-				
-				// calculate attenuation
-				col = (col * attenuation) + emission;
-			}
-			else if(isEmitted)
-			{
-				col = emission;
-			}
-			else
-			{
-				// color value (RED) assigned for debugging scope
-				col = Vec3(1, 0, 0);
-			}
-			
-			return;
-		}
-	}
-	
-	Environment* env = GetEnvironment(0);
-	if (env)
-		col = env->Col(r);
-	else
-		col = Vec3(0,0,0);
-	
-	return;
-}
+//void Scene::ShadeDebug(Vec3& col, Vec3& nrm, Vec3& objID, const Ray& r, int depth/* = 0*/, const bool debugRay /*= false*/)
+//{
+//	HitRecord rec;
+//	if (debugRay) std::cout << "\t- ray[" << r << "]\n" << "\t\t- depth[" << depth << "]\n\t\t- col[" << col << "]\n";
+//	const bool isHit = Hit(r, _epsHit, MAXFLOAT, rec, debugRay);
+//	assert(!(r.GetDirection().isNaN()));
+//	assert(!(r.GetOrigin().isNaN()));
+//	assert(!(rec.n.isNaN()));
+//	assert(!(rec.p.isNaN()));
+//	if (isHit)
+//	{
+//		Ray scattered(Vec3(0, 0, 0), Vec3(0, 0, 0));
+//		Vec3 attenuation(0, 0, 0);
+//		Vec3 emission(0, 0, 0);
+//
+//		const bool isBelowMaxDepth = depth < _maxDepth;
+//		bool isScattered = false;
+//		bool isEmitted = false;
+//
+//		if (isBelowMaxDepth && rec.mat)
+//		{
+//			isEmitted = rec.mat->Emission(r, rec, emission);
+//			isScattered = rec.mat->Scatter(r, rec, attenuation, scattered);
+//			if (debugRay) std::cout << "\t\t- scatter["<<scattered<<"]\n\t\t- atten["<<attenuation<<"]\n" << "\t\t- emission["<<emission<<"]\n";
+//			assert(!(scattered.GetDirection().isNaN()));
+//			assert(!(scattered.GetOrigin().isNaN()));
+//			if (isScattered)
+//			{
+//				ShadeDebug(col, nrm, objID, scattered, depth + 1);
+//
+//				// calculate attenuation
+//				col = (col * attenuation) + emission;
+//			}
+//			else if(isEmitted)
+//			{
+//				col = emission;
+//			}
+//			else
+//			{
+//				// color value (RED) assigned for debugging scope
+//				col = Vec3(1, 0, 0);
+//			}
+//
+//			if (depth == 0)
+//			{
+//				// calculate normal
+//				nrm = Vec3(rec.n.x() + 1, rec.n.y() + 1, rec.n.z() + 1) * 0.5;
+//				// calculate objID
+//				objID = _objIDcolors[rec.objID];
+//			}
+//
+//			return;
+//		}
+//	}
+//
+//	Environment* env = GetEnvironment(0);
+//	if (env)
+//		col = env->Col(r);
+//	else
+//		col = Vec3(0,0,0);
+//
+//	nrm = Vec3(0,0,0);
+//	objID = Vec3(0,0,0);
+//
+//	return;
+//}
 
 bool Scene::RenderPixel(const int xPix/* = 1*/, const int yPix/* = 1*/, const int activeCamIdx /* = 0*/, const bool debugRay /*= false*/)
 {
@@ -203,8 +221,7 @@ bool Scene::RenderPixel(const int xPix/* = 1*/, const int yPix/* = 1*/, const in
 	r = activeCam->CreateRay(u, v);
 
 	// add the values returned by the ray recursively exploring the scene by hitting its items
-	ShadeDebug(rgb, r, 0, debugRay);
-	Shade(rgb, nrm, objID, r);
+	Shade(rgb, nrm, objID, r, 0, debugRay);
 	std::cout << "--- end pixel ["<< rgb <<"],  ["<< nrm <<"],  ["<< objID <<"]\n\n";
 	
 	return true;

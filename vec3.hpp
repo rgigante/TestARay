@@ -144,11 +144,15 @@ inline Vec3& Vec3::operator/=(const float t) {
 
 inline Vec3 Vec3::GetNormalized()
 {
-	Vec3 res;
-	const float k = (1.0 / this->Length());
-	res[0] = this->e[0] * k;
-	res[1] = this->e[1] * k;
-	res[2] = this->e[2] * k;
+	Vec3 res(0.0);
+	const float length = this->Length();
+	if (length > 0)
+	{
+		const float k = (1.0 / length);
+		res[0] = this->e[0] * k;
+		res[1] = this->e[1] * k;
+		res[2] = this->e[2] * k;
+	}
 	return res;
 }
 
@@ -240,8 +244,16 @@ inline Vec3 Cross (const Vec3 &v1, const Vec3 &v2)
 
 inline Vec3 Normalize(Vec3 v)
 {
-	const float k = 1.0 / v.Length();
-	return Vec3(v[0] *= k, v[1] *= k, v[2] *= k);
+	const float length = v.Length();
+	if (length > 0)
+	{
+		const float k = 1.0 / length;
+		return Vec3(v[0] *= k, v[1] *= k, v[2] *= k);
+	}
+	else
+	{
+		return v;
+	}
 }
 
 // Generate a random point lying on a sphere

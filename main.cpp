@@ -22,8 +22,8 @@
 #include "hitableinstance.hpp"
 
 // global var to enable console debug
-const int g_xRes = 256;
-const int g_yRes = 256;
+const int g_xRes = 512;
+const int g_yRes = 512;
 
 //#define MATRIX_TESTS
 //#define NEW_HITABLE_TEST
@@ -473,8 +473,7 @@ int CornellBox()
 	// add camera to the scene
 	scene->AddCamera(new Camera(from, to, up, fov, aperture, focusDistance, g_xRes, g_yRes));
 	
-	scene->RenderPixel(32/64.0 * g_xRes, (24)/64.0 * g_yRes, 0, true); // front rectangle
-	scene->RenderPixel(32/64.0 * g_xRes, (40)/64.0 * g_yRes, 0, true); // back rectangle
+	scene->RenderPixel(114, (g_yRes-110), 0, true); 
 	
 #ifdef EXECUTE_RENDER
 	Framebuffer* fb = new Framebuffer(g_xRes, g_yRes, 3);

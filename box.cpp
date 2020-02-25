@@ -108,26 +108,20 @@ bool Box::HitPrimitive (const Ray& r, float t_min, float t_max, HitRecord& rec, 
 		<< "\t\t\t\t- tmax(s):" << tmaxValues << "\n"
 		<< "\t\t\t\t- smaller_tmax:" << smallest_tmax <<" / larger_tmin:" << largest_tmin << "\n";
 
-	if ((smallest_tmax - largest_tmin) > _posThreshold && (largest_tmin > t_min && largest_tmin < t_max))
+	if ((smallest_tmax >  largest_tmin) && (largest_tmin > t_min && largest_tmin < t_max))
 	{
 		rec.t = largest_tmin;
 		rec.p = r.PointAtParameter(largest_tmin);
-		if (abs(rec.p[2] - _a[2]) < _posThreshold)
-			rec.n = Vec3(0,0,1);
-		else if (abs(rec.p[2] - _b[2]) < _posThreshold)
-			rec.n = Vec3(0,0,-1);
-		else if (abs(rec.p[1] - _a[1]) < _posThreshold)
-			rec.n = Vec3(0,1,0);
-		else if (abs(rec.p[1] - _b[1]) < _posThreshold)
-			rec.n = Vec3(0,-1,0);
-		else if (abs(rec.p[0] - _a[0]) < _posThreshold)
-			rec.n = Vec3(1,0,0);
-		else if (abs(rec.p[0] - _b[0]) < _posThreshold)
-			rec.n = Vec3(-1,0,0);
-		else
-			return false; //THIS NEED TO BE FIXED
-//			assert(false);
-		
+		const Vec3 recpa = rec.p - _a;
+		const Vec3 recpb = rec.p - _b;
+		rec.n = Vec3(0.0);
+		for (int i = 0; i < 3; i++)
+		{
+			if (abs(recpa[i]) < _posThreshold)
+				rec.n[i] = 1;
+			if (abs(recpb[i]) < _posThreshold)
+				rec.n[i] = -1;
+		}
 		return true;
 	}
 	
